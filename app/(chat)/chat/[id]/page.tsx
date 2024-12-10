@@ -19,7 +19,7 @@ export default async function Page({
     notFound();
   }
 
-  // type casting and converting messages to UI messages
+  // type casting and converting messages to UI messagess
   const chat: Chat = {
     ...chatFromDb,
     messages: convertToUIMessages(chatFromDb.messages as Array<CoreMessage>),
