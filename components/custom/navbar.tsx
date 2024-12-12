@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { auth, signOut } from "@/app/(auth)/auth";
+import { auth, signOut } from "@/app/[lang]/(auth)/auth";
 
 import { History } from "./history";
 import { SlashIcon } from "./icons";
@@ -13,8 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { ELanguage } from "@/models/language.model";
 
-export const Navbar = async () => {
+export const Navbar = async ({ lang }: { lang: ELanguage }) => {
   const session = await auth();
 
   return (
@@ -59,7 +60,7 @@ export const Navbar = async () => {
                     "use server";
 
                     await signOut({
-                      redirectTo: "/",
+                      redirectTo: `/${lang}`,
                     });
                   }}
                 >
@@ -75,7 +76,7 @@ export const Navbar = async () => {
           </DropdownMenu>
         ) : (
           <Button className="py-1.5 px-2 h-fit font-normal text-white" asChild>
-            <Link href="/login">Login</Link>
+            <Link href={`/${lang}/login`}>Login</Link>
           </Button>
         )}
       </div>

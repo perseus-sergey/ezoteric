@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import useSWR from "swr";
 
 import { Chat } from "@/db/schema";
-import { fetcher, getTitleFromChat } from "@/lib/utils";
+import { fetcher, getTitleFromChat } from "@/lib/utils/utils";
 
 import {
   InfoIcon,

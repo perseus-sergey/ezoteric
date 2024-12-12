@@ -3,25 +3,46 @@ import "server-only";
 import { CoreMessage, Message } from "ai";
 import { genSaltSync, hashSync } from "bcrypt-ts";
 import { desc, eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { user, chat, User, reservation } from "./schema";
 
+const postgresUrl = process.env.POSTGRES_URL || "";
+
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
 // https://authjs.dev/reference/adapter/drizzle
-const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
-const db = drizzle(client);
+
+let db: PostgresJsDatabase<Record<string, never>> & {
+  $client: postgres.Sql;
+};
+
+try {
+  const client = postgres(`${postgresUrl}?sslmode=require`);
+  db = drizzle(client);
+} catch (error) {
+  console.log("🚀 ~ DB CONNECTION ERROR:", error);
+}
 
 export async function getUser(email: string): Promise<Array<User>> {
-  try {
-    return await db.select().from(user).where(eq(user.email, email));
-  } catch (error) {
-    console.error("Failed to get user from database");
-    throw error;
-  }
+  return [
+    {
+      id: "1",
+      email,
+      password: "password",
+    },
+  ];
 }
+
+// export async function getUser(email: string): Promise<Array<User>> {
+//   try {
+//     return await db.select().from(user).where(eq(user.email, email));
+//   } catch (error) {
+//     console.error("Failed to get user from database");
+//     throw error;
+//   }
+// }
 
 export async function createUser(email: string, password: string) {
   const salt = genSaltSync(10);

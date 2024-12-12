@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 
-import { fetcher } from "@/lib/utils";
+import { fetcher } from "@/lib/utils/utils";
 
 import { CheckCircle, InfoIcon } from "../custom/icons";
 import { Input } from "../ui/input";
