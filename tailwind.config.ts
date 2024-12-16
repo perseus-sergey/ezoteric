@@ -13,6 +13,8 @@ const config: Config = {
     fontFamily: {
       sans: ["geist"],
       mono: ["geist-mono"],
+      verdana: ["Verdana", "Geneva", "sans-serif"],
+      georgia: ["Georgia", "Times New Roman", "Times", "serif"],
     },
     extend: {
       borderRadius: {

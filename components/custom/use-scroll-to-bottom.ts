@@ -13,6 +13,7 @@ export function useScrollToBottom<T extends HTMLElement>(): [
 
     if (container && end) {
       const observer = new MutationObserver(() => {
+        console.log("🚀 ~ observer ~ observer:", observer);
         end.scrollIntoView({ behavior: "instant", block: "end" });
       });
 
@@ -29,3 +30,20 @@ export function useScrollToBottom<T extends HTMLElement>(): [
 
   return [containerRef, endRef];
 }
+// export function useScrollToBottom<T extends HTMLElement>(): [React.RefObject<T>, React.RefObject<T>] {
+//   const containerRef = useRef<T>(null);
+//   const endRef = useRef<T>(null);
+
+//   useLayoutEffect(() => {
+//       const container = containerRef.current;
+//       const end = endRef.current;
+
+//       if (container && end) {
+//           setTimeout(() => {
+//               end.scrollIntoView({ behavior: "smooth", block: "end" });
+//           }, 0);
+//       }
+//   }, [messages]); // messages додано до залежностей
+
+//   return [containerRef, endRef];
+// }

@@ -4,7 +4,6 @@ import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
 import { motion } from "framer-motion";
 import React, {
   useRef,
-  useEffect,
   useState,
   useCallback,
   Dispatch,
@@ -64,24 +63,35 @@ export function MultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      adjustHeight();
-    }
-  }, []);
+  // const adjustHeight = useCallback(() => {
+  //   if (textareaRef.current) {
+  //     textareaRef.current.style.height = "auto";
+  //     textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+  //   }
+  // }, []);
 
-  const adjustHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${
-        textareaRef.current.scrollHeight + 0
-      }px`;
-    }
-  };
+  // useEffect(() => {
+  //   adjustHeight();
+  // }, [input, adjustHeight]);
+
+  // useEffect(() => {
+  //   if (textareaRef.current) {
+  //     adjustHeight();
+  //   }
+  // }, []);
+
+  // const adjustHeight = () => {
+  //   if (textareaRef.current) {
+  //     textareaRef.current.style.height = "auto";
+  //     textareaRef.current.style.height = `${
+  //       textareaRef.current.scrollHeight + 0
+  //     }px`;
+  //   }
+  // };
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
-    adjustHeight();
+    // adjustHeight();
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -158,11 +168,11 @@ export function MultimodalInput({
   );
 
   return (
-    <div className="relative w-full flex flex-col gap-4">
+    <div className="relative w-full flex flex-col gap-4 m-1">
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[500px]">
+          <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto">
             {suggestedActions.map((suggestedAction, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -173,6 +183,7 @@ export function MultimodalInput({
                 className={index > 1 ? "hidden sm:block" : "block"}
               >
                 <button
+                  role="button"
                   onClick={async () => {
                     append({
                       role: "user",
@@ -225,14 +236,16 @@ export function MultimodalInput({
         placeholder="Send a message..."
         value={input}
         onChange={handleInput}
-        className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none"
+        className="overflow-y-scroll pr-9 resize-none text-base bg-muted border-none"
         rows={3}
         onKeyDown={(event) => {
           if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
 
             if (isLoading) {
-              toast.error("Please wait for the model to finish its response!");
+              toast.error(
+                "Please wait for the specialist to finish its response!",
+              );
             } else {
               submitForm();
             }
@@ -264,7 +277,7 @@ export function MultimodalInput({
       )}
 
       <Button
-        className="rounded-full p-1.5 h-fit absolute bottom-2 right-10 m-0.5 dark:border-zinc-700"
+        className="rounded-full p-1.5 h-fit absolute bottom-10 right-2 m-0.5 dark:border-zinc-700"
         onClick={(event) => {
           event.preventDefault();
           fileInputRef.current?.click();

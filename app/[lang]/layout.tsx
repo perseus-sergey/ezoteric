@@ -11,18 +11,27 @@ import { ESegment, MAIN_URL } from "@/models/url.model";
 import { DEFAULT_META_DATA } from "@/models/meta/home.model";
 import { DEFAULT_META_OG } from "@/models/meta/root.model";
 
+// =================================================================
+// improve components/custom/NotFoundPage.tsx
+// change comparing user with db app/[lang]/(auth)/auth.ts, db/queries.ts
+// change app/[lang]/(chat)/twitter-image.png, app/[lang]/(chat)/opengraph-image.png, app/favicon.ico
+// change the text components/custom/overview.tsx
+// =================================================================
+
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 type TProps = Readonly<{
   children: React.ReactNode;
-  params: { [key in ESegment]: string };
+  params: Promise<{ [key in ESegment]: string }>;
 }>;
 
 export const dynamicParams = false;
 
-export const generateMetadata = async (props: TProps): Promise<Metadata> => {
-  const { params } = await props;
-  const lang = getELangKey(params.lang);
+export const generateMetadata = async ({
+  params,
+}: TProps): Promise<Metadata> => {
+  const p = await params;
+  const lang = getELangKey(p.lang);
 
   return {
     metadataBase: new URL(basesUrl),
@@ -47,26 +56,25 @@ export async function generateStaticParams() {
   return Object.values(ELanguage).map((l) => ({ [ESegment.LANG]: l }));
 }
 
-export default async function Layout(props: TProps) {
-  const { params } = await props;
-
-  const lang = getELangKey(params.lang);
-
-  const { children } = props;
+export default async function Layout({ children, params }: TProps) {
+  const p = await params;
+  const lang = getELangKey(p.lang);
 
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
-      <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Toaster position="top-center" />
-          <Navbar lang={lang} />
-          {children}
-        </ThemeProvider>
+      <body className="antialiased bg-secondary">
+        <main className="max-w-5xl mx-auto">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster position="top-center" />
+            <Navbar lang={lang} />
+            {children}
+          </ThemeProvider>
+        </main>
       </body>
     </html>
   );

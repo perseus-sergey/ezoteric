@@ -4,8 +4,8 @@ import { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
   pages: {
-    signIn: `/${ELanguage.EN}/${ESegment.LOGIN}`,
-    newUser: `/${ELanguage.EN}`,
+    signIn: `/${ELanguage.EN}/${ESegment.LOGIN}`, // URL-адреса для сторінки входу
+    newUser: `/${ELanguage.EN}`, // URL-адреса для перенаправлення нового користувача після успішної реєстрації
   },
   providers: [
     // added later in auth.ts since it requires bcrypt which is only compatible with Node.js
@@ -28,9 +28,6 @@ export const authConfig = {
       const isOnRegisterRoute = new RegExp(
         `/(${langPattern})/${ESegment.REGISTER}(/|$)`,
       ).test(nextUrl.pathname);
-
-      // const isOnRegister = nextUrl.pathname.startsWith("/register");
-      // const isOnLogin = nextUrl.pathname.startsWith("/login");
 
       if (isLoggedIn && (isOnLoginRoute || isOnRegisterRoute)) {
         return Response.redirect(new URL(`/${ELanguage.EN}`, nextUrl));

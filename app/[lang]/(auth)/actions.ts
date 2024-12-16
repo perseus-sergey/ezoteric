@@ -19,7 +19,6 @@ export const login = async (
   _: LoginActionState,
   formData: FormData,
 ): Promise<LoginActionState> => {
-  console.log("🚀 ~ formData:", formData);
   try {
     const validatedData = authFormSchema.parse({
       email: formData.get("email"),
