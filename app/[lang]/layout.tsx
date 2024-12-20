@@ -8,8 +8,8 @@ import { ThemeProvider } from "@/components/custom/theme-provider";
 import { ELanguage } from "@/models/language.model";
 import { getELangKey } from "@/lib/utils/getLanguage";
 import { ESegment, MAIN_URL } from "@/models/url.model";
-import { DEFAULT_META_DATA } from "@/models/meta/home.model";
 import { DEFAULT_META_OG } from "@/models/meta/root.model";
+import { DEFAULT_META_DATA } from "@/models/meta/default.model";
 
 // =================================================================
 // improve components/custom/NotFoundPage.tsx
@@ -63,7 +63,7 @@ export default async function Layout({ children, params }: TProps) {
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
       <body className="antialiased bg-secondary">
-        <main className="max-w-5xl mx-auto">
+        <main className="max-w-5xl mx-auto p-2 sm:p-4 pt-10">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

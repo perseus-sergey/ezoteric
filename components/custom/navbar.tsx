@@ -34,7 +34,7 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
               <SlashIcon size={16} />
             </div>
             <div className="text-sm dark:text-zinc-300 truncate w-28 md:w-fit">
-              Next.js Gemini Chatbot
+              Ezoteric.net
             </div>
           </div>
         </div>

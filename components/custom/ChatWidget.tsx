@@ -11,6 +11,9 @@ import { PreviewMessage } from "@/components/custom/message";
 import { MultimodalInput } from "./multimodal-input";
 import useWindowSize from "./use-window-size";
 import { ELanguage } from "@/models/language.model";
+import { CHAT_LANG_MODEL } from "@/models/meta/chat.model";
+
+const { chatTitle, overviewTexts } = CHAT_LANG_MODEL;
 
 const ChatWidget = ({
   id,
@@ -30,24 +33,25 @@ const ChatWidget = ({
       body: { id },
       initialMessages,
       maxSteps: 10,
-      onFinish: () => {
-        window.history.replaceState({}, "", `${lang}/chat/${id}`);
-      },
+      //   onFinish: () => {
+      //     window.history.replaceState({}, "", `${lang}/chat/${id}`);
+      //   },
     });
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  //   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Прокрутка донизу при додаванні нових повідомлень
-    if (messagesEndRef.current && messagesContainerRef.current && isOpen) {
+    if (messagesContainerRef.current && isOpen) {
+      // if (messagesEndRef.current && messagesContainerRef.current && isOpen) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
 
   const toggleChat = () => setIsOpen(!isOpen);
-  const { width } = useWindowSize();
+  const { width, height } = useWindowSize();
 
   const isSmallScreen = width && width < 400;
 
@@ -95,19 +99,23 @@ const ChatWidget = ({
       {isOpen && (
         <>
           <nav className="flex justify-between items-center px-4 py-2 bg-primary">
-            <p className="font-bold">Chat</p>
+            <p className="font-bold">{chatTitle[lang]}</p>
             <button onClick={toggleChat}>
               <X className="size-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only"></span>
             </button>
           </nav>
 
           <section
-            className="flex flex-col max-h-[70dvh] grow overflow-y-auto"
+            className={clsx(
+              "flex flex-col grow overflow-y-auto",
+              height && height < 580 ? "max-h-[50dvh]" : "max-h-[70dvh]",
+            )}
+            // className="flex flex-col max-h-[70dvh] grow overflow-y-auto"
             ref={messagesContainerRef}
           >
-            {messages.length === 0 ? (
-              <Overview />
+            {messages.length === 0 && height && height > 450 ? (
+              <Overview texts={overviewTexts[lang]} />
             ) : (
               <>
                 <div
@@ -129,7 +137,7 @@ const ChatWidget = ({
                 </div>
 
                 <div
-                  ref={messagesEndRef}
+                  //   ref={messagesEndRef}
                   className="shrink-0 min-w-[24px] min-h-[24px]"
                 />
               </>
@@ -138,6 +146,7 @@ const ChatWidget = ({
 
           <form className="flex flex-row gap-2 relative items-end w-full">
             <MultimodalInput
+              lang={lang}
               input={input}
               setInput={setInput}
               handleSubmit={handleSubmit}

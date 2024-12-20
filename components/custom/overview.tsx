@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 import { MessageIcon, VercelIcon } from "./icons";
 
-export const Overview = () => {
+export const Overview = ({ texts }: { texts: string[] }) => {
   return (
     <motion.div
       key="overview"
@@ -19,10 +19,10 @@ export const Overview = () => {
           <span>+</span>
           <MessageIcon />
         </p>
-        <p>
-          Будь ласка, введіть ваше запитання, або виберіть одне із
-          запропонованих
-        </p>
+
+        {texts.map((text, i) => (
+          <p key={i}>{text}</p>
+        ))}
       </div>
     </motion.div>
   );

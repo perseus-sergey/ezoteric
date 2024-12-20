@@ -1,19 +1,186 @@
+import { parseISO, subYears } from "date-fns";
 import { ELanguage } from "../language.model";
+import * as z from "zod";
 
-export const DEFAULT_META_DATA = {
-  [ELanguage.UA]: {
-    title: "Нумерологія та Таро — таємниці та відповіді",
-    description:
-      "Дізнайтеся про нумерологію, Таро та інші езотеричні практики. Відкрийте для себе таємниці чисел, символів та отримайте відповіді на життєві питання.",
-    keywords:
-      "нумерологія, таро, езотерика, значення чисел, символи, передбачення, духовні практики",
+export const MAIN_TEXT = {
+  h1: {
+    [ELanguage.UA]:
+      "Розкрий свій внутрішній потенціал: пізнай світ езотеричної мудрості",
+    [ELanguage.EN]:
+      "Unlock Your Inner Potential: Explore the World of Esoteric Wisdom",
+  },
+  h1_p: {
+    [ELanguage.UA]: [
+      `Ezoteric.net – це ваш провідник у світ езотеричних знань. Ми
+          пропонуємо професійні консультації з Human Design, нумерології, Таро,
+          Священної Геометрії, астрології, ангелософії, Фен-Шуй та інших
+          нетрадиційних наук. Наша місія – допомогти вам зрозуміти себе, свій
+          потенціал та шлях до гармонійного життя.`,
+    ],
+    [ELanguage.EN]: [
+      `Ezoteric.net is your guide to the world of esoteric knowledge. We
+          offer professional consultations in Human Design, Numerology, Tarot,
+          Sacred Geometry, Astrology, Angelosophy, Feng Shui, and other
+          unconventional sciences. Our mission is to help you understand
+          yourself, your potential, and the path to a harmonious life.`,
+    ],
   },
 
-  [ELanguage.EN]: {
-    title: "Numerology and Tarot — Secrets and Answers",
-    description:
-      "Discover the world of numerology, Tarot, and other esoteric practices. Unlock the mysteries of numbers, symbols, and find answers to life's questions.",
-    keywords:
-      "numerology, tarot, esoterics, number meanings, symbols, divination, spiritual practices",
+  h2_1: { [ELanguage.UA]: `Наші послуги`, [ELanguage.EN]: "Our Services" },
+  h2_1_p: {
+    [ELanguage.UA]: [
+      `Ми пропонуємо різноманітні персоналізовані послуги, які допоможуть вам глибше зрозуміти себе та свій життєвий шлях.`,
+    ],
+    [ELanguage.EN]: [
+      "We offer a variety of personalized services to help you gain a deeper understanding of yourself and your life path.",
+    ],
+  },
+  h2_1_ul: {
+    [ELanguage.UA]: [
+      [`Human Design`, `Відкрий свій унікальний енергетичний план.`],
+      [`Нумерологія`, `Розкрий прихований зміст своїх чисел.`],
+      [
+        `Гадання на картах Таро`,
+        `Отримай ясність та розуміння своєї поточної ситуації.`,
+      ],
+      [`Священна Геометрія`, `Досліджуй фундаментальні візерунки всесвіту.`],
+      [`Астрологія`, `Зрозумій вплив космосу на своє життя.`],
+      [`Ангелософія`, `Зв'яжися з ангельською мудрістю та керівництвом.`],
+      [
+        `Фен-Шуй`,
+        `Гармонізуй свій життєвий простір для оптимального благополуччя.`,
+      ],
+    ],
+    [ELanguage.EN]: [
+      ["Human Design", "Discover your unique energetic blueprint."],
+      ["Numerology", "Uncover the hidden meanings behind your numbers."],
+      [
+        "Tarot Card Reading",
+        "Gain clarity and insight into your current situation.",
+      ],
+      ["Sacred Geometry", "Explore the fundamental patterns of the universe."],
+      ["Astrology", "Understand the influence of the cosmos on your life."],
+      ["Angelosophy", "Connect with angelic wisdom and guidance."],
+      ["Feng Shui", "Harmonize your living space for optimal well-being."],
+    ],
+  },
+
+  h2_2: {
+    [ELanguage.UA]: `Дізнайтеся про себе`,
+    [ELanguage.EN]: "Discover Yourself",
+  },
+  h2_2_p: {
+    [ELanguage.UA]: [
+      `Введіть своє ім'я та дату народження, щоб отримати базову інформацію про вашу особистість:`,
+    ],
+    [ELanguage.EN]: [
+      `Enter your name and date of birth to receive basic information about your personality:`,
+    ],
+  },
+
+  h2_3: { [ELanguage.UA]: `Контакти`, [ELanguage.EN]: "Contact Us" },
+  h2_3_p: {
+    [ELanguage.UA]: [`Зв'яжіться з нами:`],
+    [ELanguage.EN]: [`Get in touch with us:`],
+  },
+  h2_3_phone: { [ELanguage.UA]: "Телефон", [ELanguage.EN]: "Phone" },
+
+  numerologyForm: {
+    name: {
+      label: {
+        [ELanguage.EN]: "Full Name:",
+        [ELanguage.UA]: "Повне ім'я",
+      },
+      placeholder: {
+        [ELanguage.UA]: "Введіть своє повне ім'я",
+        [ELanguage.EN]: "Enter your full name",
+      },
+    },
+    birthdate: {
+      label: {
+        [ELanguage.UA]: "Дата народження",
+        [ELanguage.EN]: "Date of Birth",
+      },
+      caption: {
+        [ELanguage.EN]: "Pick a date",
+        [ELanguage.UA]: "Виберіть дату",
+      },
+    },
+    submit: {
+      title: {
+        [ELanguage.UA]: "Отримати інформацію",
+        [ELanguage.EN]: "Get Information",
+      },
+    },
+
+    resultDescription: {
+      title: {
+        [ELanguage.EN]: "For the most accurate results:",
+        [ELanguage.UA]: "Для більш повного результату:",
+      },
+      texts: {
+        [ELanguage.EN]: [
+          "Please provide your full name (including surname and any middle names) when filling out the form. This allows for a more comprehensive and insightful numerological analysis.",
+        ],
+        [ELanguage.UA]: [
+          `Будьте уважні при заповненні форми, введіть ваше повне ім'я (з урахуванням прізвища та бажано по батькові). Це дозволяє надати більш конкретний і повний результат.`,
+        ],
+      },
+    },
   },
 };
+
+export const MODAL_NUMEROLOGY = {
+  modalCaption: {
+    [ELanguage.UA]: `Дізнайтеся про себе`,
+    [ELanguage.EN]: "Discover Yourself",
+  },
+
+  modalCloseBtn: {
+    [ELanguage.UA]: `Закрити`,
+    [ELanguage.EN]: "Close",
+  },
+};
+
+export interface INumerologyJsonSchema {
+  lifePathNumber: number;
+  destinyNumber: number;
+  personalityNumber: number;
+  lifePathNumberInterpretation: string;
+  destinyNumberInterpretation: string;
+  personalityNumberInterpretation: string;
+  overallInterpretation: string;
+}
+export interface INumerologyResponseList {
+  lifePathNumber: number;
+  destinyNumber: number;
+  personalityNumber: number;
+  lifePathNumberInterpretation: string;
+  destinyNumberInterpretation: string;
+  personalityNumberInterpretation: string;
+  overallInterpretation: string;
+}
+
+export interface IModalAiResponseProps {
+  aiResponse: INumerologyJsonSchema | null;
+  formData: z.infer<typeof numerologyFormSchema>;
+}
+
+export const BIRTH_DATE_FORMAT = "yyyy-MM-dd";
+
+export const numerologyFormSchema = z.object({
+  username: z.string().min(2, { message: "Ім'я занадто коротке" }),
+  birthdate: z
+    .string()
+    .refine((val) => !isNaN(parseISO(val).getTime()), {
+      message: "Не коректний формат дати",
+    })
+    .transform((val) => parseISO(val))
+    .refine((date) => date < subYears(new Date(), 8), {
+      message: "Ваш вік повинен бути більше ніж 8 років",
+    })
+    .refine((date) => date > subYears(new Date(), 150), {
+      message: "Ваш вік повинен бути менше ніж 150 років",
+    })
+    .transform((date) => date.toISOString()),
+});

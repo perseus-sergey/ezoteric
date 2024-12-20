@@ -17,21 +17,11 @@ import { PreviewAttachment } from "./preview-attachment";
 import useWindowSize from "./use-window-size";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-
-const suggestedActions = [
-  {
-    title: "Help me book a flight",
-    label: "from San Francisco to London",
-    action: "Help me book a flight from San Francisco to London",
-  },
-  {
-    title: "What is the status",
-    label: "of flight BA142 flying tmrw?",
-    action: "What is the status of flight BA142 flying tmrw?",
-  },
-];
+import { chatSuggestedActions } from "@/models/meta/chat.model";
+import { ELanguage } from "@/models/language.model";
 
 export function MultimodalInput({
+  lang,
   input,
   setInput,
   isLoading,
@@ -42,6 +32,7 @@ export function MultimodalInput({
   append,
   handleSubmit,
 }: {
+  lang: ELanguage;
   input: string;
   setInput: (value: string) => void;
   isLoading: boolean;
@@ -62,32 +53,6 @@ export function MultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-
-  // const adjustHeight = useCallback(() => {
-  //   if (textareaRef.current) {
-  //     textareaRef.current.style.height = "auto";
-  //     textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   adjustHeight();
-  // }, [input, adjustHeight]);
-
-  // useEffect(() => {
-  //   if (textareaRef.current) {
-  //     adjustHeight();
-  //   }
-  // }, []);
-
-  // const adjustHeight = () => {
-  //   if (textareaRef.current) {
-  //     textareaRef.current.style.height = "auto";
-  //     textareaRef.current.style.height = `${
-  //       textareaRef.current.scrollHeight + 0
-  //     }px`;
-  //   }
-  // };
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
@@ -172,8 +137,8 @@ export function MultimodalInput({
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto">
-            {suggestedActions.map((suggestedAction, index) => (
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 w-full md:px-0 mx-auto">
+            {chatSuggestedActions.map((suggestedAction, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -187,14 +152,16 @@ export function MultimodalInput({
                   onClick={async () => {
                     append({
                       role: "user",
-                      content: suggestedAction.action,
+                      content: suggestedAction.action[lang],
                     });
                   }}
                   className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
                 >
-                  <span className="font-medium">{suggestedAction.title}</span>
+                  <span className="font-medium">
+                    {suggestedAction.title[lang]}
+                  </span>
                   <span className="text-zinc-500 dark:text-zinc-400">
-                    {suggestedAction.label}
+                    {suggestedAction.label[lang]}
                   </span>
                 </button>
               </motion.div>

@@ -2,7 +2,7 @@ import { CoreMessage } from "ai";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/app/[lang]/(auth)/auth";
-import { Chat as PreviewChat } from "@/components/custom/chat";
+// import { Chat as PreviewChat } from "@/components/custom/chat";
 import { getChatById } from "@/db/queries";
 import { Chat } from "@/db/schema";
 import { convertToUIMessages } from "@/lib/utils/utils";
@@ -35,5 +35,6 @@ export default async function Page({
     return notFound();
   }
 
-  return <PreviewChat id={chat.id} initialMessages={chat.messages} />;
+  return <pre>{JSON.stringify(chat)}</pre>;
+  // return <PreviewChat id={chat.id} initialMessages={chat.messages} />;
 }
