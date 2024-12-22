@@ -1,35 +1,37 @@
-import { convertToCoreMessages, Message, streamText } from "ai";
-import { z } from "zod";
+import { convertToCoreMessages, Message, streamText } from 'ai';
+import { z } from 'zod';
 
-import { geminiFlashModel } from "@/ai";
+import { geminiFlashModel } from '@/ai';
 import {
   generateReservationPrice,
   generateSampleFlightSearchResults,
   generateSampleFlightStatus,
   generateSampleSeatSelection,
-} from "@/ai/actions";
+} from '@/ai/actions';
 import {
   createReservation,
   deleteChatById,
   getChatById,
   getReservationById,
-  saveChat,
-} from "@/db/queries";
-import { generateUUID } from "@/lib/utils/utils";
-import { auth } from "@/app/[lang]/(auth)/auth";
+  // saveChat,
+} from '@/db/queries';
+import { generateUUID } from '@/lib/utils/utils';
+import { auth } from '@/app/[lang]/(auth)/auth';
 
 export async function POST(request: Request) {
   const { id, messages }: { id: string; messages: Array<Message> } =
     await request.json();
 
+  console.log('🚀 ~ POST ~ id:', id);
+
   const session = await auth();
 
   if (!session) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const coreMessages = convertToCoreMessages(messages).filter(
-    (message) => message.content.length > 0,
+    (message) => message.content.length > 0
   );
 
   const result = await streamText({
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
 
 Upon a user initiating the chat, greet them with a personalized and context-aware message.  Examples:
 
-* "Welcome to ${process.env.NEXT_PUBLIC_SITE_NAME || ""}!  I'm here to help you explore the fascinating world of esoteric knowledge.  What brings you here today?"
+* "Welcome to ${process.env.NEXT_PUBLIC_SITE_NAME || ''}!  I'm here to help you explore the fascinating world of esoteric knowledge.  What brings you here today?"
 * "Hello! I see you're interested in learning more about [specific topic if discernible, e.g., Tarot, Human Design]. How can I assist you?"
 * "Greetings!  Is there a particular area of esotericism you'd like to discuss?"
 
@@ -82,14 +84,14 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
 
     tools: {
       getWeather: {
-        description: "Get the current weather at a location",
+        description: 'Get the current weather at a location',
         parameters: z.object({
-          latitude: z.number().describe("Latitude coordinate"),
-          longitude: z.number().describe("Longitude coordinate"),
+          latitude: z.number().describe('Latitude coordinate'),
+          longitude: z.number().describe('Longitude coordinate'),
         }),
         execute: async ({ latitude, longitude }) => {
           const response = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`,
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`
           );
 
           const weatherData = await response.json();
@@ -98,10 +100,10 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
       },
 
       displayFlightStatus: {
-        description: "Display the status of a flight",
+        description: 'Display the status of a flight',
         parameters: z.object({
-          flightNumber: z.string().describe("Flight number"),
-          date: z.string().describe("Date of the flight"),
+          flightNumber: z.string().describe('Flight number'),
+          date: z.string().describe('Date of the flight'),
         }),
         execute: async ({ flightNumber, date }) => {
           const flightStatus = await generateSampleFlightStatus({
@@ -114,10 +116,10 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
       },
 
       searchFlights: {
-        description: "Search for flights based on the given parameters",
+        description: 'Search for flights based on the given parameters',
         parameters: z.object({
-          origin: z.string().describe("Origin airport or city"),
-          destination: z.string().describe("Destination airport or city"),
+          origin: z.string().describe('Origin airport or city'),
+          destination: z.string().describe('Destination airport or city'),
         }),
         execute: async ({ origin, destination }) => {
           const results = await generateSampleFlightSearchResults({
@@ -130,9 +132,9 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
       },
 
       selectSeats: {
-        description: "Select seats for a flight",
+        description: 'Select seats for a flight',
         parameters: z.object({
-          flightNumber: z.string().describe("Flight number"),
+          flightNumber: z.string().describe('Flight number'),
         }),
         execute: async ({ flightNumber }) => {
           const seats = await generateSampleSeatSelection({ flightNumber });
@@ -140,25 +142,25 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
         },
       },
       createReservation: {
-        description: "Display pending reservation details",
+        description: 'Display pending reservation details',
         parameters: z.object({
-          seats: z.string().array().describe("Array of selected seat numbers"),
-          flightNumber: z.string().describe("Flight number"),
+          seats: z.string().array().describe('Array of selected seat numbers'),
+          flightNumber: z.string().describe('Flight number'),
           departure: z.object({
-            cityName: z.string().describe("Name of the departure city"),
-            airportCode: z.string().describe("Code of the departure airport"),
-            timestamp: z.string().describe("ISO 8601 date of departure"),
-            gate: z.string().describe("Departure gate"),
-            terminal: z.string().describe("Departure terminal"),
+            cityName: z.string().describe('Name of the departure city'),
+            airportCode: z.string().describe('Code of the departure airport'),
+            timestamp: z.string().describe('ISO 8601 date of departure'),
+            gate: z.string().describe('Departure gate'),
+            terminal: z.string().describe('Departure terminal'),
           }),
           arrival: z.object({
-            cityName: z.string().describe("Name of the arrival city"),
-            airportCode: z.string().describe("Code of the arrival airport"),
-            timestamp: z.string().describe("ISO 8601 date of arrival"),
-            gate: z.string().describe("Arrival gate"),
-            terminal: z.string().describe("Arrival terminal"),
+            cityName: z.string().describe('Name of the arrival city'),
+            airportCode: z.string().describe('Code of the arrival airport'),
+            timestamp: z.string().describe('ISO 8601 date of arrival'),
+            gate: z.string().describe('Arrival gate'),
+            terminal: z.string().describe('Arrival terminal'),
           }),
-          passengerName: z.string().describe("Name of the passenger"),
+          passengerName: z.string().describe('Name of the passenger'),
         }),
         execute: async (props) => {
           const { totalPriceInUSD } = await generateReservationPrice(props);
@@ -176,7 +178,7 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
             return { id, ...props, totalPriceInUSD };
           } else {
             return {
-              error: "User is not signed in to perform this action!",
+              error: 'User is not signed in to perform this action!',
             };
           }
         },
@@ -184,22 +186,22 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
 
       authorizePayment: {
         description:
-          "User will enter credentials to authorize payment, wait for user to respond when they are done",
+          'User will enter credentials to authorize payment, wait for user to respond when they are done',
         parameters: z.object({
           reservationId: z
             .string()
-            .describe("Unique identifier for the reservation"),
+            .describe('Unique identifier for the reservation'),
         }),
         execute: async ({ reservationId }) => {
           return { reservationId };
         },
       },
       verifyPayment: {
-        description: "Verify payment status",
+        description: 'Verify payment status',
         parameters: z.object({
           reservationId: z
             .string()
-            .describe("Unique identifier for the reservation"),
+            .describe('Unique identifier for the reservation'),
         }),
         execute: async ({ reservationId }) => {
           const reservation = await getReservationById({ id: reservationId });
@@ -213,31 +215,31 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
       },
 
       displayBoardingPass: {
-        description: "Display a boarding pass",
+        description: 'Display a boarding pass',
         parameters: z.object({
           reservationId: z
             .string()
-            .describe("Unique identifier for the reservation"),
+            .describe('Unique identifier for the reservation'),
           passengerName: z
             .string()
-            .describe("Name of the passenger, in title case"),
-          flightNumber: z.string().describe("Flight number"),
-          seat: z.string().describe("Seat number"),
+            .describe('Name of the passenger, in title case'),
+          flightNumber: z.string().describe('Flight number'),
+          seat: z.string().describe('Seat number'),
           departure: z.object({
-            cityName: z.string().describe("Name of the departure city"),
-            airportCode: z.string().describe("Code of the departure airport"),
-            airportName: z.string().describe("Name of the departure airport"),
-            timestamp: z.string().describe("ISO 8601 date of departure"),
-            terminal: z.string().describe("Departure terminal"),
-            gate: z.string().describe("Departure gate"),
+            cityName: z.string().describe('Name of the departure city'),
+            airportCode: z.string().describe('Code of the departure airport'),
+            airportName: z.string().describe('Name of the departure airport'),
+            timestamp: z.string().describe('ISO 8601 date of departure'),
+            terminal: z.string().describe('Departure terminal'),
+            gate: z.string().describe('Departure gate'),
           }),
           arrival: z.object({
-            cityName: z.string().describe("Name of the arrival city"),
-            airportCode: z.string().describe("Code of the arrival airport"),
-            airportName: z.string().describe("Name of the arrival airport"),
-            timestamp: z.string().describe("ISO 8601 date of arrival"),
-            terminal: z.string().describe("Arrival terminal"),
-            gate: z.string().describe("Arrival gate"),
+            cityName: z.string().describe('Name of the arrival city'),
+            airportCode: z.string().describe('Code of the arrival airport'),
+            airportName: z.string().describe('Name of the arrival airport'),
+            timestamp: z.string().describe('ISO 8601 date of arrival'),
+            terminal: z.string().describe('Arrival terminal'),
+            gate: z.string().describe('Arrival gate'),
           }),
         }),
         execute: async (boardingPass) => {
@@ -247,25 +249,29 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
     },
 
     onFinish: async ({ responseMessages }) => {
-      if (session.user && session.user.id) {
-        try {
-          await saveChat({
-            id,
-            messages: [...coreMessages, ...responseMessages],
-            userId: session.user.id,
-          });
-        } catch (error) {
-          console.error(
-            "Failed to save chat. Error Name: ",
-            (error as Error).name,
-          );
-        }
-      }
+      console.log(
+        '🚀 ~ onFinish: ~ responseMessages:',
+        responseMessages.at(-1)
+      );
+      // if (session.user && session.user.id) {
+      //   try {
+      //     await saveChat({
+      //       id,
+      //       messages: [...coreMessages, ...responseMessages],
+      //       userId: session.user.id,
+      //     });
+      //   } catch (error) {
+      //     console.error(
+      //       "Failed to save chat. Error Name: ",
+      //       (error as Error).name,
+      //     );
+      //   }
+      // }
     },
 
     experimental_telemetry: {
       isEnabled: true,
-      functionId: "stream-text",
+      functionId: 'stream-text',
     },
   });
 
@@ -274,28 +280,28 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
 
 export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+  const id = searchParams.get('id');
 
   if (!id) {
-    return new Response("Not Found", { status: 404 });
+    return new Response('Not Found', { status: 404 });
   }
 
   const session = await auth();
 
   if (!session || !session.user) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   try {
     const chat = await getChatById({ id });
 
     if (chat.userId !== session.user.id) {
-      return new Response("Unauthorized", { status: 401 });
+      return new Response('Unauthorized', { status: 401 });
     }
 
     await deleteChatById({ id });
 
-    return new Response("Chat deleted", { status: 200 });
+    return new Response('Chat deleted', { status: 200 });
   } catch (error) {
     return new Response(
       `An error occurred while processing your request. Error Name: ${
@@ -303,7 +309,7 @@ export async function DELETE(request: Request) {
       }`,
       {
         status: 500,
-      },
+      }
     );
   }
 }

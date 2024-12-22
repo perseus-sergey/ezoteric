@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { ELanguage } from "@/models/language.model";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { ELanguage } from '@/models/language.model';
 import {
   BIRTH_DATE_FORMAT,
   IModalAiResponseProps,
   MAIN_TEXT,
   numerologyFormSchema,
-} from "@/models/meta/home.model";
-import { generateAiNumerology } from "@/controllers/numerology.controller";
-import { useState } from "react";
-import { ModalNumerologyResponse } from "./Modals/ModalNumerologyResponse";
-import { Button } from "@/components/ui/button";
+} from '@/models/meta/home.model';
+import { generateAiNumerology } from '@/controllers/numerology.controller';
+import { useState } from 'react';
+import { ModalNumerologyResponse } from './Modals/ModalNumerologyResponse';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -21,12 +21,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
-import { format } from "date-fns";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 const { numerologyForm } = MAIN_TEXT;
 
@@ -38,8 +38,8 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
   const form = useForm<z.infer<typeof numerologyFormSchema>>({
     resolver: zodResolver(numerologyFormSchema),
     defaultValues: {
-      username: "",
-      birthdate: "",
+      username: '',
+      birthdate: '',
     },
   });
 
@@ -48,7 +48,7 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
     const result = await generateAiNumerology(
       data.username,
       data.birthdate,
-      lang,
+      lang
     );
     setAiResult({
       aiResponse: result,
@@ -67,7 +67,7 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
         <form
           aria-label="Numerology Form"
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 w-80 shrink-0"
+          className="space-y-4 w-full sm:w-96 shrink-0"
         >
           <Card>
             <CardContent className="pt-4 space-y-4">
@@ -120,7 +120,7 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                 {isLoading ? (
                   <>
                     <Loader2 className="animate-spin" />
-                    Please wait
+                    {numerologyForm.submit.pending[lang]}
                   </>
                 ) : (
                   numerologyForm.submit.title[lang]

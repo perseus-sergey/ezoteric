@@ -1,17 +1,18 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { clsx } from "clsx";
-import { Attachment, Message } from "ai";
-import { useChat } from "ai/react";
-import { Overview } from "./overview";
-import { PreviewMessage } from "@/components/custom/message";
-import { MultimodalInput } from "./multimodal-input";
-import useWindowSize from "./use-window-size";
-import { ELanguage } from "@/models/language.model";
-import { CHAT_LANG_MODEL } from "@/models/meta/chat.model";
+import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { clsx } from 'clsx';
+import { Attachment, Message } from 'ai';
+import { useChat } from 'ai/react';
+import { Overview } from './overview';
+import { PreviewMessage } from '@/components/custom/message';
+import { MultimodalInput } from './multimodal-input';
+import useWindowSize from './use-window-size';
+import { ELanguage } from '@/models/language.model';
+import { CHAT_LANG_MODEL } from '@/models/meta/chat.model';
+import { Skeleton } from '../ui/skeleton';
 
 const { chatTitle, overviewTexts } = CHAT_LANG_MODEL;
 
@@ -57,39 +58,39 @@ const ChatWidget = ({
 
   const chatVariants = {
     open: {
-      width: "300px",
-      height: "fit-content",
+      width: '300px',
+      height: 'fit-content',
       opacity: 1,
     },
     openSm: {
-      width: "100dvw",
-      height: "fit-content",
+      width: '100dvw',
+      height: 'fit-content',
       opacity: 1,
       bottom: 0,
       right: 0,
     },
     closed: {
-      width: "50px",
-      height: "50px",
+      width: '50px',
+      height: '50px',
       opacity: 0.9,
     },
   };
 
   const determineAnimationVariant = () => {
     if (isSmallScreen) {
-      return isOpen ? "openSm" : "closed";
+      return isOpen ? 'openSm' : 'closed';
     } else {
-      return isOpen ? "open" : "closed";
+      return isOpen ? 'open' : 'closed';
     }
   };
 
   return (
     <motion.div
       className={clsx(
-        "flex flex-col shadow-lg fixed bottom-4 right-4 z-50 md:bottom-8 md:right-8 overflow-hidden",
+        'flex flex-col shadow-lg fixed bottom-4 right-4 z-50 md:bottom-8 md:right-8 overflow-hidden',
         isOpen
-          ? "bg-background rounded-lg"
-          : "bg-primary rounded-full text-white",
+          ? 'bg-background rounded-lg'
+          : 'bg-primary rounded-full text-white'
       )}
       variants={chatVariants}
       animate={determineAnimationVariant()}
@@ -108,8 +109,8 @@ const ChatWidget = ({
 
           <section
             className={clsx(
-              "flex flex-col grow overflow-y-auto",
-              height && height < 580 ? "max-h-[50dvh]" : "max-h-[70dvh]",
+              'flex flex-col grow overflow-y-auto',
+              height && height < 580 ? 'max-h-[50dvh]' : 'max-h-[70dvh]'
             )}
             // className="flex flex-col max-h-[70dvh] grow overflow-y-auto"
             ref={messagesContainerRef}
@@ -120,8 +121,8 @@ const ChatWidget = ({
               <>
                 <div
                   className={clsx(
-                    "flex flex-col gap-4 items-center",
-                    messages.length > 0 && "p-2",
+                    'flex flex-col gap-4 items-center',
+                    messages.length > 0 && 'p-2'
                   )}
                 >
                   {messages.map((message) => (
@@ -136,10 +137,17 @@ const ChatWidget = ({
                   ))}
                 </div>
 
-                <div
-                  //   ref={messagesEndRef}
-                  className="shrink-0 min-w-[24px] min-h-[24px]"
-                />
+                {isLoading && (
+                  <div className="flex space-x-4 px-2">
+                    <Skeleton className="size-6 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-4 w-40" />
+                    </div>
+                  </div>
+                )}
+
+                <div className="shrink-0 min-w-[24px] min-h-[24px]" />
               </>
             )}
           </section>

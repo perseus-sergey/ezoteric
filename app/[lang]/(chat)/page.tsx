@@ -1,24 +1,31 @@
-import ChatWidget from "@/components/custom/ChatWidget";
-import { Title } from "@/components/custom/Title";
-import { getELangKey } from "@/lib/utils/getLanguage";
-import { cn, generateUUID } from "@/lib/utils/utils";
-import { ESegment } from "@/models/url.model";
-import Image from "next/image";
-import sunrise_meditation_1200 from "../../../public/images/sunrise_meditation_1200.jpg";
-import hands_with_artifacts_500 from "../../../public/images/hands_with_artifacts_500.jpg";
-import { MAIN_TEXT } from "@/models/meta/home.model";
-import NumerologyForm from "@/components/custom/numerology-form";
+import { Mail, PhoneCall } from 'lucide-react';
+import ChatWidget from '@/components/custom/ChatWidget';
+import { Title } from '@/components/custom/Title';
+import { getELangKey } from '@/lib/utils/getLanguage';
+import { cn, generateUUID } from '@/lib/utils/utils';
+import { ESegment } from '@/models/url.model';
+import Image from 'next/image';
+import sunrise_meditation_1200 from '../../../public/images/sunrise_meditation_1200.jpg';
+import hands_with_artifacts_500 from '../../../public/images/hands_with_artifacts_500.jpg';
+import { MAIN_TEXT } from '@/models/meta/home.model';
+import NumerologyForm from '@/components/custom/numerology-form';
+import Link from 'next/link';
 
 type TProps = Readonly<{
   params: Promise<{ [key in ESegment]: string }>;
 }>;
+
+const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
+const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
 const {
   h1,
   h1_p,
   h2_1,
   h2_1_p,
+  h1_img_alt,
   h2_1_ul,
+  h2_1_img_alt,
   h2_2,
   h2_2_p,
   h2_3,
@@ -47,7 +54,7 @@ export default async function Page({ params }: TProps) {
   return (
     <article className="relative mx-auto">
       <div className="relative mx-auto">
-        <Image src={sunrise_meditation_1200} alt="image for img" />
+        <Image src={sunrise_meditation_1200} alt={h1_img_alt[lang]} priority />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-65% to-secondary"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent from-90% to-secondary"></div>
         <div className="absolute inset-0 bg-gradient-to-l from-transparent from-90% to-secondary"></div>
@@ -59,31 +66,33 @@ export default async function Page({ params }: TProps) {
         <p key={i}>{text}</p>
       ))}
 
-      <TitleH2>{h2_1[lang]}</TitleH2>
-      <div className="flex flex-wrap lg:flex-nowrap">
-        <div className="relative lg:shrink-0 mx-auto lg:m-0">
-          <Image src={hands_with_artifacts_500} alt="image for img" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent from-65% to-secondary"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent from-90% to-secondary"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent from-90% to-secondary"></div>
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent from-90% to-secondary"></div>
-        </div>
+      <section className="py-4">
+        <TitleH2>{h2_1[lang]}</TitleH2>
+        <div className="flex flex-wrap lg:flex-nowrap">
+          <div className="relative lg:shrink-0 mx-auto lg:m-0">
+            <Image src={hands_with_artifacts_500} alt={h2_1_img_alt[lang]} />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent from-65% to-secondary"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent from-90% to-secondary"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent from-90% to-secondary"></div>
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent from-90% to-secondary"></div>
+          </div>
 
-        <div className="space-y-8">
-          {h2_1_p[lang].map((text, i) => (
-            <p key={i} className="text-center p-4 text-xl">
-              {text}
-            </p>
-          ))}
-          <ul className="p-0 sm:pl-8">
-            {h2_1_ul[lang].map((li) => (
-              <li key={li[0]} className="py-1">
-                <strong>{li[0]}</strong>: {li[1]}
-              </li>
+          <div className="space-y-8">
+            {h2_1_p[lang].map((text, i) => (
+              <p key={i} className="text-center p-4 text-xl">
+                {text}
+              </p>
             ))}
-          </ul>
+            <ul className="p-0 sm:pl-8">
+              {h2_1_ul[lang].map((li) => (
+                <li key={li[0]} className="py-1">
+                  <strong>{li[0]}</strong>: {li[1]}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      </section>
 
       <section className="p-4 flex gap-8 items-center justify-center flex-wrap lg:flex-nowrap bg-slate-300 dark:bg-slate-600">
         <div>
@@ -106,11 +115,34 @@ export default async function Page({ params }: TProps) {
 
       <TitleH2>{h2_3[lang]}</TitleH2>
       {h2_3_p[lang].map((text, i) => (
-        <p key={i}>{text}</p>
+        <p
+          key={i}
+          className="text-center font-semibold text-xl pb-4 font-georgia"
+        >
+          {text}
+        </p>
       ))}
-      <ul>
-        <li>Email: info@ezoteric.net</li>
-        <li>{h2_3_phone[lang]}: +380 XX XXX XX XX</li>
+      <ul className="flex flex-wrap items-center gap-4 justify-evenly">
+        <li className="flex items-center gap-2">
+          <Mail className="opacity-50" /> Email:{' '}
+          <Link
+            className="hover:opacity-75"
+            href={`mailto:${siteMail}`}
+            aria-label={`Send mail to ${sitePhone}`}
+          >
+            {siteMail}
+          </Link>
+        </li>
+        <li className="flex items-center gap-2">
+          <PhoneCall className="opacity-50" /> {h2_3_phone[lang]}:{' '}
+          <Link
+            className="hover:opacity-75"
+            href={`tel:${sitePhone.replace(/\s+/g, '')}`}
+            aria-label={`Call ${sitePhone}`}
+          >
+            {sitePhone}
+          </Link>
+        </li>
       </ul>
 
       <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} />
@@ -125,8 +157,8 @@ interface ITitleH2 extends React.HTMLAttributes<HTMLElement> {
 const TitleH2 = ({ children, className, ...attributes }: ITitleH2) => (
   <h2
     className={cn(
-      "font-bold font-georgia p-2 sm:p-6 text-center text-2xl sm:text-3xl",
-      className,
+      'font-bold font-georgia p-2 sm:p-6 text-center text-2xl sm:text-3xl',
+      className
     )}
     {...attributes}
   >

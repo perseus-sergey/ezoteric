@@ -1,8 +1,8 @@
-import { ELanguage } from "@/models/language.model";
+import { ELanguage } from '@/models/language.model';
 import {
   IModalAiResponseProps,
   MODAL_NUMEROLOGY,
-} from "@/models/meta/home.model";
+} from '@/models/meta/home.model';
 
 import {
   AlertDialog,
@@ -12,8 +12,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Dispatch, SetStateAction } from "react";
+} from '@/components/ui/alert-dialog';
+import { Dispatch, SetStateAction } from 'react';
 
 interface IProps {
   lang: ELanguage;
@@ -22,7 +22,18 @@ interface IProps {
   isOpen: boolean;
 }
 
-const { modalCaption, modalCloseBtn } = MODAL_NUMEROLOGY;
+const {
+  modalCaption,
+  modalCloseBtn,
+  modalResponseErrors,
+  modalDescription,
+  modalResponseParams: {
+    lifePathNumber,
+    destinyNumber,
+    personalityNumber,
+    overallInterpretation,
+  },
+} = MODAL_NUMEROLOGY;
 
 export const ModalNumerologyResponse = ({
   lang,
@@ -39,52 +50,49 @@ export const ModalNumerologyResponse = ({
               {modalCaption[lang]}
             </AlertDialogTitle>
             <AlertDialogTitle>
-              {`Numerology results for "${aiResult.formData.username}" (${aiResult.formData.birthdate})`}
+              {`${modalDescription[lang]} "${aiResult.formData.username}" (${aiResult.formData.birthdate})`}
             </AlertDialogTitle>
             {aiResult.aiResponse ? (
               <ul className="max-h-[40dvh] overflow-y-auto">
                 <li>
                   <AlertDialogDescription>
-                    <strong>Life Path Number:</strong>{" "}
-                    {aiResult.aiResponse.lifePathNumber} -{" "}
+                    <strong>{lifePathNumber[lang]}:</strong>{' '}
+                    {aiResult.aiResponse.lifePathNumber} -{' '}
                     {aiResult.aiResponse.lifePathNumberInterpretation}
                   </AlertDialogDescription>
                 </li>
                 <li>
                   <AlertDialogDescription>
-                    <strong>Destiny Number:</strong>{" "}
-                    {aiResult.aiResponse.destinyNumber} -{" "}
+                    <strong>{destinyNumber[lang]}:</strong>{' '}
+                    {aiResult.aiResponse.destinyNumber} -{' '}
                     {aiResult.aiResponse.destinyNumberInterpretation}
                   </AlertDialogDescription>
                 </li>
                 <li>
                   <AlertDialogDescription>
-                    <strong>Personality Number:</strong>{" "}
-                    {aiResult.aiResponse.personalityNumber} -{" "}
+                    <strong>{personalityNumber[lang]}:</strong>{' '}
+                    {aiResult.aiResponse.personalityNumber} -{' '}
                     {aiResult.aiResponse.personalityNumberInterpretation}
                   </AlertDialogDescription>
                 </li>
                 <li>
                   <AlertDialogDescription>
-                    <strong>Overall Interpretation:</strong>{" "}
+                    <strong>{overallInterpretation[lang]}:</strong>{' '}
                     {aiResult.aiResponse.overallInterpretation}
                   </AlertDialogDescription>
                 </li>
               </ul>
             ) : (
               <AlertDialogDescription>
-                На жаль, під час виконання сталася помилка. Будь ласка,
-                спробуйте пізніше.
+                {modalResponseErrors[lang].join(' ')}
               </AlertDialogDescription>
             )}
           </>
         ) : (
           <>
-            <AlertDialogTitle>
-              На жаль, під час виконання сталася помилка.
-            </AlertDialogTitle>
+            <AlertDialogTitle>{modalResponseErrors[lang][0]}</AlertDialogTitle>
             <AlertDialogDescription>
-              Будь ласка, спробуйте пізніше.
+              {modalResponseErrors[lang][1]}
             </AlertDialogDescription>
           </>
         )}

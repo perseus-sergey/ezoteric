@@ -1,19 +1,19 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { auth, signOut } from "@/app/[lang]/(auth)/auth";
+import { auth, signOut } from '@/app/[lang]/(auth)/auth';
 
-import { History } from "./history";
-import { SlashIcon } from "./icons";
-import { ThemeToggle } from "./theme-toggle";
-import { Button } from "../ui/button";
+import { History } from './history';
+import { SlashIcon } from './icons';
+import { ThemeToggle } from './theme-toggle';
+import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { ELanguage } from "@/models/language.model";
+} from '../ui/dropdown-menu';
+import { ELanguage } from '@/models/language.model';
 
 export const Navbar = async ({ lang }: { lang: ELanguage }) => {
   const session = await auth();
@@ -23,6 +23,7 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
       <div className="bg-background fixed top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center z-30">
         <div className="flex flex-row gap-3 items-center">
           <History user={session?.user} />
+
           <div className="flex flex-row gap-2 items-center">
             <Image
               src="/images/gemini-logo.png"
@@ -57,7 +58,7 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
                 <form
                   className="w-full"
                   action={async () => {
-                    "use server";
+                    'use server';
 
                     await signOut({
                       redirectTo: `/${lang}`,
