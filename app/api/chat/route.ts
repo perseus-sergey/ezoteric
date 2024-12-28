@@ -19,10 +19,11 @@ import { generateUUID } from '@/lib/utils/utils';
 import { auth } from '@/app/[lang]/(auth)/auth';
 
 export async function POST(request: Request) {
-  const { id, messages }: { id: string; messages: Array<Message> } =
+  const { messages }: { messages: Array<Message> } =
+    // const { id, messages }: { id: string; messages: Array<Message> } =
     await request.json();
 
-  console.log('🚀 ~ POST ~ id:', id);
+  // console.log('🚀 ~ POST ~ id:', id);
 
   const session = await auth();
 

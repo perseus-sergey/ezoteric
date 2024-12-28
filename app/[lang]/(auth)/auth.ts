@@ -1,11 +1,11 @@
 // import { compare } from "bcrypt-ts";
-import NextAuth, { User, Session } from "next-auth";
-import { JWT } from "next-auth/jwt";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth, { User, Session } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
+import Credentials from 'next-auth/providers/credentials';
 
-import { getUser } from "@/db/queries";
+import { getUser } from '@/db/queries';
 
-import { authConfig } from "./auth.config";
+import { authConfig } from './auth.config';
 
 interface ExtendedSession extends Session {
   user: User;
@@ -37,7 +37,7 @@ export const {
           const passwordsMatch = password === users[0].password!;
           if (passwordsMatch) return users[0] as User;
         } catch (error) {
-          console.log("🚀 ~ authorize ~ error:", error);
+          console.log('🚀 ~ authorize ~ error:', error);
           return null;
         }
 

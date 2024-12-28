@@ -1,14 +1,14 @@
-import "server-only";
+import 'server-only';
 
-import { CoreMessage, Message } from "ai";
-import { genSaltSync, hashSync } from "bcrypt-ts";
-import { desc, eq } from "drizzle-orm";
-import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { CoreMessage, Message } from 'ai';
+import { genSaltSync, hashSync } from 'bcrypt-ts';
+import { desc, eq } from 'drizzle-orm';
+import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
-import { user, chat, User, reservation } from "./schema";
+import { user, chat, User, reservation } from './schema';
 
-const postgresUrl = process.env.POSTGRES_URL || "";
+const postgresUrl = process.env.POSTGRES_URL || '';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -19,18 +19,19 @@ let db: PostgresJsDatabase<Record<string, never>> & {
 };
 
 try {
-  const client = postgres(`${postgresUrl}?sslmode=require`);
+  const client = postgres(postgresUrl);
   db = drizzle(client);
 } catch (error) {
-  console.log("🚀 ~ DB CONNECTION ERROR:", error);
+  console.log('🚀 ~ DB CONNECTION ERROR:', error);
 }
 
 export async function getUser(email: string): Promise<Array<User>> {
   return [
     {
-      id: "1",
+      id: '1',
       email,
-      password: "password",
+      password: 'password',
+      name: null,
     },
   ];
 }
@@ -44,14 +45,22 @@ export async function getUser(email: string): Promise<Array<User>> {
 //   }
 // }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(
+  email: string,
+  password: string,
+  name: string | null = null
+) {
   const salt = genSaltSync(10);
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    const newUser = await db
+      .insert(user)
+      .values({ email, password: hash, name })
+      .returning();
+    return newUser[0];
   } catch (error) {
-    console.error("Failed to create user in database");
+    console.error('Failed to create user in database');
     throw error;
   }
 }
@@ -84,7 +93,7 @@ export async function saveChat({
       userId,
     });
   } catch (error) {
-    console.error("Failed to save chat in database");
+    console.error('Failed to save chat in database');
     throw error;
   }
 }
@@ -93,7 +102,7 @@ export async function deleteChatById({ id }: { id: string }) {
   try {
     return await db.delete(chat).where(eq(chat.id, id));
   } catch (error) {
-    console.error("Failed to delete chat by id from database");
+    console.error('Failed to delete chat by id from database');
     throw error;
   }
 }
@@ -106,7 +115,7 @@ export async function getChatsByUserId({ id }: { id: string }) {
       .where(eq(chat.userId, id))
       .orderBy(desc(chat.createdAt));
   } catch (error) {
-    console.error("Failed to get chats by user from database");
+    console.error('Failed to get chats by user from database');
     throw error;
   }
 }
@@ -116,7 +125,7 @@ export async function getChatById({ id }: { id: string }) {
     const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
     return selectedChat;
   } catch (error) {
-    console.error("Failed to get chat by id from database");
+    console.error('Failed to get chat by id from database');
     throw error;
   }
 }
