@@ -1,20 +1,20 @@
-import { Metadata } from "next";
-import { Toaster } from "sonner";
+import { Metadata } from 'next';
+import { Toaster } from 'sonner';
 
-import "./globals.css";
+import './globals.css';
 
-import { Navbar } from "@/components/custom/navbar";
-import { ThemeProvider } from "@/components/custom/theme-provider";
-import { ELanguage } from "@/models/language.model";
-import { getELangKey } from "@/lib/utils/getLanguage";
-import { ESegment, MAIN_URL } from "@/models/url.model";
-import { DEFAULT_META_OG } from "@/models/meta/root.model";
-import { DEFAULT_META_DATA } from "@/models/meta/default.model";
+import { Navbar } from '@/components/custom/navbar';
+import { ThemeProvider } from '@/components/custom/theme-provider';
+import { ELanguage } from '@/models/language.model';
+import { getELangKey } from '@/lib/utils/getLanguage';
+import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
+import { DEFAULT_META_OG } from '@/models/root.model';
+import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 
 // =================================================================
 // improve components/custom/NotFoundPage.tsx
 // change comparing user with db app/[lang]/(auth)/auth.ts, db/queries.ts
-// change app/[lang]/(chat)/twitter-image.png, app/[lang]/(chat)/opengraph-image.png, app/favicon.ico
+// change app/[lang]/(main)/twitter-image.png, app/[lang]/(main)/opengraph-image.png, app/favicon.ico
 // change the text components/custom/overview.tsx
 // =================================================================
 
@@ -22,7 +22,7 @@ const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 type TProps = Readonly<{
   children: React.ReactNode;
-  params: Promise<{ [key in ESegment]: string }>;
+  params: TParams;
 }>;
 
 export const dynamicParams = false;

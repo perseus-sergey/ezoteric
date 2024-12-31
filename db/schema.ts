@@ -11,13 +11,7 @@ import {
   text,
   integer,
 } from 'drizzle-orm/pg-core';
-
-enum DB_TABLE_NAME {
-  TBL_USER = 'ezo_ser',
-  TBL_CHAT = 'ezo_hat',
-  TBL_RESERVATION = 'ezo_reservation',
-  TBL_ARTICLE = 'ezo_article',
-}
+import { DB_TABLE_NAME, langSuffix } from './root';
 
 const { TBL_USER, TBL_CHAT, TBL_RESERVATION, TBL_ARTICLE } = DB_TABLE_NAME;
 
@@ -28,7 +22,7 @@ export const user = pgTable(TBL_USER, {
   password: varchar('password', { length: 64 }),
 });
 
-export type User = InferSelectModel<typeof user>;
+export type TUser = InferSelectModel<typeof user>;
 
 export const chat = pgTable(TBL_CHAT, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
@@ -39,7 +33,7 @@ export const chat = pgTable(TBL_CHAT, {
     .references(() => user.id),
 });
 
-export type Chat = Omit<InferSelectModel<typeof chat>, 'messages'> & {
+export type TChat = Omit<InferSelectModel<typeof chat>, 'messages'> & {
   messages: Array<Message>;
 };
 
@@ -53,22 +47,40 @@ export const reservation = pgTable(TBL_RESERVATION, {
     .references(() => user.id),
 });
 
-export type Reservation = InferSelectModel<typeof reservation>;
+export type TReservation = InferSelectModel<typeof reservation>;
 
-export const article = pgTable(TBL_ARTICLE, {
+export const tblArticle = pgTable(TBL_ARTICLE, {
   id: serial('id').primaryKey(),
   createdAt: timestamp('createdAt').notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdateFn(() => new Date())
+    .notNull(),
   slug: varchar('slug', { length: 256 }).notNull().unique(),
-  titleUa: varchar('title_ua', { length: 256 }).notNull().unique(),
-  titleEn: varchar('title_en', { length: 256 }).notNull().unique(),
-  descriptionUa: varchar('description_ua', { length: 640 }).notNull(),
-  descriptionEn: varchar('description_en', { length: 640 }).notNull(),
-  keywordsUa: varchar('keywords_ua', { length: 256 }).notNull(),
-  keywordsEn: varchar('keywords_en', { length: 256 }).notNull(),
-  textUa: text('text_ua').notNull(),
-  textEn: text('text_en').notNull(),
+  titleUa: varchar(`title${langSuffix.uk}`, { length: 256 }).notNull().unique(),
+  titleEn: varchar(`title${langSuffix.en}`, { length: 256 }).notNull().unique(),
+  descriptionUa: varchar(`description${langSuffix.uk}`, {
+    length: 640,
+  }).notNull(),
+  descriptionEn: varchar(`description${langSuffix.en}`, {
+    length: 640,
+  }).notNull(),
+  keywordsUa: varchar(`keywords${langSuffix.uk}`, { length: 256 }).notNull(),
+  keywordsEn: varchar(`keywords${langSuffix.en}`, { length: 256 }).notNull(),
+  textUa: text(`text${langSuffix.uk}`).notNull(),
+  textEn: text(`text${langSuffix.en}`).notNull(),
   imageName: varchar('image_name', { length: 256 }),
   view: integer('view'),
 });
 
-export type TArticle = InferSelectModel<typeof article>;
+export type TArticle = InferSelectModel<typeof tblArticle>;
+
+export type TArticleLocalized = Pick<
+  InferSelectModel<typeof tblArticle>,
+  'id' | 'slug' | 'updatedAt' | 'imageName' | 'view'
+> & {
+  title: string;
+  description: string;
+  text: string;
+  keywords: string;
+};

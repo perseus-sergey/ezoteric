@@ -1,12 +1,12 @@
 {
   "extends": [
-    "plugin:drizzle/all",
-    "next/core-web-vitals",
     "plugin:import/recommended",
     "plugin:import/typescript",
-    "prettier",
     "plugin:tailwindcss/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:drizzle/all",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -14,6 +14,11 @@
   },
   "plugins": ["import", "tailwindcss", "@typescript-eslint", "drizzle"],
   "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+
     "tailwindcss/no-custom-classname": "off",
     "tailwindcss/classnames-order": "off",
     "@typescript-eslint/no-explicit-any": "error",

@@ -3,17 +3,13 @@ import ChatWidget from '@/components/custom/ChatWidget';
 import { Title } from '@/components/custom/Title';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { cn, generateUUID } from '@/lib/utils/utils';
-import { ESegment } from '@/models/url.model';
 import Image from 'next/image';
 import sunrise_meditation_1200 from '../../../public/images/sunrise_meditation_1200.jpg';
 import hands_with_artifacts_500 from '../../../public/images/hands_with_artifacts_500.jpg';
 import { MAIN_TEXT } from '@/models/meta/home.model';
 import NumerologyForm from '@/components/custom/numerology-form';
 import Link from 'next/link';
-
-type TProps = Readonly<{
-  params: Promise<{ [key in ESegment]: string }>;
-}>;
+import { TParams } from '@/models/url.model';
 
 const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
@@ -34,7 +30,7 @@ const {
   numerologyForm,
 } = MAIN_TEXT;
 
-export default async function Page({ params }: TProps) {
+export default async function Page({ params }: { params: TParams }) {
   const p = await params;
   const lang = getELangKey(p.lang);
 

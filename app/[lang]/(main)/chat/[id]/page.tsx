@@ -1,11 +1,11 @@
-import { CoreMessage } from "ai";
-import { notFound } from "next/navigation";
+import { CoreMessage } from 'ai';
+import { notFound } from 'next/navigation';
 
-import { auth } from "@/app/[lang]/(auth)/auth";
+import { auth } from '@/app/[lang]/(auth)/auth';
 // import { Chat as PreviewChat } from "@/components/custom/chat";
-import { getChatById } from "@/db/queries";
-import { Chat } from "@/db/schema";
-import { convertToUIMessages } from "@/lib/utils/utils";
+import { getChatById } from '@/db/queries';
+import { TChat } from '@/db/schema';
+import { convertToUIMessages } from '@/lib/utils/utils';
 
 export default async function Page({
   params,
@@ -20,7 +20,7 @@ export default async function Page({
   }
 
   // type casting and converting messages to UI messages
-  const chat: Chat = {
+  const chat: TChat = {
     ...chatFromDb,
     messages: convertToUIMessages(chatFromDb.messages as Array<CoreMessage>),
   };

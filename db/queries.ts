@@ -3,29 +3,13 @@ import 'server-only';
 import { CoreMessage, Message } from 'ai';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { desc, eq } from 'drizzle-orm';
-import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
 
-import { user, chat, User, reservation } from './schema';
+import { user, chat, TUser, reservation } from './schema';
+import { getDB } from './root';
 
-const postgresUrl = process.env.POSTGRES_URL || '';
+const db = getDB();
 
-// Optionally, if not using email/pass login, you can
-// use the Drizzle adapter for Auth.js / NextAuth
-// https://authjs.dev/reference/adapter/drizzle
-
-let db: PostgresJsDatabase<Record<string, never>> & {
-  $client: postgres.Sql;
-};
-
-try {
-  const client = postgres(postgresUrl);
-  db = drizzle(client);
-} catch (error) {
-  console.log('🚀 ~ DB CONNECTION ERROR:', error);
-}
-
-export async function getUser(email: string): Promise<Array<User>> {
+export async function getUser(email: string): Promise<Array<TUser>> {
   return [
     {
       id: '1',

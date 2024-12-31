@@ -1,5 +1,5 @@
 <a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
+  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(main)/opengraph-image.png">
   <h1 align="center">Next.js Gemini Chatbot</h1>
 </a>
 
@@ -9,7 +9,6 @@
 
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
   <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
   <a href="#running-locally"><strong>Running locally</strong></a>
 </p>
@@ -33,10 +32,6 @@
 - [NextAuth.js](https://github.com/nextauthjs/next-auth)
   - Simple and secure authentication
 
-## Model Providers
-
-This template ships with Google Gemini `gemini-1.5-pro` models as the default. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
-
 ## Deploy Your Own
 
 You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
@@ -57,5 +52,3 @@ You will need to use the environment variables [defined in `.env.example`](.env.
 pnpm install
 pnpm dev
 ```
-
-Your app template should now be running on [localhost:3000](http://localhost:3000/).

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import ErrorPage from "@/components/custom/ErrorPage";
+import ErrorPage from '@/components/custom/ErrorPage';
 
 const errorFn = ({ reset }: { reset: () => void }) => (
   <ErrorPage resetFn={reset} />
