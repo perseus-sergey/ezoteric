@@ -1,1 +1,19 @@
+# .husky/pre-push
+
+# Перевірка змін у схемі або міграціях
+if git diff --cached --name-only | grep -E 'schema\.(ts|sql)|migrations/'; then
+  echo "Schema or migrations changed."
+  read -p "Do you want to run 'pnpm migrate:generate' and 'pnpm migrate:migrate'? (y/n) " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    pnpm migrate:generate
+    pnpm migrate:migrate
+  else
+    echo "Please run the migration commands manually."
+    exit 1
+  fi
+fi
+
+# Виконання збірки проєкту
+echo "Building the project..."
 pnpm build

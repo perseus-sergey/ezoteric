@@ -9,8 +9,8 @@ export const langSuffix = {
 };
 
 export enum DB_TABLE_NAME {
-  TBL_USER = 'ezo_ser',
-  TBL_CHAT = 'ezo_hat',
+  TBL_USER = 'ezo_user',
+  TBL_CHAT = 'ezo_chat',
   TBL_RESERVATION = 'ezo_reservation',
   TBL_ARTICLE = 'ezo_article',
 }

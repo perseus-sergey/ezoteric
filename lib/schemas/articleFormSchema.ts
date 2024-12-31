@@ -5,11 +5,11 @@ export const articleFormSchema = z.object({
   titleUa: z
     .string()
     .min(2, { message: 'Заголовок занадто короткий' })
-    .max(256, { message: 'Title (UA) is too long.' }),
+    .max(255, { message: 'Title (UA) is too long.' }),
   titleEn: z
     .string()
     .min(2, { message: 'Title is too short' })
-    .max(256, { message: 'Title (EN) is too long.' }),
+    .max(255, { message: 'Title (EN) is too long.' }),
   descriptionUa: z
     .string()
     .max(640, { message: 'Description (UA) is too long.' })
@@ -20,11 +20,11 @@ export const articleFormSchema = z.object({
     .min(10, { message: 'Description is too short' }),
   keywordsUa: z
     .string()
-    .max(256, { message: 'Keywords (UA) are too long.' })
+    .max(255, { message: 'Keywords (UA) are too long.' })
     .min(10, { message: 'Keywords is too short' }),
   keywordsEn: z
     .string()
-    .max(256, { message: 'Keywords (EN) are too long.' })
+    .max(255, { message: 'Keywords (EN) are too long.' })
     .min(10, { message: 'Keywords is too short' }),
   textUa: z.string().min(20, { message: 'Текст занадто короткий' }),
   textEn: z.string().min(20, { message: 'Text is too short' }),
