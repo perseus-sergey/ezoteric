@@ -34,6 +34,7 @@ const ArticleList = ({ articleList, lang }: IArticleListProps) =>
           return (
             <li key={id}>
               <ArticleCard
+                date={updatedAt}
                 // lang={lang}
                 seoCardLinkTitle={getSeoCardLinkTitle(title)[lang]}
                 articleTitle={
@@ -44,8 +45,9 @@ const ArticleList = ({ articleList, lang }: IArticleListProps) =>
                 }
                 image={
                   <FillingValidImage
+                    className="rounded-sm"
                     image={{
-                      src: `${ARTICLE_IMG.path}${imageName}`,
+                      src: `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`,
                       ...ARTICLE_CARD_IMAGE.size,
                     }}
                     defaultImage={{

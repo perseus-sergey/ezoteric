@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
-import './globals.css';
+// import './globals.css';
 
 import { Navbar } from '@/components/custom/navbar';
 import { ThemeProvider } from '@/components/custom/theme-provider';
@@ -63,7 +63,7 @@ export default async function Layout({ children, params }: TProps) {
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
       <body className="antialiased bg-secondary">
-        <main className="max-w-5xl mx-auto p-2 sm:p-4 pt-10">
+        <main className="max-w-5xl mx-auto p-2 sm:px-4 pt-14">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -8,12 +8,13 @@ import { getArticleBySlug, updateArticleView } from '@/db/queriesArticle';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { isFileExists } from '@/lib/utils/imagePathValidate';
-import { ARTICLE_IMG } from '@/models/article.model';
 import { IMG_PROPERTIES } from '@/models/image.model';
 import { INFO_PANEL_TITLES } from '@/models/infoPanel.model';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { TParams } from '@/models/url.model';
+import { ESegment, TParams } from '@/models/url.model';
+import BrCrumb from '@/components/custom/BrCrumb';
+import { ARTICLE_IMG, ARTICLE_LIST } from '@/models/article.model';
 
 export default async function Page({ params }: { params: TParams }) {
   const p = await params;
@@ -24,40 +25,52 @@ export default async function Page({ params }: { params: TParams }) {
 
   if (!article) notFound();
 
-  const currDate = getFormattedDateStrYearFirst(article.updatedAt);
+  const { title, text, description, updatedAt, imageName, view, id } = article;
 
-  const imgPath = `${ARTICLE_IMG.path}${article.imageName || ` ${slug}.jpg`}`;
+  const currDate = getFormattedDateStrYearFirst(updatedAt);
 
+  const imgPath = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
   const isImgExists = isFileExists(imgPath);
 
-  await updateArticleView(article.id);
+  await updateArticleView(id);
 
   return (
     <article className="relative mx-auto">
-      <Title>{article.title}</Title>
+      <BrCrumb
+        items={[
+          {
+            title: ARTICLE_LIST.h1Title[lang],
+            href: ESegment.ARTICLES,
+          },
+          { title },
+        ]}
+        lang={lang}
+      />
 
-      {article.description && <TextUnderH1>{article.description}</TextUnderH1>}
+      <Title>{title}</Title>
+
+      {description && <TextUnderH1>{description}</TextUnderH1>}
 
       {isImgExists && (
         <Image
           className="my-4 mx-auto sm:border-2 border-white sm:shadow-md rounded"
           src={imgPath}
-          alt={ARTICLE_IMG.getAlt(article.title)[lang]}
+          alt={ARTICLE_IMG.getAlt(title)[lang]}
           placeholder="blur"
           blurDataURL={IMG_PROPERTIES.defaultImgBlur}
           {...ARTICLE_IMG.size}
         />
       )}
 
-      <div className="article-text">
-        <DangerHtml text={article.text} />
+      <div className="article-text px-4 py-2">
+        <DangerHtml text={text} />
       </div>
 
       <BottomInfoPanel
         items={[
           {
             name: INFO_PANEL_TITLES.views[lang],
-            value: (article.view || 0) + 1,
+            value: (view || 0) + 1,
           },
           {
             name: INFO_PANEL_TITLES.date[lang],

@@ -17,12 +17,12 @@ export const ARTICLE_IMG = {
 
 export const ARTICLE_CARD_IMAGE = {
   defaultImgSrc: '/images/post/default_post_400.jpg',
-  size: { width: 250, height: 250 },
+  size: { width: 400, height: 400 },
 };
 
 export const ARTICLES_COUNT_CAPTION = {
-  [EN]: 'Number of articles found: ',
-  [UA]: 'Кількість знайдених статей: ',
+  [EN]: 'Number of articles: ',
+  [UA]: 'Кількість статей: ',
 };
 
 export const ARTICLE_PAGINATION_PARAMS = {
@@ -64,3 +64,10 @@ export const getSeoCardLinkTitle = (title: string) => ({
   [UA]: `Перейти до перегляду статті "${title}"`,
   [EN]: `Go to view the article "${title}"`,
 });
+
+export const ARTICLE_LIST = {
+  h1Title: {
+    [UA]: 'Блог',
+    [EN]: 'Blog',
+  },
+};

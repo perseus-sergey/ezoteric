@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "tsx db/migrate next build",
+    "build": "tsx db/migrate && next build",
     "migrate:generate": "npx drizzle-kit generate",
     "migrate:migrate": "tsx db/migrate",
     "start": "next start",

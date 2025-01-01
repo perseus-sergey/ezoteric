@@ -1,4 +1,5 @@
 import ArticleList from '@/components/custom/ArticleList';
+import BrCrumb from '@/components/custom/BrCrumb';
 import Pagination from '@/components/custom/Pagination';
 import { Title } from '@/components/custom/Title';
 import { getArticlesChunk } from '@/db/queriesArticle';
@@ -6,6 +7,7 @@ import { getELangKey } from '@/lib/utils/getLanguage';
 import { validSearchParam } from '@/lib/utils/validSearchParam';
 import {
   ARTICLE_PAGINATION_PARAMS,
+  ARTICLE_LIST,
   ARTICLES_COUNT_CAPTION,
 } from '@/models/article.model';
 import { EUrlSearchParam, TParams, TSearchParams } from '@/models/url.model';
@@ -13,6 +15,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 const { perPage } = ARTICLE_PAGINATION_PARAMS;
+const { h1Title } = ARTICLE_LIST;
 
 export default async function Page({
   params,
@@ -47,7 +50,9 @@ export default async function Page({
 
   return (
     <article className="relative mx-auto">
-      <Title className="mt-10">Welcome to Articles Page</Title>
+      <BrCrumb items={[{ title: h1Title[lang] }]} lang={lang} />
+
+      <Title className="mt-10">{h1Title[lang]}</Title>
 
       <Suspense>
         {/* <Filter

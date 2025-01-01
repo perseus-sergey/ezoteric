@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 
-const BASE = "/en";
+const BASE = '/en';
 
 const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
+        source: '/',
         destination: BASE,
         permanent: true,
       },

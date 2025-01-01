@@ -19,6 +19,7 @@ interface IArticleCardProps {
   // isTitleCentered?: boolean;
   articleDescription: React.ReactNode;
   infoPanelItems: IBottomInfoPanelItem[];
+  date: Date;
 }
 
 const ArticleCard = ({
@@ -29,23 +30,28 @@ const ArticleCard = ({
   infoPanelItems,
   href,
   seoCardLinkTitle,
+  date,
   // isTitleCentered = false,
 }: IArticleCardProps) => (
   <Card>
     <SeoLink href={href} title={seoCardLinkTitle}>
-      <CardHeader>
-        <CardTitle>{articleTitle}</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4">
-          {articleDescription}
-          {image && image}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4">
+        <div>
+          <CardHeader>
+            <CardTitle>{articleTitle}</CardTitle>
+            <CardDescription>
+              {date.toLocaleDateString('en-CA')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{articleDescription}</p>
+          </CardContent>
+          <CardFooter>
+            <BottomInfoPanel items={infoPanelItems} />
+          </CardFooter>
         </div>
-      </CardContent>
-      <CardFooter>
-        <BottomInfoPanel items={infoPanelItems} />
-      </CardFooter>
+        {image && image}
+      </div>
     </SeoLink>
   </Card>
 );
