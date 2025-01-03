@@ -14,15 +14,20 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { ELanguage } from '@/models/language.model';
+import SeoLink from './SeoLink';
+import { HEADER_MODEL } from '@/models/root.model';
+import { isAdminAuth } from '@/lib/utils/loggedUser';
 
 export const Navbar = async ({ lang }: { lang: ELanguage }) => {
-  const session = await auth();
+  const session = (await auth()) || undefined;
+  // const isAdmin = session?.user?.role === 'admin';
+  const isAdmin = await isAdminAuth(session);
 
   return (
     <>
       <div className="bg-background fixed top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center z-30">
         <div className="flex flex-row gap-3 items-center">
-          <History user={session?.user} />
+          <History isAdmin={isAdmin} lang={lang} />
 
           <div className="flex flex-row gap-2 items-center">
             <Image
@@ -34,9 +39,13 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
             <div className="text-zinc-500">
               <SlashIcon size={16} />
             </div>
-            <div className="text-sm dark:text-zinc-300 truncate w-28 md:w-fit">
+            <SeoLink
+              title={HEADER_MODEL.logo[lang]}
+              href={`/${lang}`}
+              className="text-sm dark:text-zinc-300 truncate w-28 md:w-fit"
+            >
               Ezoteric.net
-            </div>
+            </SeoLink>
           </div>
         </div>
 
@@ -47,7 +56,7 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
                 className="py-1.5 px-2 h-fit font-normal"
                 variant="secondary"
               >
-                {session.user?.email}
+                {session.user?.name || session.user?.email}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

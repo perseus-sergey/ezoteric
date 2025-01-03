@@ -4,6 +4,7 @@ import Pagination from '@/components/custom/Pagination';
 import { Title } from '@/components/custom/Title';
 import { getArticlesChunk } from '@/db/queriesArticle';
 import { getELangKey } from '@/lib/utils/getLanguage';
+import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { validSearchParam } from '@/lib/utils/validSearchParam';
 import {
   ARTICLE_PAGINATION_PARAMS,
@@ -48,6 +49,8 @@ export default async function Page({
     !articles || articles.length === 0 ? 0 : totalCount || 0;
   const totalPages = Math.ceil(articlesCount / perPage);
 
+  const isAdmin = await isAdminAuth();
+
   return (
     <article className="relative mx-auto">
       <BrCrumb items={[{ title: h1Title[lang] }]} lang={lang} />
@@ -74,7 +77,7 @@ export default async function Page({
         searchParams={searchParams}
       />
 
-      <ArticleList articleList={articles} lang={lang} />
+      <ArticleList articleList={articles} lang={lang} isAdmin={isAdmin} />
 
       <Pagination
         lang={lang}

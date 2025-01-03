@@ -15,7 +15,7 @@ interface IArticleCardProps {
   articleTitle: React.ReactNode;
   href: string;
   seoCardLinkTitle: string;
-  image?: React.ReactNode;
+  image: React.ReactNode;
   // isTitleCentered?: boolean;
   articleDescription: React.ReactNode;
   infoPanelItems: IBottomInfoPanelItem[];
@@ -33,25 +33,25 @@ const ArticleCard = ({
   date,
   // isTitleCentered = false,
 }: IArticleCardProps) => (
-  <Card>
-    <SeoLink href={href} title={seoCardLinkTitle}>
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4">
-        <div>
-          <CardHeader>
-            <CardTitle>{articleTitle}</CardTitle>
-            <CardDescription>
-              {date.toLocaleDateString('en-CA')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{articleDescription}</p>
-          </CardContent>
-          <CardFooter>
-            <BottomInfoPanel items={infoPanelItems} />
-          </CardFooter>
-        </div>
-        {image && image}
+  <Card className="min-h-[410px] flex">
+    <SeoLink
+      href={href}
+      title={seoCardLinkTitle}
+      className="min-h-full flex flex-col md:flex-row items-center justify-between gap-4 p-4"
+    >
+      <div className="h-full flex flex-col flex-1 justify-between">
+        <CardHeader>
+          <CardTitle>{articleTitle}</CardTitle>
+          <CardDescription>{date.toLocaleDateString('en-CA')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">{articleDescription}</p>
+        </CardContent>
+        <CardFooter>
+          <BottomInfoPanel items={infoPanelItems} />
+        </CardFooter>
       </div>
+      {image}
     </SeoLink>
   </Card>
 );

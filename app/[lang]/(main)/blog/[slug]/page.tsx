@@ -15,6 +15,10 @@ import { notFound } from 'next/navigation';
 import { ESegment, TParams } from '@/models/url.model';
 import BrCrumb from '@/components/custom/BrCrumb';
 import { ARTICLE_IMG, ARTICLE_LIST } from '@/models/article.model';
+import { isAdminAuth } from '@/lib/utils/loggedUser';
+import Link from 'next/link';
+
+const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
 export default async function Page({ params }: { params: TParams }) {
   const p = await params;
@@ -32,6 +36,8 @@ export default async function Page({ params }: { params: TParams }) {
   const imgPath = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
   const isImgExists = isFileExists(imgPath);
 
+  const isAdmin = await isAdminAuth();
+
   await updateArticleView(id);
 
   return (
@@ -40,7 +46,7 @@ export default async function Page({ params }: { params: TParams }) {
         items={[
           {
             title: ARTICLE_LIST.h1Title[lang],
-            href: ESegment.ARTICLES,
+            href: ESegment.BLOG,
           },
           { title },
         ]}
@@ -48,6 +54,12 @@ export default async function Page({ params }: { params: TParams }) {
       />
 
       <Title>{title}</Title>
+
+      {isAdmin && (
+        <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}>
+          edit
+        </Link>
+      )}
 
       {description && <TextUnderH1>{description}</TextUnderH1>}
 

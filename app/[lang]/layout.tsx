@@ -1,8 +1,6 @@
 import { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
-// import './globals.css';
-
 import { Navbar } from '@/components/custom/navbar';
 import { ThemeProvider } from '@/components/custom/theme-provider';
 import { ELanguage } from '@/models/language.model';

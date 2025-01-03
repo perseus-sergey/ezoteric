@@ -17,7 +17,9 @@ export enum ESegment {
   LOGIN = 'login',
   REGISTER = 'register',
   MASTER = 'master',
-  ARTICLES = 'articles',
+  BLOG = 'blog',
+  ARTICLE_EDIT = 'edit',
+  ARTICLE_ADD = 'add',
 }
 
 export type TParams = Promise<{ [key in ESegment]: string }>;

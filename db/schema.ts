@@ -9,16 +9,20 @@ import {
   boolean,
   text,
   integer,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
 import { DB_TABLE_NAME, langSuffix } from './root';
 
 const { TBL_USER, TBL_CHAT, TBL_RESERVATION, TBL_ARTICLE } = DB_TABLE_NAME;
+
+export const userRoleEnum = pgEnum('user_role', ['user', 'admin', 'editor']);
 
 export const user = pgTable(TBL_USER, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull().unique(),
   name: varchar('name', { length: 128 }),
   password: varchar('password', { length: 64 }),
+  role: userRoleEnum('role').notNull().default('user'),
 });
 
 export type TUser = InferSelectModel<typeof user>;
@@ -69,7 +73,7 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
   textUa: text(`text${langSuffix.uk}`).notNull(),
   textEn: text(`text${langSuffix.en}`).notNull(),
   imageName: varchar('image_name', { length: 255 }),
-  view: integer('view'),
+  view: integer('view').default(0),
 });
 
 export type TArticle = InferSelectModel<typeof tblArticle>;

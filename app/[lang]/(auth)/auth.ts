@@ -1,4 +1,4 @@
-// import { compare } from "bcrypt-ts";
+import { compare } from 'bcrypt-ts';
 import NextAuth, { User, Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
@@ -33,8 +33,7 @@ export const {
         if (users.length === 0) return null;
 
         try {
-          // const passwordsMatch = await compare(password, users[0].password!);
-          const passwordsMatch = password === users[0].password!;
+          const passwordsMatch = await compare(password, users[0].password!);
           if (passwordsMatch) return users[0] as User;
         } catch (error) {
           console.log('🚀 ~ authorize ~ error:', error);

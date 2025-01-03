@@ -12,6 +12,9 @@ import { ESegment } from '@/models/url.model';
 import { TArticleLocalized } from '@/db/schema';
 import EmptyData from './EmptyData';
 import FillingValidImage from './FillingValidImage';
+import Link from 'next/link';
+
+const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
 const {
   date: dateTitle,
@@ -22,9 +25,10 @@ const {
 interface IArticleListProps {
   lang: ELanguage;
   articleList: TArticleLocalized[] | null;
+  isAdmin: boolean;
 }
 
-const ArticleList = ({ articleList, lang }: IArticleListProps) =>
+const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
   articleList && articleList.length > 0 ? (
     <ul>
       {articleList.map(
@@ -33,12 +37,18 @@ const ArticleList = ({ articleList, lang }: IArticleListProps) =>
 
           return (
             <li key={id}>
+              {isAdmin && (
+                <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}>
+                  edit
+                </Link>
+              )}
               <ArticleCard
                 date={updatedAt}
                 // lang={lang}
                 seoCardLinkTitle={getSeoCardLinkTitle(title)[lang]}
                 articleTitle={
                   <>
+                    {/* TODO: Change bg */}
                     <div className="bg-[url('/Images/package_network_4729.png')] size-8 shrink-0" />
                     {title}
                   </>
@@ -59,7 +69,7 @@ const ArticleList = ({ articleList, lang }: IArticleListProps) =>
                   />
                 }
                 articleDescription={cutText(description, 250)}
-                href={`/${lang}/${ESegment.ARTICLES}/${slug}`}
+                href={`/${lang}/${BLOG}/${slug}`}
                 infoPanelItems={[
                   { name: viewsTitle[lang], value: view },
                   {

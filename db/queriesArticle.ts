@@ -109,22 +109,17 @@ export async function getArticleBySlug({
   }
 }
 export async function getArticleByIdForUpdate(id: number) {
-  return {
-    id,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    slug: 'example-article',
-    titleUa: 'Приклад статті',
-    titleEn: 'Example Article',
-    descriptionUa: 'Це опис статті українською.',
-    descriptionEn: 'This is the description in English.',
-    keywordsUa: 'ключові, слова',
-    keywordsEn: 'keywords, words',
-    textUa: 'Текст статті українською.',
-    textEn: 'Article text in English.',
-    imageName: 'example.jpg',
-    view: 0,
-  };
+  try {
+    const [res] = await db
+      .select()
+      .from(tblArticle)
+      .where(eq(tblArticle.id, id))
+      .limit(1);
+
+    return res;
+  } catch (error) {
+    return error as Error;
+  }
 }
 
 export const insertNewArticle = async (createdArticle: TArticleFormValues) => {
@@ -161,7 +156,7 @@ export const updateArticle = async (
 export const updateArticleView = async (id: number) => {
   return await db
     .update(tblArticle)
-    .set({ view: sql`${tblArticle.view} + 1` })
+    .set({ view: sql`${tblArticle.view || 0} + 1` })
     .where(eq(tblArticle.id, id))
     .returning();
 };

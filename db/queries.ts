@@ -9,25 +9,25 @@ import { getDB } from './root';
 
 const db = getDB();
 
-export async function getUser(email: string): Promise<Array<TUser>> {
-  return [
-    {
-      id: '1',
-      email,
-      password: 'password',
-      name: null,
-    },
-  ];
-}
-
-// export async function getUser(email: string): Promise<Array<User>> {
-//   try {
-//     return await db.select().from(user).where(eq(user.email, email));
-//   } catch (error) {
-//     console.error("Failed to get user from database");
-//     throw error;
-//   }
+// export async function getUser(email: string): Promise<Array<TUser>> {
+//   return [
+//     {
+//       id: '1',
+//       email,
+//       password: 'password',
+//       name: null,
+//     },
+//   ];
 // }
+
+export async function getUser(email: string): Promise<Array<TUser>> {
+  try {
+    return await db.select().from(user).where(eq(user.email, email)).limit(1);
+  } catch (error) {
+    console.error('Failed to get user from database');
+    throw error;
+  }
+}
 
 export async function createUser(
   email: string,

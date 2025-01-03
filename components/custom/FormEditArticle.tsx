@@ -64,24 +64,6 @@ export const FormEditArticle = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Slug */}
-        <FormField
-          control={form.control}
-          name="slug"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Slug</FormLabel>
-              <FormControl>
-                <Input placeholder="article-slug" {...field} />
-              </FormControl>
-              <FormDescription>
-                Унікальний ідентифікатор статті.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Title UA */}
         <FormField
           control={form.control}
@@ -219,6 +201,24 @@ export const FormEditArticle = ({
               <FormControl>
                 <Textarea placeholder="imageName.jpg" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Slug */}
+        <FormField
+          control={form.control}
+          name="slug"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Slug</FormLabel>
+              <FormControl>
+                <Input placeholder="article-slug" {...field} />
+              </FormControl>
+              <FormDescription>
+                Унікальний ідентифікатор статті.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

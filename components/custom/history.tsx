@@ -1,7 +1,6 @@
 'use client';
 
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
-import { User } from 'next-auth';
 import { useState } from 'react';
 
 import { MenuIcon } from './icons';
@@ -13,8 +12,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from '../ui/sheet';
+import Link from 'next/link';
+import { ESegment } from '@/models/url.model';
+import { ELanguage } from '@/models/language.model';
 
-export const History = ({ user }: { user: User | undefined }) => {
+const { MASTER, BLOG, ARTICLE_ADD } = ESegment;
+
+export const History = ({
+  isAdmin,
+  lang,
+}: {
+  isAdmin: boolean;
+  lang: ELanguage;
+}) => {
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
 
   return (
@@ -50,24 +60,14 @@ export const History = ({ user }: { user: User | undefined }) => {
             <div className="flex flex-row gap-2">
               <div className="dark:text-zinc-300">Left bar</div>
 
-              <div className="dark:text-zinc-400 text-zinc-500">
-                {/* {history === undefined ? "loading" : history.length} chats */}
-                Site menu
-              </div>
+              <div className="dark:text-zinc-400 text-zinc-500">Site menu</div>
             </div>
           </div>
 
-          {user && user.email ? (
-            <div className="text-sm flex flex-row items-center justify-between">
-              <div className="flex flex-row gap-2">
-                <div className="dark:text-zinc-300">Logged in as</div>
-
-                <div className="dark:text-zinc-400 text-zinc-500">
-                  {/* {history === undefined ? "loading" : history.length} chats */}
-                  {user.email} {user.id}
-                </div>
-              </div>
-            </div>
+          {isAdmin ? (
+            <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
+              Add New Post
+            </Link>
           ) : null}
         </SheetContent>
       </Sheet>
