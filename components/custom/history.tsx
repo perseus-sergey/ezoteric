@@ -58,17 +58,23 @@ export const History = ({
 
           <div className="text-sm flex flex-row items-center justify-between">
             <div className="flex flex-row gap-2">
-              <div className="dark:text-zinc-300">Left bar</div>
+              <span className="dark:text-zinc-300">Left bar</span>
 
-              <div className="dark:text-zinc-400 text-zinc-500">Site menu</div>
+              <span className="dark:text-zinc-400 text-zinc-500">
+                Site menu
+              </span>
             </div>
           </div>
 
-          {isAdmin ? (
-            <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
-              Add New Post
-            </Link>
-          ) : null}
+          <section className="flex flex-col gap-2 mt-4">
+            <Link href={`/${lang}/${BLOG}`}>Blog</Link>
+
+            {isAdmin ? (
+              <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
+                Add New Post
+              </Link>
+            ) : null}
+          </section>
         </SheetContent>
       </Sheet>
     </>
