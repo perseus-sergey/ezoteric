@@ -25,11 +25,11 @@ export async function POST(request: Request) {
 
   // console.log('🚀 ~ POST ~ id:', id);
 
-  const session = await auth();
+  // const session = await auth();
 
-  if (!session) {
-    return new Response('Unauthorized', { status: 401 });
-  }
+  // if (!session) {
+  //   return new Response('Unauthorized', { status: 401 });
+  // }
 
   const coreMessages = convertToCoreMessages(messages).filter(
     (message) => message.content.length > 0
