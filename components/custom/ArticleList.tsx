@@ -13,6 +13,7 @@ import { TArticleLocalized } from '@/db/schema';
 import EmptyData from './EmptyData';
 import FillingValidImage from './FillingValidImage';
 import Link from 'next/link';
+import { PencilLine } from 'lucide-react';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -39,7 +40,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
             <li key={id}>
               {isAdmin && (
                 <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}>
-                  edit
+                  <PencilLine className="size-4 text-muted-foreground" />
                 </Link>
               )}
               <ArticleCard

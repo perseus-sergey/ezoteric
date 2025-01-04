@@ -17,37 +17,49 @@ import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
 import { HEADER_MODEL } from '@/models/root.model';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
+import { ESegment } from '@/models/url.model';
 
-export const Navbar = async ({ lang }: { lang: ELanguage }) => {
+const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
+const { logo, links } = HEADER_MODEL;
+
+export const Header = async ({ lang }: { lang: ELanguage }) => {
   const session = (await auth()) || undefined;
-  // const isAdmin = session?.user?.role === 'admin';
   const isAdmin = await isAdminAuth(session);
 
   return (
-    <>
-      <div className="bg-background fixed top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center z-30">
-        <div className="flex flex-row gap-3 items-center">
-          <History isAdmin={isAdmin} lang={lang} />
+    <header
+      id="top"
+      className="bg-background/80 sticky top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center z-30"
+    >
+      <div className="flex flex-row gap-3 items-center">
+        <History isAdmin={isAdmin} lang={lang} />
 
-          <div className="flex flex-row gap-2 items-center">
-            <Image
-              src="/images/gemini-logo.png"
-              height={20}
-              width={20}
-              alt="gemini logo"
-            />
-            <div className="text-zinc-500">
-              <SlashIcon size={16} />
-            </div>
-            <SeoLink
-              title={HEADER_MODEL.logo[lang]}
-              href={`/${lang}`}
-              className="text-sm dark:text-zinc-300 truncate w-28 md:w-fit"
-            >
-              Ezoteric.net
-            </SeoLink>
+        <div className="flex flex-row gap-2 items-center">
+          <Image
+            src="/images/gemini-logo.png"
+            height={20}
+            width={20}
+            alt="gemini logo"
+          />
+          <div className="text-zinc-500">
+            <SlashIcon size={16} />
           </div>
+          <SeoLink
+            title={logo[lang]}
+            href={`/${lang}`}
+            className="text-sm dark:text-zinc-300 truncate w-28 md:w-fit"
+          >
+            Ezoteric.net
+          </SeoLink>
         </div>
+      </div>
+
+      <nav className="flex flex-row gap-4 items-center">
+        <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>
+          {links.blog.caption[lang]}
+        </SeoLink>
+
+        <ThemeToggle />
 
         {session ? (
           <DropdownMenu>
@@ -59,10 +71,16 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
                 {session.user?.name || session.user?.email}
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <ThemeToggle />
-              </DropdownMenuItem>
+              {isAdmin ? (
+                <DropdownMenuItem>
+                  <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
+                    Add New Post
+                  </Link>
+                </DropdownMenuItem>
+              ) : null}
+
               <DropdownMenuItem className="p-1 z-50">
                 <form
                   className="w-full"
@@ -89,7 +107,7 @@ export const Navbar = async ({ lang }: { lang: ELanguage }) => {
             <Link href={`/${lang}/login`}>Login</Link>
           </Button>
         )}
-      </div>
-    </>
+      </nav>
+    </header>
   );
 };

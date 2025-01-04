@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
-import { Navbar } from '@/components/custom/navbar';
+import { Header } from '@/components/custom/Header';
 import { ThemeProvider } from '@/components/custom/theme-provider';
 import { ELanguage } from '@/models/language.model';
 import { getELangKey } from '@/lib/utils/getLanguage';
@@ -61,18 +61,18 @@ export default async function Layout({ children, params }: TProps) {
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
       <body className="antialiased bg-secondary">
-        <main className="max-w-5xl mx-auto p-2 sm:px-4 pt-14">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          // disableTransitionOnChange
+        >
+          <Header lang={lang} />
+          <main className="max-w-5xl mx-auto px-2 sm:px-4">
             <Toaster position="top-center" />
-            <Navbar lang={lang} />
             {children}
-          </ThemeProvider>
-        </main>
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

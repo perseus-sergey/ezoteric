@@ -17,6 +17,7 @@ import BrCrumb from '@/components/custom/BrCrumb';
 import { ARTICLE_IMG, ARTICLE_LIST } from '@/models/article.model';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import Link from 'next/link';
+import { PencilLine } from 'lucide-react';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -57,7 +58,7 @@ export default async function Page({ params }: { params: TParams }) {
 
       {isAdmin && (
         <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}>
-          edit
+          <PencilLine className="size-4 text-muted-foreground" />
         </Link>
       )}
 

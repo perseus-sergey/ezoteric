@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "tsx db/migrate && next build",
-    "migrate:generate": "npx drizzle-kit generate",
-    "migrate:migrate": "tsx db/migrate",
+    "d:generate": "npx drizzle-kit generate",
+    "d:migrate": "tsx db/migrate",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky"

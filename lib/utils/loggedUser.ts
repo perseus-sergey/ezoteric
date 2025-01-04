@@ -10,7 +10,6 @@ export const isAdminAuth = cache(async (session?: Session) => {
 
   return userSession &&
     userSession.user &&
-    userSession.user.email &&
     adminEmail &&
     userSession.user.email === adminEmail
     ? true
