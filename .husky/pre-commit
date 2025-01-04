@@ -5,6 +5,7 @@ pnpm exec tsc --noEmit
 pnpm exec lint-staged
 
 # Перевірка змін у схемі або міграціях
+echo "Check changes in drizzle schemas..."
 if git diff --cached --name-only | grep -E 'schema\.(ts|sql)|migrations/'; then
   echo "Schema or migrations changed. Running migration commands..."
   pnpm d:generate
