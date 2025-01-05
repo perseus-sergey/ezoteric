@@ -13,6 +13,7 @@ import useWindowSize from './use-window-size';
 import { ELanguage } from '@/models/language.model';
 import { CHAT_LANG_MODEL } from '@/models/meta/chat.model';
 import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
 
 const { chatTitle, overviewTexts } = CHAT_LANG_MODEL;
 
@@ -101,10 +102,11 @@ const ChatWidget = ({
         <>
           <nav className="flex justify-between items-center px-4 py-2 bg-primary">
             <p className="font-bold">{chatTitle[lang]}</p>
-            <button onClick={toggleChat}>
+            <Button onClick={toggleChat}>
               <X className="size-4" />
-              <span className="sr-only"></span>
-            </button>
+              {/* // TODO: change */}
+              <span className="sr-only">Закрити вікно чату</span>
+            </Button>
           </nav>
 
           <section
