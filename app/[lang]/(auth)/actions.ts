@@ -2,7 +2,7 @@
 
 import { createUser, getUser } from '@/db/queries';
 
-import { signIn } from './auth';
+import { signIn, signOut } from './auth';
 import { TAuthFormValues } from '@/lib/schemas/authSchema';
 
 type ActionStatus =
@@ -59,3 +59,6 @@ export const register = async (
     return { status: error instanceof Error ? 'failed' : 'invalid_data' };
   }
 };
+
+export const logout = async (redirectTo: string) =>
+  await signOut({ redirectTo });

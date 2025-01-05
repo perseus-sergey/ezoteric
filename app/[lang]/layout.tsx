@@ -11,7 +11,7 @@ import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 
 // =================================================================
 // improve components/custom/NotFoundPage.tsx
-// change comparing user with db app/[lang]/(auth)/auth.ts, db/queries.ts
+// meta for all pages
 // change app/[lang]/(main)/twitter-image.png, app/[lang]/(main)/opengraph-image.png, app/favicon.ico
 // change the text components/custom/overview.tsx
 // =================================================================
@@ -68,6 +68,7 @@ export default async function Layout({ children, params }: TProps) {
           // disableTransitionOnChange
         >
           <Header lang={lang} />
+
           <main className="max-w-5xl mx-auto px-2 sm:px-4">
             <Toaster position="top-center" />
             {children}

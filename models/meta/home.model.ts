@@ -124,8 +124,8 @@ export const MAIN_TEXT = {
         [ELanguage.EN]: 'Get Information',
       },
       pending: {
-        [ELanguage.EN]: 'Please wait...',
-        [ELanguage.UA]: 'Зачекайте...',
+        [ELanguage.EN]: 'Please wait',
+        [ELanguage.UA]: 'Зачекайте',
       },
     },
 
