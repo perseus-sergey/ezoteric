@@ -1,28 +1,31 @@
-"use client";
+import { LoaderIcon } from '@/components/custom/icons';
 
-import { useFormStatus } from "react-dom";
+import { Button } from '../ui/button';
 
-import { LoaderIcon } from "@/components/custom/icons";
-
-import { Button } from "../ui/button";
-
-export function SubmitButton({ children }: { children: React.ReactNode }) {
-  const { pending } = useFormStatus();
-
+export function SubmitButton({
+  pending,
+  submitCaption,
+  pendingCaption,
+}: {
+  pending: boolean;
+  submitCaption: React.ReactNode;
+  pendingCaption: React.ReactNode;
+}) {
   return (
     <Button
-      type={pending ? "button" : "submit"}
+      type={pending ? 'button' : 'submit'}
       aria-disabled={pending}
-      className="relative text-white"
+      disabled={pending}
+      className="flex gap-2 items-center text-white"
     >
-      {children}
+      {pending ? pendingCaption : submitCaption}
       {pending && (
-        <span className="animate-spin absolute right-4">
+        <span className="animate-spin">
           <LoaderIcon />
         </span>
       )}
       <span aria-live="polite" className="sr-only" role="status">
-        {pending ? "Loading" : "Submit form"}
+        {pending ? 'Loading' : 'Submit form'}
       </span>
     </Button>
   );

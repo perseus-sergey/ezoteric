@@ -13,7 +13,6 @@ import {
 import { generateAiNumerology } from '@/controllers/numerology.controller';
 import { useState } from 'react';
 import { ModalNumerologyResponse } from './Modals/ModalNumerologyResponse';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -23,10 +22,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { SubmitButton } from './submit-button';
 
 const { numerologyForm } = MAIN_TEXT;
 
@@ -112,20 +111,11 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
               />
             </CardContent>
             <CardFooter>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="text-stone-50"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="animate-spin" />
-                    {numerologyForm.submit.pending[lang]}
-                  </>
-                ) : (
-                  numerologyForm.submit.title[lang]
-                )}
-              </Button>
+              <SubmitButton
+                pending={isLoading}
+                submitCaption={numerologyForm.submit.title[lang]}
+                pendingCaption={numerologyForm.submit.pending[lang]}
+              />
             </CardFooter>
           </Card>
         </form>

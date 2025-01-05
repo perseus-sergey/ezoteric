@@ -26,4 +26,26 @@ export const HEADER_MODEL = {
       },
     },
   },
+
+  sideBarOpenIcon: {
+    alt: {
+      [UA]: 'Іконка кнопки відкриття прихованого меню',
+      [EN]: 'Open hidden menu button icon',
+    },
+    ariaLabel: {
+      [UA]: 'Відкрити бокове меню',
+      [EN]: 'Open side menu',
+    },
+  },
+
+  sideBarCloseIcon: {
+    alt: {
+      [UA]: 'Іконка закриття бокового меню',
+      [EN]: 'Side menu close icon',
+    },
+    ariaLabel: {
+      [UA]: 'Закрити бокове меню',
+      [EN]: 'Close the side menu',
+    },
+  },
 };

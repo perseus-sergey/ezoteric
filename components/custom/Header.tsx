@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { auth, signOut } from '@/app/[lang]/(auth)/auth';
 
-import { History } from './history';
+import { SideBar } from './SideBar';
 import { SlashIcon } from './icons';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '../ui/button';
@@ -29,10 +29,10 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
   return (
     <header
       id="top"
-      className="bg-background/80 sticky top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center z-30"
+      className="border-grid sticky z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center"
     >
       <div className="flex flex-row gap-3 items-center">
-        <History isAdmin={isAdmin} lang={lang} />
+        <SideBar isAdmin={isAdmin} session={session} lang={lang} />
 
         <div className="flex flex-row gap-2 items-center">
           <Image
@@ -41,6 +41,7 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
             width={20}
             alt="gemini logo"
           />
+
           <div className="text-zinc-500">
             <SlashIcon size={16} />
           </div>
@@ -54,7 +55,7 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
         </div>
       </div>
 
-      <nav className="flex flex-row gap-4 items-center">
+      <nav className="hidden md:flex flex-row gap-4 items-center">
         <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>
           {links.blog.caption[lang]}
         </SeoLink>
@@ -82,9 +83,10 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
               ) : null}
 
               <DropdownMenuItem className="p-1 z-50">
-                <form
-                  className="w-full"
-                  action={async () => {
+                <button
+                  type="submit"
+                  className="w-full text-left px-1 py-0.5 text-red-500"
+                  onClick={async () => {
                     'use server';
 
                     await signOut({
@@ -92,13 +94,8 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
                     });
                   }}
                 >
-                  <button
-                    type="submit"
-                    className="w-full text-left px-1 py-0.5 text-red-500"
-                  >
-                    Sign out
-                  </button>
-                </form>
+                  Sign out
+                </button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
