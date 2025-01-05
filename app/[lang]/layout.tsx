@@ -12,6 +12,8 @@ import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 // =================================================================
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
+// save chat to db
+// change card image size
 // change app/[lang]/(main)/twitter-image.png, app/[lang]/(main)/opengraph-image.png, app/favicon.ico
 // change the text components/custom/overview.tsx
 // =================================================================
