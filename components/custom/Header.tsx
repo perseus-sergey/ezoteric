@@ -15,9 +15,10 @@ import {
 } from '../ui/dropdown-menu';
 import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
-import { HEADER_MODEL } from '@/models/root.model';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { ESegment } from '@/models/url.model';
+import LanguageSwitcher from './LanguageSwitcher';
+import { HEADER_MODEL } from '@/models/header.model';
 
 const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
 const { logo, links } = HEADER_MODEL;
@@ -59,6 +60,8 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
         <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>
           {links.blog.caption[lang]}
         </SeoLink>
+
+        <LanguageSwitcher />
 
         <ThemeToggle />
 

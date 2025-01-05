@@ -17,7 +17,6 @@ import {
 import Link from 'next/link';
 import { ESegment } from '@/models/url.model';
 import { ELanguage } from '@/models/language.model';
-import { HEADER_MODEL } from '@/models/root.model';
 import { Session } from 'next-auth';
 import SeoLink from './SeoLink';
 import { ThemeToggle } from './theme-toggle';
@@ -28,6 +27,8 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { logout } from '@/app/[lang]/(auth)/actions';
+import { HEADER_MODEL } from '@/models/header.model';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const { MASTER, BLOG, ARTICLE_ADD } = ESegment;
 const { sideBarOpenIcon } = HEADER_MODEL;
@@ -74,7 +75,6 @@ export const SideBar = ({
           </SheetHeader>
 
           <nav className="flex flex-col gap-2 items-center">
-            <SheetClose />
             <SheetClose asChild>
               <SeoLink
                 title={links.blog.ariaLabel[lang]}
@@ -83,6 +83,8 @@ export const SideBar = ({
                 {links.blog.caption[lang]}
               </SeoLink>
             </SheetClose>
+
+            <LanguageSwitcher withCaption />
 
             <ThemeToggle />
 
