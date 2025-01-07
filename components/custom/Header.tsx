@@ -1,26 +1,17 @@
-import Image from 'next/image';
-import Link from 'next/link';
-
-import { auth, signOut } from '@/app/[lang]/(auth)/auth';
+import { auth } from '@/app/[lang]/(auth)/auth';
 
 import { SideBar } from './SideBar';
-import { SlashIcon } from './icons';
 import { ThemeToggle } from './theme-toggle';
-import { Button } from '../ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { ESegment } from '@/models/url.model';
 import LanguageSwitcher from './LanguageSwitcher';
 import { HEADER_MODEL } from '@/models/header.model';
+import { EzotericIcon } from '@/svg/EzotericIcon';
+import { UserMenu } from './UserMenu';
 
-const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
+const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
 
 export const Header = async ({ lang }: { lang: ELanguage }) => {
@@ -36,77 +27,32 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
         <SideBar isAdmin={isAdmin} session={session} lang={lang} />
 
         <div className="flex flex-row gap-2 items-center">
-          <Image
-            src="/images/gemini-logo.png"
-            height={20}
-            width={20}
-            alt="gemini logo"
-          />
-
-          <div className="text-zinc-500">
-            <SlashIcon size={16} />
-          </div>
+          <EzotericIcon strokeWidth={0} />
           <SeoLink
             title={logo[lang]}
             href={`/${lang}`}
-            className="text-sm dark:text-zinc-300 truncate w-28 md:w-fit"
+            className="dark:text-zinc-300 truncate w-28 md:w-fit font-georgia"
           >
             Ezoteric.net
           </SeoLink>
         </div>
       </div>
 
-      <nav className="hidden md:flex flex-row gap-4 items-center">
+      <nav className="hidden md:flex flex-row gap-4 items-center font-georgia">
         <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>
           {links.blog.caption[lang]}
         </SeoLink>
 
         <LanguageSwitcher />
 
-        <ThemeToggle />
+        <ThemeToggle lang={lang} />
 
-        {session ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                className="py-1.5 px-2 h-fit font-normal"
-                variant="secondary"
-              >
-                {session.user?.name || session.user?.email}
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              {isAdmin ? (
-                <DropdownMenuItem>
-                  <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
-                    Add New Post
-                  </Link>
-                </DropdownMenuItem>
-              ) : null}
-
-              <DropdownMenuItem className="p-1 z-50">
-                <button
-                  type="submit"
-                  className="w-full text-left px-1 py-0.5 text-red-500"
-                  onClick={async () => {
-                    'use server';
-
-                    await signOut({
-                      redirectTo: `/${lang}`,
-                    });
-                  }}
-                >
-                  Sign out
-                </button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button className="py-1.5 px-2 h-fit font-normal text-white" asChild>
-            <Link href={`/${lang}/login`}>Login</Link>
-          </Button>
-        )}
+        <UserMenu
+          lang={lang}
+          userEmail={session?.user?.email}
+          userName={session?.user?.name}
+          isAdmin={isAdmin}
+        />
       </nav>
     </header>
   );

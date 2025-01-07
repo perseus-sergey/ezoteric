@@ -1,8 +1,7 @@
 import { Mail, PhoneCall } from 'lucide-react';
-import ChatWidget from '@/components/custom/ChatWidget';
 import { Title } from '@/components/custom/Title';
 import { getELangKey } from '@/lib/utils/getLanguage';
-import { cn, generateUUID } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils/utils';
 import Image from 'next/image';
 import sunrise_meditation_1200 from '../../../public/images/sunrise_meditation_1200.jpg';
 import hands_with_artifacts_500 from '../../../public/images/hands_with_artifacts_500.jpg';
@@ -33,19 +32,6 @@ const {
 export default async function Page({ params }: { params: TParams }) {
   const p = await params;
   const lang = getELangKey(p.lang);
-
-  const id = generateUUID();
-
-  // const initialMessages: Message[] = [
-  //   {
-  //     id,
-  //     createdAt: new Date(),
-  //     content: `Вітаю Вас в чаті! Мене звати Езобот.
-  //       Я досвідчений фахівець в сфері езотеричних знань.
-  //       Я прикладу всі зусилля і мої знання щоб дати Вам відповіді на всі ваші запитання.`,
-  //     role: "assistant",
-  //   },
-  // ];
 
   return (
     <article className="relative mx-auto">
@@ -141,7 +127,7 @@ export default async function Page({ params }: { params: TParams }) {
         </li>
       </ul>
 
-      <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} />
+      {/* <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} /> */}
     </article>
   );
 }

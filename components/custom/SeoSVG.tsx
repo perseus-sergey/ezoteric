@@ -8,7 +8,7 @@ export default function SeoSVG({
   className,
   color = 'currentColor',
   viewBox = '0 0 24 24',
-  strokeWidth = 1,
+  strokeWidth = 0,
   children,
   ...props
 }: IProps) {

@@ -14,6 +14,7 @@ import { ELanguage } from '@/models/language.model';
 import { CHAT_LANG_MODEL } from '@/models/meta/chat.model';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
+import { CHAT } from '@/models/chat.model';
 
 const { chatTitle, overviewTexts } = CHAT_LANG_MODEL;
 
@@ -104,8 +105,7 @@ const ChatWidget = ({
             <p className="font-bold">{chatTitle[lang]}</p>
             <Button onClick={toggleChat}>
               <X className="size-4" />
-              {/* // TODO: change */}
-              <span className="sr-only">Закрити вікно чату</span>
+              <span className="sr-only">{CHAT.closeBtn.ariaLabel[lang]}</span>
             </Button>
           </nav>
 
@@ -176,7 +176,7 @@ const ChatWidget = ({
           onClick={toggleChat}
           className="size-full flex items-center justify-center"
         >
-          Chat
+          {CHAT.chatBtn.caption[lang]}
         </button>
       )}
     </motion.div>

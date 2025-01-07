@@ -5,7 +5,7 @@ import { getELangKey } from '@/lib/utils/getLanguage';
 import { ELanguage } from '@/models/language.model';
 import { Button } from '../ui/button';
 import { LANGUAGE_SELECT } from '@/models/header.model';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 
 const { EN, UA } = ELanguage;
 
@@ -33,7 +33,7 @@ const LanguageSwitcher = ({
   return (
     <Button
       variant="ghost"
-      className={clsx('[&_svg]:size-6', !withCaption && 'size-10')}
+      className={clsx(!withCaption && 'size-10 [&_svg]:size-6')}
       onClick={handleLanguageChange}
     >
       {icon}

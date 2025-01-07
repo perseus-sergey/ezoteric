@@ -22,7 +22,7 @@ const BrCrumb = ({
   items: EBreadcrumb[];
   lang: ELanguage;
 }) => (
-  <Breadcrumb>
+  <Breadcrumb className="p-2">
     <BreadcrumbList>
       <BreadcrumbItem>
         <BreadcrumbLink asChild>

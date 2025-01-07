@@ -2,6 +2,7 @@ import React from 'react';
 import { ELanguage } from './language.model';
 import { DEFAULT_META_OG } from './root.model';
 import SeoSVG from '@/components/custom/SeoSVG';
+import { Moon, Sun } from 'lucide-react';
 
 const { UA, EN } = ELanguage;
 
@@ -90,5 +91,53 @@ export const LANGUAGE_SELECT: Record<ELanguage, LanguageData> = {
         />
       </SeoSVG>
     ),
+  },
+};
+
+export const THEME_SELECT = {
+  dark: {
+    caption: {
+      [EN]: 'Dark',
+      [UA]: 'Темний',
+    },
+    ariaLabel: {
+      [EN]: 'Toggle to dark mode',
+      [UA]: 'Переключити на темний режим',
+    },
+    icon: <Moon />,
+  },
+
+  light: {
+    caption: {
+      [EN]: 'Light',
+      [UA]: 'Світлий',
+    },
+    ariaLabel: {
+      [EN]: 'Toggle to light mode',
+      [UA]: 'Переключити на світлий режим',
+    },
+    icon: <Sun />,
+  },
+};
+
+export const HEADER_LOGIN = {
+  signin: {
+    [EN]: 'Login',
+    [UA]: 'Увійти',
+  },
+  signout: {
+    [EN]: 'Sign out',
+    [UA]: 'Вийти',
+  },
+};
+
+export const SIDEBAR = {
+  title: {
+    [UA]: 'Меню сайту',
+    [EN]: 'Site menu',
+  },
+  description: {
+    [UA]: 'Навігаційне меню',
+    [EN]: 'Navigation menu',
   },
 };

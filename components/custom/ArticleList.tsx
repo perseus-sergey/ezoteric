@@ -11,9 +11,11 @@ import {
 import { ESegment } from '@/models/url.model';
 import { TArticleLocalized } from '@/db/schema';
 import EmptyData from './EmptyData';
-import FillingValidImage from './FillingValidImage';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
+import { isFileExists } from '@/lib/utils/imagePathValidate';
+import Image from 'next/image';
+import { IMG_PROPERTIES } from '@/models/image.model';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -31,10 +33,14 @@ interface IArticleListProps {
 
 const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
   articleList && articleList.length > 0 ? (
-    <ul>
+    <ul className="space-y-4">
       {articleList.map(
         ({ id, title, description, view, updatedAt, imageName, slug }) => {
           const currDate = getFormattedDateStrYearFirst(updatedAt);
+          const imgSrc = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
+          const imgPath = isFileExists(imgSrc)
+            ? imgSrc
+            : ARTICLE_CARD_IMAGE.defaultImgSrc;
 
           return (
             <li key={id}>
@@ -45,28 +51,16 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
               )}
               <ArticleCard
                 date={updatedAt}
-                // lang={lang}
                 seoCardLinkTitle={getSeoCardLinkTitle(title)[lang]}
-                articleTitle={
-                  <>
-                    {/* TODO: Change bg */}
-                    <div className="bg-[url('/Images/package_network_4729.png')] size-8 shrink-0" />
-                    {title}
-                  </>
-                }
+                articleTitle={title}
                 image={
-                  <FillingValidImage
+                  <Image
                     className="rounded-sm"
-                    image={{
-                      src: `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`,
-                      ...ARTICLE_CARD_IMAGE.size,
-                    }}
-                    defaultImage={{
-                      src: `${ARTICLE_CARD_IMAGE.defaultImgSrc}`,
-                      ...ARTICLE_CARD_IMAGE.size,
-                    }}
+                    src={imgPath}
+                    placeholder="blur"
+                    blurDataURL={IMG_PROPERTIES.defaultImgBlur}
                     alt={ARTICLE_IMG.getAlt(title)[lang]}
-                    isFillParent
+                    {...ARTICLE_CARD_IMAGE.size}
                   />
                 }
                 articleDescription={cutText(description, 250)}

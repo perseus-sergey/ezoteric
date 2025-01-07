@@ -3,9 +3,18 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { Moon, Sun } from 'lucide-react';
+import { THEME_SELECT } from '@/models/header.model';
+import { ELanguage } from '@/models/language.model';
 
-export function ThemeToggle() {
+const { dark, light } = THEME_SELECT;
+
+export function ThemeToggle({
+  lang,
+  withCaption = false,
+}: {
+  lang: ELanguage;
+  withCaption?: boolean;
+}) {
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -22,14 +31,20 @@ export function ThemeToggle() {
       onClick={() => {
         setTheme(theme === 'dark' ? 'light' : 'dark');
       }}
-      variant="outline"
-      size="icon"
+      variant="ghost"
     >
-      {theme === 'dark' ? <Sun /> : <Moon />}
-      {/* // TODO: change */}
-      <span className="sr-only">
-        {theme === 'dark' ? 'Включити світлу тему' : 'Включити темну тему'}
-      </span>
+      {theme === 'dark' ? light.icon : dark.icon}
+      {withCaption
+        ? theme === 'dark'
+          ? light.caption[lang]
+          : dark.caption[lang]
+        : null}
+
+      {!withCaption && (
+        <span className="sr-only">
+          {theme === 'dark' ? light.ariaLabel[lang] : dark.ariaLabel[lang]}
+        </span>
+      )}
     </Button>
   );
 }

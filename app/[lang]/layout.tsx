@@ -8,8 +8,11 @@ import { getELangKey } from '@/lib/utils/getLanguage';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
+import ChatWidget from '@/components/custom/ChatWidget';
+import { generateUUID } from '@/lib/utils/utils';
 
 // =================================================================
+// reset user password functionality
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
 // save chat to db
@@ -60,6 +63,8 @@ export default async function Layout({ children, params }: TProps) {
   const p = await params;
   const lang = getELangKey(p.lang);
 
+  const id = generateUUID();
+
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
       <body className="antialiased bg-secondary">
@@ -74,6 +79,7 @@ export default async function Layout({ children, params }: TProps) {
           <main className="max-w-5xl mx-auto px-2 sm:px-4">
             <Toaster position="top-center" />
             {children}
+            <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} />
           </main>
         </ThemeProvider>
       </body>

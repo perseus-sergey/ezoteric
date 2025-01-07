@@ -1,8 +1,3 @@
-'use client';
-
-// import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
-import { useState } from 'react';
-
 import { MenuIcon } from './icons';
 import { Button } from '../ui/button';
 import {
@@ -14,23 +9,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '../ui/sheet';
-import Link from 'next/link';
 import { ESegment } from '@/models/url.model';
 import { ELanguage } from '@/models/language.model';
 import { Session } from 'next-auth';
 import SeoLink from './SeoLink';
 import { ThemeToggle } from './theme-toggle';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { logout } from '@/app/[lang]/(auth)/actions';
-import { HEADER_MODEL } from '@/models/header.model';
+import { HEADER_MODEL, SIDEBAR } from '@/models/header.model';
 import LanguageSwitcher from './LanguageSwitcher';
+import { BookOpenText } from 'lucide-react';
+import { UserMenu } from './UserMenu';
 
-const { MASTER, BLOG, ARTICLE_ADD } = ESegment;
+const { BLOG } = ESegment;
 const { sideBarOpenIcon } = HEADER_MODEL;
 const { links } = HEADER_MODEL;
 
@@ -43,91 +32,46 @@ export const SideBar = ({
   isAdmin: boolean;
   lang: ELanguage;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
-      <Sheet
-        open={isOpen}
-        onOpenChange={(state) => {
-          setIsOpen(state);
-        }}
-      >
+      <Sheet>
         <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            className="p-1.5 h-fit md:hidden"
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          >
+          <Button variant="ghost" className="p-1.5 h-fit md:hidden">
             <MenuIcon />
             <span className="sr-only">{sideBarOpenIcon.ariaLabel[lang]}</span>
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-3 w-80 bg-muted">
           <SheetHeader>
-            {/* TODO: lang */}
-            <SheetTitle className="text-left">Site menu</SheetTitle>
+            <SheetTitle className="text-left">{SIDEBAR.title[lang]}</SheetTitle>
             <SheetDescription className="text-left">
-              Навігаційне меню
+              {SIDEBAR.description[lang]}
             </SheetDescription>
           </SheetHeader>
 
-          <nav className="flex flex-col gap-2 items-center">
+          <nav className="w-fit px-4 py-8 flex flex-col items-start gap-2 font-georgia">
             <SheetClose asChild>
               <SeoLink
+                className="flex items-center gap-2 px-4 py-2"
                 title={links.blog.ariaLabel[lang]}
                 href={`/${lang}/${BLOG}`}
               >
+                <BookOpenText className="size-4 text-muted-foreground" />
                 {links.blog.caption[lang]}
               </SeoLink>
             </SheetClose>
 
             <LanguageSwitcher withCaption />
 
-            <ThemeToggle />
+            <ThemeToggle lang={lang} withCaption />
 
-            {session ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="py-1.5 px-2 h-fit font-normal"
-                    variant="secondary"
-                  >
-                    {session.user?.name || session.user?.email}
-                  </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="end">
-                  {isAdmin ? (
-                    <DropdownMenuItem>
-                      <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
-                        Add New Post
-                      </Link>
-                    </DropdownMenuItem>
-                  ) : null}
-
-                  <DropdownMenuItem className="p-1 z-50">
-                    <button
-                      className="w-full text-left px-1 py-0.5 text-red-500"
-                      onClick={() => logout(`/${lang}`)}
-                    >
-                      Sign out
-                    </button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <SheetClose asChild>
-                <Button
-                  className="py-1.5 px-2 h-fit font-normal text-white"
-                  asChild
-                >
-                  <Link href={`/${lang}/login`}>Login</Link>
-                </Button>
-              </SheetClose>
-            )}
+            <UserMenu
+              lang={lang}
+              userEmail={session?.user?.email}
+              userName={session?.user?.name}
+              isAdmin={isAdmin}
+              withIcons
+            />
           </nav>
         </SheetContent>
       </Sheet>
