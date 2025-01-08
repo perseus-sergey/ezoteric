@@ -32,7 +32,7 @@ export default async function Page({ params }: { params: TParams }) {
   const lang = getELangKey(p.lang);
 
   return (
-    <article className="relative mx-auto pb-4">
+    <article className="relative mx-auto">
       <div className="relative mx-auto">
         <Image src={sunrise_meditation_1200} alt={h1_img_alt[lang]} priority />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-65% to-secondary"></div>
