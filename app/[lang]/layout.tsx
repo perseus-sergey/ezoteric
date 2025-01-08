@@ -14,9 +14,10 @@ import { Footer } from '@/components/custom/Footer';
 
 // =================================================================
 // remove login/register pages
-// footer: phone, email
+// blog: search input
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
+// robots.txt
 // chat: save to db
 // chat: add message time
 // change the text components/custom/overview.tsx
@@ -68,7 +69,7 @@ export default async function Layout({ children, params }: TProps) {
 
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
-      <body className="antialiased bg-secondary">
+      <body className="antialiased bg-secondary min-h-dvh flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -77,7 +78,7 @@ export default async function Layout({ children, params }: TProps) {
         >
           <Header lang={lang} />
 
-          <main className="max-w-5xl mx-auto px-2 sm:px-4">
+          <main className="max-w-5xl flex-1 mx-auto pb-4 px-2 sm:px-4">
             <Toaster position="top-center" />
             {children}
             <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} />
