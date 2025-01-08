@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { THEME_SELECT } from '@/models/header.model';
 import { ELanguage } from '@/models/language.model';
+import { Moon, Sun } from 'lucide-react';
 
 const { dark, light } = THEME_SELECT;
 
@@ -33,13 +34,12 @@ export function ThemeToggle({
       }}
       variant="ghost"
     >
-      {theme === 'dark' ? light.icon : dark.icon}
+      {theme === 'dark' ? <Sun /> : <Moon />}
       {withCaption
         ? theme === 'dark'
           ? light.caption[lang]
           : dark.caption[lang]
         : null}
-
       {!withCaption && (
         <span className="sr-only">
           {theme === 'dark' ? light.ariaLabel[lang] : dark.ariaLabel[lang]}
@@ -48,14 +48,3 @@ export function ThemeToggle({
     </Button>
   );
 }
-
-// return (
-//   <div
-//     className="cursor-pointer"
-//     onClick={() => {
-//       setTheme(theme === "dark" ? "light" : "dark");
-//     }}
-//   >
-//     {`Toggle ${theme === "light" ? "dark" : "light"} mode`}
-//   </div>
-// );

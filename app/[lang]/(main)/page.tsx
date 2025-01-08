@@ -9,6 +9,7 @@ import { MAIN_TEXT } from '@/models/meta/home.model';
 import NumerologyForm from '@/components/custom/numerology-form';
 import Link from 'next/link';
 import { TParams } from '@/models/url.model';
+import { FOOTER_MODEL } from '@/models/header.model';
 
 const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
@@ -23,9 +24,6 @@ const {
   h2_1_img_alt,
   h2_2,
   h2_2_p,
-  h2_3,
-  h2_3_p,
-  h2_3_phone,
   numerologyForm,
 } = MAIN_TEXT;
 
@@ -34,7 +32,7 @@ export default async function Page({ params }: { params: TParams }) {
   const lang = getELangKey(p.lang);
 
   return (
-    <article className="relative mx-auto">
+    <article className="relative mx-auto pb-4">
       <div className="relative mx-auto">
         <Image src={sunrise_meditation_1200} alt={h1_img_alt[lang]} priority />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-65% to-secondary"></div>
@@ -95,32 +93,28 @@ export default async function Page({ params }: { params: TParams }) {
         <NumerologyForm lang={lang} />
       </section>
 
-      <TitleH2>{h2_3[lang]}</TitleH2>
-      {h2_3_p[lang].map((text, i) => (
-        <p
-          key={i}
-          className="text-center font-semibold text-xl pb-4 font-georgia"
-        >
-          {text}
-        </p>
-      ))}
+      <TitleH2>{FOOTER_MODEL.title[lang]}</TitleH2>
+      <p className="text-center font-semibold text-xl pb-4 font-georgia">
+        {FOOTER_MODEL.description[lang]}
+      </p>
       <ul className="flex flex-wrap items-center gap-4 justify-evenly">
         <li className="flex items-center gap-2">
           <Mail className="opacity-50" /> Email:{' '}
           <Link
             className="hover:opacity-75"
             href={`mailto:${siteMail}`}
-            aria-label={`Send mail to ${sitePhone}`}
+            aria-label={FOOTER_MODEL.mail.ariaLabel[lang]}
           >
             {siteMail}
           </Link>
         </li>
         <li className="flex items-center gap-2">
-          <PhoneCall className="opacity-50" /> {h2_3_phone[lang]}:{' '}
+          <PhoneCall className="opacity-50" />{' '}
+          {FOOTER_MODEL.phone.caption[lang]}:{' '}
           <Link
             className="hover:opacity-75"
             href={`tel:${sitePhone.replace(/\s+/g, '')}`}
-            aria-label={`Call ${sitePhone}`}
+            aria-label={FOOTER_MODEL.phone.ariaLabel[lang]}
           >
             {sitePhone}
           </Link>

@@ -18,6 +18,7 @@ import { HEADER_MODEL, SIDEBAR } from '@/models/header.model';
 import LanguageSwitcher from './LanguageSwitcher';
 import { BookOpenText } from 'lucide-react';
 import { UserMenu } from './UserMenu';
+import { LoginProviders } from './LoginProviders';
 
 const { BLOG } = ESegment;
 const { sideBarOpenIcon } = HEADER_MODEL;
@@ -65,13 +66,17 @@ export const SideBar = ({
 
             <ThemeToggle lang={lang} withCaption />
 
-            <UserMenu
-              lang={lang}
-              userEmail={session?.user?.email}
-              userName={session?.user?.name}
-              isAdmin={isAdmin}
-              withIcons
-            />
+            {session ? (
+              <UserMenu
+                lang={lang}
+                userEmail={session?.user?.email}
+                userName={session?.user?.name}
+                userImgSrc={session?.user?.image}
+                isAdmin={isAdmin}
+              />
+            ) : (
+              <LoginProviders lang={lang} withIcons />
+            )}
           </nav>
         </SheetContent>
       </Sheet>

@@ -10,6 +10,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { HEADER_MODEL } from '@/models/header.model';
 import { EzotericIcon } from '@/svg/EzotericIcon';
 import { UserMenu } from './UserMenu';
+import { LoginProviders } from './LoginProviders';
 
 const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
@@ -47,12 +48,17 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
 
         <ThemeToggle lang={lang} />
 
-        <UserMenu
-          lang={lang}
-          userEmail={session?.user?.email}
-          userName={session?.user?.name}
-          isAdmin={isAdmin}
-        />
+        {session ? (
+          <UserMenu
+            lang={lang}
+            userEmail={session?.user?.email}
+            userName={session?.user?.name}
+            userImgSrc={session?.user?.image}
+            isAdmin={isAdmin}
+          />
+        ) : (
+          <LoginProviders lang={lang} />
+        )}
       </nav>
     </header>
   );

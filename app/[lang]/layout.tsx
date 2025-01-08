@@ -10,14 +10,15 @@ import { DEFAULT_META_OG } from '@/models/root.model';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 import ChatWidget from '@/components/custom/ChatWidget';
 import { generateUUID } from '@/lib/utils/utils';
+import { Footer } from '@/components/custom/Footer';
 
 // =================================================================
-// reset user password functionality
+// remove login/register pages
+// footer: phone, email
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
-// save chat to db
-// change card image size
-// change app/[lang]/(main)/twitter-image.png, app/[lang]/(main)/opengraph-image.png, app/favicon.ico
+// chat: save to db
+// chat: add message time
 // change the text components/custom/overview.tsx
 // =================================================================
 
@@ -82,6 +83,7 @@ export default async function Layout({ children, params }: TProps) {
             <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} />
           </main>
         </ThemeProvider>
+        <Footer lang={lang} />
       </body>
     </html>
   );

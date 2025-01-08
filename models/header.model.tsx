@@ -2,7 +2,6 @@ import React from 'react';
 import { ELanguage } from './language.model';
 import { DEFAULT_META_OG } from './root.model';
 import SeoSVG from '@/components/custom/SeoSVG';
-import { Moon, Sun } from 'lucide-react';
 
 const { UA, EN } = ELanguage;
 
@@ -104,7 +103,6 @@ export const THEME_SELECT = {
       [EN]: 'Toggle to dark mode',
       [UA]: 'Переключити на темний режим',
     },
-    icon: <Moon />,
   },
 
   light: {
@@ -116,7 +114,6 @@ export const THEME_SELECT = {
       [EN]: 'Toggle to light mode',
       [UA]: 'Переключити на світлий режим',
     },
-    icon: <Sun />,
   },
 };
 
@@ -139,5 +136,27 @@ export const SIDEBAR = {
   description: {
     [UA]: 'Навігаційне меню',
     [EN]: 'Navigation menu',
+  },
+};
+
+export const FOOTER_MODEL = {
+  title: { [ELanguage.UA]: `Контакти`, [ELanguage.EN]: 'Contact Us' },
+  description: {
+    [ELanguage.UA]: `Зв'яжіться з нами:`,
+    [ELanguage.EN]: `Get in touch with us:`,
+  },
+  phone: {
+    caption: { [ELanguage.UA]: 'Телефон', [ELanguage.EN]: 'Phone' },
+    ariaLabel: {
+      [ELanguage.UA]: 'Зателефонувати нам',
+      [ELanguage.EN]: 'Call us',
+    },
+  },
+
+  mail: {
+    ariaLabel: {
+      [ELanguage.UA]: 'Надіслати нам листа',
+      [ELanguage.EN]: 'Send us an email',
+    },
   },
 };

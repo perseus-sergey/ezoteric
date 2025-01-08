@@ -90,13 +90,6 @@ export const MAIN_TEXT = {
     ],
   },
 
-  h2_3: { [ELanguage.UA]: `Контакти`, [ELanguage.EN]: 'Contact Us' },
-  h2_3_p: {
-    [ELanguage.UA]: [`Зв'яжіться з нами:`],
-    [ELanguage.EN]: [`Get in touch with us:`],
-  },
-  h2_3_phone: { [ELanguage.UA]: 'Телефон', [ELanguage.EN]: 'Phone' },
-
   numerologyForm: {
     name: {
       label: {

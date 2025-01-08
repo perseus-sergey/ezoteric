@@ -1,11 +1,11 @@
 'use client';
 
 import { ELanguage } from '@/models/language.model';
-import { login } from '@/app/[lang]/(auth)/actions';
 import AuthForm from './auth-form';
 import { TAuthFormValues } from '@/lib/schemas/authSchema';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { login } from '@/app/[lang]/(auth)/actions';
 
 export default function LoginPage({ lang }: { lang: ELanguage }) {
   const router = useRouter();

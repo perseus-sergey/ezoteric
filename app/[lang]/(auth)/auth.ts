@@ -1,5 +1,7 @@
 import { compare } from 'bcrypt-ts';
 import NextAuth, { User, Session } from 'next-auth';
+import { Provider } from 'next-auth/providers';
+import Google from 'next-auth/providers/google';
 import { JWT } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
 
@@ -11,6 +13,33 @@ interface ExtendedSession extends Session {
   user: User;
 }
 
+const providers: Provider[] = [
+  Google,
+  Credentials({
+    credentials: {},
+    async authorize(credentials: Record<string, string> | undefined) {
+      if (!credentials?.email || !credentials?.password) {
+        return null;
+      }
+
+      const { email, password } = credentials;
+
+      const users = await getUser(email);
+      if (users.length === 0) return null;
+
+      try {
+        const passwordsMatch = await compare(password, users[0].password!);
+        if (passwordsMatch) return users[0] as User;
+      } catch (error) {
+        console.log('🚀 ~ authorize ~ error:', error);
+        return null;
+      }
+
+      return null;
+    },
+  }),
+];
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -19,31 +48,7 @@ export const {
 } = NextAuth({
   ...authConfig,
 
-  providers: [
-    Credentials({
-      credentials: {},
-      async authorize(credentials: Record<string, string> | undefined) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const { email, password } = credentials;
-
-        const users = await getUser(email);
-        if (users.length === 0) return null;
-
-        try {
-          const passwordsMatch = await compare(password, users[0].password!);
-          if (passwordsMatch) return users[0] as User;
-        } catch (error) {
-          console.log('🚀 ~ authorize ~ error:', error);
-          return null;
-        }
-
-        return null;
-      },
-    }),
-  ],
+  providers,
 
   callbacks: {
     async jwt({ token, user }) {
@@ -67,4 +72,14 @@ export const {
       return session;
     },
   },
+});
+
+export const providerMap = providers.map((provider) => {
+  if (typeof provider === 'function') {
+    const providerData = provider();
+
+    return { id: providerData.id, name: providerData.name };
+  }
+
+  return { id: provider.id, name: provider.name };
 });

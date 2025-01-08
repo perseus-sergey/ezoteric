@@ -20,13 +20,11 @@ export function SubmitButton({
     >
       {pending ? pendingCaption : submitCaption}
       {pending && (
-        <span className="animate-spin">
+        <span className="animate-spin" aria-live="polite" role="status">
           <LoaderIcon />
         </span>
       )}
-      <span aria-live="polite" className="sr-only" role="status">
-        {pending ? 'Loading' : 'Submit form'}
-      </span>
     </Button>
   );
 }
+SubmitButton.displayName = 'SubmitButton';

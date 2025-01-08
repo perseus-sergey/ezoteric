@@ -21,11 +21,12 @@ import {
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
-import { LogOut, User } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '@/app/[lang]/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
 import { LOGOUT_MODAL } from '@/models/modal.model';
+import Image from 'next/image';
 
 const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
@@ -34,6 +35,7 @@ export const UserMenu = ({
   lang,
   userEmail,
   userName,
+  userImgSrc,
   isAdmin,
   withIcons = false,
 }: {
@@ -42,11 +44,12 @@ export const UserMenu = ({
   withIcons?: boolean;
   userName?: string | null;
   userEmail?: string | null;
+  userImgSrc?: string | null;
 }) => {
   const [isListOpen, setListOpen] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
 
-  return userName || userEmail ? (
+  return (
     <>
       <DropdownMenu onOpenChange={setListOpen} open={isListOpen}>
         <DropdownMenuTrigger asChild>
@@ -54,10 +57,27 @@ export const UserMenu = ({
             className="[&_svg]:size-6"
             variant={withIcons ? 'ghost' : 'outline'}
           >
-            {withIcons && (
+            {userImgSrc ? (
+              <Image
+                src={userImgSrc}
+                width={24}
+                height={24}
+                alt={`${userName}'s avatar`}
+                className="rounded-full"
+              />
+            ) : (
               <PersonCelebrateRounded className="text-muted-foreground" />
             )}
+
             {userName || userEmail}
+
+            <span
+              className="rotate-90 opacity-50 text-xl tracking-tight leading-none pb-2"
+              aria-label="More options"
+              role="img"
+            >
+              ...
+            </span>
           </Button>
         </DropdownMenuTrigger>
 
@@ -105,12 +125,5 @@ export const UserMenu = ({
         </AlertDialogContent>
       </AlertDialog>
     </>
-  ) : (
-    <Button variant={withIcons ? 'ghost' : 'outline'} asChild>
-      <Link href={`/${lang}/login`}>
-        {withIcons && <User className="text-muted-foreground" />}
-        {HEADER_LOGIN.signin[lang]}
-      </Link>
-    </Button>
   );
 };
