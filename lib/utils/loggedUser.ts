@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/app/[lang]/(auth)/auth';
+import { auth } from '@/app/(auth)/auth';
 import { Session } from 'next-auth';
 import { cache } from 'react';
 
