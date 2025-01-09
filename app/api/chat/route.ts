@@ -16,7 +16,7 @@ import {
   // saveChat,
 } from '@/db/queries';
 import { generateUUID } from '@/lib/utils/utils';
-import { auth } from '@/app/[lang]/(auth)/auth';
+import { auth } from '@/app/(auth)/auth';
 
 export async function POST(request: Request) {
   const { messages }: { messages: Array<Message> } =

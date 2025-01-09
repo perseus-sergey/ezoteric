@@ -8,9 +8,9 @@ import {
 import { ELanguage } from '@/models/language.model';
 import { HEADER_LOGIN } from '@/models/header.model';
 import { User } from 'lucide-react';
-import { providerMap } from '@/app/[lang]/(auth)/auth';
+import { providerMap } from '@/app/(auth)/auth';
 import { AUTH_PROVIDER_LOGOS } from '@/models/auth.model';
-import { restProviderLinksAction } from '@/app/[lang]/(auth)/actions';
+import { restProviderLinksAction } from '@/app/(auth)/actions';
 
 export const LoginProviders = ({
   lang,

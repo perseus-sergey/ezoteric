@@ -23,7 +23,7 @@ import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
 import { LogOut } from 'lucide-react';
 import { useState } from 'react';
-import { logout } from '@/app/[lang]/(auth)/actions';
+import { logout } from '@/app/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
 import { LOGOUT_MODAL } from '@/models/modal.model';
 import Image from 'next/image';

@@ -1,4 +1,4 @@
-import { auth } from '@/app/[lang]/(auth)/auth';
+import { auth } from '@/app/(auth)/auth';
 
 import { SideBar } from './SideBar';
 import { ThemeToggle } from './theme-toggle';

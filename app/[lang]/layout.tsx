@@ -15,6 +15,7 @@ import { Footer } from '@/components/custom/Footer';
 // =================================================================
 // remove login/register pages
 // blog: search input
+// blog: priority for first img
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
 // robots.txt
