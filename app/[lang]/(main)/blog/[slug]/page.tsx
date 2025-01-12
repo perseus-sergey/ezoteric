@@ -12,14 +12,56 @@ import { IMG_PROPERTIES } from '@/models/image.model';
 import { INFO_PANEL_TITLES } from '@/models/infoPanel.model';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ESegment, TParams } from '@/models/url.model';
+import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import BrCrumb from '@/components/custom/BrCrumb';
-import { ARTICLE_IMG, ARTICLE_LIST } from '@/models/article.model';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
+import { ARTICLE_IMG } from '@/models/article.model';
+import { BLOG_H1 } from '@/models/blog.model';
+import { Metadata } from 'next';
+import { DEFAULT_META_OG } from '@/models/root.model';
+import { ELanguage } from '@/models/language.model';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
+
+const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+
+export const revalidate = 172800; // 3600 * 48 invalidate cache every 2 days
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: TParams;
+}): Promise<Metadata> => {
+  const p = await params;
+  const lang = getELangKey(p.lang);
+  const { slug } = p;
+  const article = await getArticleBySlug({ lang, slug });
+  if (!article) notFound();
+  const { title, keywords, description, updatedAt } = article;
+
+  return {
+    metadataBase: new URL(basesUrl),
+    title,
+    description,
+    keywords,
+    openGraph: {
+      ...DEFAULT_META_OG,
+      title,
+      description,
+      url: `/${lang}/${BLOG}/${slug}`,
+      publishedTime: getFormattedDateStrYearFirst(updatedAt),
+    },
+    alternates: {
+      canonical: `/${lang}/${BLOG}/${slug}`,
+      languages: {
+        en: `/${ELanguage.EN}/${BLOG}/${slug}`,
+        uk: `/${ELanguage.UA}/${BLOG}/${slug}`,
+      },
+    },
+  };
+};
 
 export default async function Page({ params }: { params: TParams }) {
   const p = await params;
@@ -46,7 +88,7 @@ export default async function Page({ params }: { params: TParams }) {
       <BrCrumb
         items={[
           {
-            title: ARTICLE_LIST.h1Title[lang],
+            title: BLOG_H1[lang],
             href: ESegment.BLOG,
           },
           { title },
@@ -75,7 +117,7 @@ export default async function Page({ params }: { params: TParams }) {
         />
       )}
 
-      <div className="article-text px-4 py-2">
+      <div className="article-text px-4 py-2 bg-tertiary rounded-lg">
         <DangerHtml text={text} />
       </div>
 

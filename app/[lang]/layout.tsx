@@ -13,7 +13,8 @@ import { generateUUID } from '@/lib/utils/utils';
 import { Footer } from '@/components/custom/Footer';
 
 // =================================================================
-// remove login/register pages
+// поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
+// можливо створити сторінки в соцмережах з взаємними посиланнями
 // blog: search input
 // blog: priority for first img
 // improve components/custom/NotFoundPage.tsx
@@ -70,10 +71,11 @@ export default async function Layout({ children, params }: TProps) {
 
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
-      <body className="antialiased bg-secondary min-h-dvh flex flex-col">
+      {/* <body className="antialiased min-h-dvh flex flex-col bg-[url('/images/esoteric_sunrise_meditation.jpg')] bg-no-repeat bg-cover bg-fixed"> */}
+      <body className="antialiased min-h-dvh flex flex-col bg-[url('/images/ezoteric_1024.jpeg')] bg-no-repeat bg-cover bg-fixed">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           // disableTransitionOnChange
         >

@@ -7,16 +7,56 @@ import { getELangKey } from '@/lib/utils/getLanguage';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { validSearchParam } from '@/lib/utils/validSearchParam';
 import {
-  ARTICLE_PAGINATION_PARAMS,
-  ARTICLE_LIST,
-  ARTICLES_COUNT_CAPTION,
-} from '@/models/article.model';
-import { EUrlSearchParam, TParams, TSearchParams } from '@/models/url.model';
+  BLOG_PAGINATION_PARAMS,
+  BLOG_H1,
+  BLOG_COUNT_CAPTION,
+  META_BLOG,
+} from '@/models/blog.model';
+import { ELanguage } from '@/models/language.model';
+import { DEFAULT_META_OG } from '@/models/root.model';
+import {
+  ESegment,
+  EUrlSearchParam,
+  MAIN_URL,
+  TParams,
+  TSearchParams,
+} from '@/models/url.model';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
-const { perPage } = ARTICLE_PAGINATION_PARAMS;
-const { h1Title } = ARTICLE_LIST;
+const { perPage, offsetNumber } = BLOG_PAGINATION_PARAMS;
+const { BLOG } = ESegment;
+
+const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+
+export const revalidate = 86400; // 3600 * 24 invalidate cache every 24 hours
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: TParams;
+}): Promise<Metadata> => {
+  const p = await params;
+  const lang = getELangKey(p.lang);
+
+  return {
+    metadataBase: new URL(basesUrl),
+    ...META_BLOG[lang],
+    openGraph: {
+      ...DEFAULT_META_OG,
+      ...META_BLOG[lang],
+      url: `/${lang}/${BLOG}`,
+    },
+    alternates: {
+      canonical: `/${lang}/${BLOG}`,
+      languages: {
+        en: `/${ELanguage.EN}/${BLOG}`,
+        uk: `/${ELanguage.UA}/${BLOG}`,
+      },
+    },
+  };
+};
 
 export default async function Page({
   params,
@@ -53,9 +93,9 @@ export default async function Page({
 
   return (
     <article className="relative mx-auto">
-      <BrCrumb items={[{ title: h1Title[lang] }]} lang={lang} />
+      <BrCrumb items={[{ title: BLOG_H1[lang] }]} lang={lang} />
 
-      <Title className="mt-10">{h1Title[lang]}</Title>
+      <Title>{BLOG_H1[lang]}</Title>
 
       <Suspense>
         {/* <Filter
@@ -67,12 +107,12 @@ export default async function Page({
         /> */}
       </Suspense>
 
-      <p className="text-blue-600 font-bold text-center text-lg">{`${ARTICLES_COUNT_CAPTION[lang]}${articlesCount}`}</p>
+      <p className="text-tertiary-foreground font-bold bg-tertiary w-fit px-8 py-2 my-2 rounded-sm">{`${BLOG_COUNT_CAPTION[lang]}${articlesCount}`}</p>
 
       <Pagination
         lang={lang}
         page={pageNumber || 1}
-        offsetNumber={ARTICLE_PAGINATION_PARAMS.offsetNumber}
+        offsetNumber={offsetNumber}
         totalPages={totalPages}
         searchParams={searchParams}
       />
@@ -82,7 +122,7 @@ export default async function Page({
       <Pagination
         lang={lang}
         page={pageNumber || 1}
-        offsetNumber={ARTICLE_PAGINATION_PARAMS.offsetNumber}
+        offsetNumber={offsetNumber}
         totalPages={totalPages}
         searchParams={searchParams}
       />

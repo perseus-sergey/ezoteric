@@ -1,7 +1,7 @@
 import { auth } from '@/app/(auth)/auth';
 
 import { SideBar } from './SideBar';
-import { ThemeToggle } from './theme-toggle';
+import ThemeToggle from './theme-toggle';
 import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
 import { isAdminAuth } from '@/lib/utils/loggedUser';

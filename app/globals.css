@@ -22,7 +22,7 @@
   }
 }
 
-@layer base {
+/* @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -75,6 +75,87 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+} */
+
+@layer base {
+  :root {
+    --background: 210 20% 97%; /* Very light gray/off-white */
+    --foreground: 220 40% 8%; /* Dark gray/almost black for good contrast */
+
+    --card: 0 0% 100%; /* Pure white */
+    --card-foreground: 220 40% 8%; /* Dark gray/almost black */
+
+    --popover: 0 0% 100%; /* Pure white */
+    --popover-foreground: 220 40% 8%; /* Dark gray/almost black */
+
+    --primary: 198 81% 60%; /* Teal/Turquoise inspired by the image */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 210 20% 90%; /* Lighter gray */
+    --secondary-foreground: 220 40% 8%; /* Dark gray/almost black */
+
+    --tertiary: 201 44% 89%; /* Lighter green */
+    --tertiary-foreground: 220 40% 8%; /* Dark gray/almost black */
+
+    --muted: 210 15% 85%; /* Even lighter gray */
+    --muted-foreground: 210 11.2% 48.8%; /* Medium gray */
+
+    --accent: 167 66% 44%; /* Greenish accent */
+    --accent-foreground: 0 0% 100%; /* White */
+
+    --destructive: 0 80% 50%; /* Dark red */
+    --destructive-foreground: 0 0% 100%; /* White */
+
+    --border: 210 10% 80%; /* Light gray border */
+    --input: 210 10% 80%; /* Light gray input */
+    --ring: 198 81% 60%; /* Teal/Turquoise */
+    --radius: 0.5rem;
+
+    --chart-1: 198 60% 50%; /* Slightly darker Teal */
+    --chart-2: 160 50% 40%; /* Darker Green */
+    --chart-3: 60 60% 40%; /* Darker Yellow/Gold */
+    --chart-4: 280 50% 50%; /* Darker Purple */
+    --chart-5: 340 60% 40%; /* Darker Magenta/Pink */
+  }
+
+  .dark {
+    --background: 18 15% 15%; /* Dark blue/gray - a bit lighter than pure black */
+    --foreground: 210 30% 95%; /* Very light gray/almost white */
+
+    --card: 220 30% 10%; /* Dark gray */
+    --card-foreground: 210 30% 95%; /* Very light gray/almost white */
+
+    --popover: 220 30% 10%; /* Dark gray */
+    --popover-foreground: 210 30% 95%; /* Very light gray/almost white */
+
+    --primary: 198 60% 40%; /* Darker Teal */
+    --primary-foreground: 210 30% 95%; /* Very light gray/almost white */
+
+    --secondary: 220 20% 20%; /* Darker gray */
+    --secondary-foreground: 39 100% 84%; /* wheat */
+
+    --tertiary: 207 41% 15%; /* Lighter gray */
+    --tertiary-foreground: 49 100% 83%; /* Like wheat */
+
+    --muted: 220 15% 25%; /* Slightly lighter dark gray */
+    --muted-foreground: 210 20% 70%; /* Medium-light gray */
+
+    --accent: 167 40% 30%; /* Darker Green */
+    --accent-foreground: 210 30% 95%; /* Very light gray/almost white */
+
+    --destructive: 0 60% 40%; /* Darker red */
+    --destructive-foreground: 210 30% 95%; /* Very light gray/almost white */
+
+    --border: 220 10% 20%; /* Darker gray border */
+    --input: 220 10% 20%; /* Darker gray input */
+    --ring: 198 60% 40%; /* Darker Teal */
+
+    --chart-1: 198 40% 40%; /* Darker Teal */
+    --chart-2: 160 30% 30%; /* Darker Green */
+    --chart-3: 60 40% 30%; /* Darker Yellow */
+    --chart-4: 280 30% 40%; /* Darker Purple */
+    --chart-5: 340 40% 30%; /* Darker Pink */
   }
 }
 

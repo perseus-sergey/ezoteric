@@ -1,5 +1,5 @@
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
-import { ARTICLE_PAGINATION_PARAMS } from '@/models/article.model';
+import { BLOG_PAGINATION_PARAMS } from '@/models/blog.model';
 import { ELanguage } from '@/models/language.model';
 import { EUrlSearchParam, TSearchParams } from '@/models/url.model';
 import { TooltipSimple } from './TooltipSimple';
@@ -11,7 +11,7 @@ const {
   firstPageTitle,
   lastPageTitle,
   linkTitle,
-} = ARTICLE_PAGINATION_PARAMS;
+} = BLOG_PAGINATION_PARAMS;
 
 interface IPaginationProps {
   page: number;
@@ -76,7 +76,11 @@ const Pagination = ({
 
   return (
     totalPages > 1 && (
-      <nav className="flex justify-center py-4" data-testid="Pagination">
+      <nav
+        className="flex justify-center py-4"
+        role="navigation"
+        aria-label="pagination"
+      >
         <ul
           className={`shadow-[0px_3px_5px_rgba(0,0,0,0.25)] w-fit p-0 sm:p-2 bg-white/60 flex justify-center items-center border`}
         >

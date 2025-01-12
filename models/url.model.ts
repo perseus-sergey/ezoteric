@@ -14,8 +14,6 @@ export enum ESegment {
   ID = 'id',
   LANG = 'lang',
   SLUG = 'slug',
-  LOGIN = 'login',
-  REGISTER = 'register',
   MASTER = 'master',
   BLOG = 'blog',
   ARTICLE_EDIT = 'edit',

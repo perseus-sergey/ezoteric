@@ -9,7 +9,7 @@ import { Moon, Sun } from 'lucide-react';
 
 const { dark, light } = THEME_SELECT;
 
-export function ThemeToggle({
+export default function ThemeToggle({
   lang,
   withCaption = false,
 }: {

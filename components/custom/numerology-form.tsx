@@ -9,6 +9,7 @@ import {
   IModalAiResponseProps,
   MAIN_TEXT,
   numerologyFormSchema,
+  TNumerologySchema,
 } from '@/models/meta/home.model';
 import { generateAiNumerology } from '@/controllers/numerology.controller';
 import { useState } from 'react';
@@ -27,22 +28,24 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { SubmitButton } from './submit-button';
 
-const { numerologyForm } = MAIN_TEXT;
+const {
+  numerForm: { form: numerForm },
+} = MAIN_TEXT;
 
 export default function NumerologyForm({ lang }: { lang: ELanguage }) {
   const [aiResult, setAiResult] = useState<IModalAiResponseProps | null>(null);
   const [hasResult, setHasResult] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof numerologyFormSchema>>({
-    resolver: zodResolver(numerologyFormSchema),
+  const form = useForm<z.infer<TNumerologySchema>>({
+    resolver: zodResolver(numerologyFormSchema(lang)),
     defaultValues: {
       username: '',
       birthdate: '',
     },
   });
 
-  async function onSubmit(data: z.infer<typeof numerologyFormSchema>) {
+  async function onSubmit(data: z.infer<TNumerologySchema>) {
     setIsLoading(true);
     const result = await generateAiNumerology(
       data.username,
@@ -76,11 +79,11 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="pl-2">
-                      {numerologyForm.name.label[lang]}
+                      {numerForm.name.label[lang]}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={numerologyForm.name.placeholder[lang]}
+                        placeholder={numerForm.name.placeholder[lang]}
                         {...field}
                         className="dark:border-stone-600"
                       />
@@ -96,7 +99,7 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="pl-2">
-                      {numerologyForm.birthdate.label[lang]}
+                      {numerForm.birthdate.label[lang]}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -113,8 +116,8 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
             <CardFooter>
               <SubmitButton
                 pending={isLoading}
-                submitCaption={numerologyForm.submit.title[lang]}
-                pendingCaption={numerologyForm.submit.pending[lang]}
+                submitCaption={numerForm.submit.title[lang]}
+                pendingCaption={numerForm.submit.pending[lang]}
               />
             </CardFooter>
           </Card>

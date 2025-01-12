@@ -8,7 +8,7 @@ const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
 export const Footer = async ({ lang }: { lang: ELanguage }) => {
   return (
-    <footer className="p-4 font-georgia bg-gradient-to-b to-transparent from-slate-400 dark:from-slate-700 flex flex-wrap gap-8">
+    <footer className="p-4 font-georgia bg-gradient-to-b from-tertiary/70 via-tertiary/90 to-tertiary/40 flex flex-wrap gap-8">
       <section className="w-44 sm:w-auto">
         <h2 className="text-xl font-bold text-center py-4">
           {FOOTER_MODEL.description[lang]}

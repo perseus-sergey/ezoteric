@@ -3,11 +3,7 @@ import { INFO_PANEL_TITLES } from '@/models/infoPanel.model';
 import { ELanguage } from '@/models/language.model';
 import ArticleCard from './ArticleCard';
 import { cutText } from '@/lib/utils/cutText';
-import {
-  ARTICLE_CARD_IMAGE,
-  ARTICLE_IMG,
-  getSeoCardLinkTitle,
-} from '@/models/article.model';
+import { BLOG_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/blog.model';
 import { ESegment } from '@/models/url.model';
 import { TArticleLocalized } from '@/db/schema';
 import EmptyData from './EmptyData';
@@ -16,6 +12,7 @@ import { PencilLine } from 'lucide-react';
 import { isFileExists } from '@/lib/utils/imagePathValidate';
 import Image from 'next/image';
 import { IMG_PROPERTIES } from '@/models/image.model';
+import { ARTICLE_IMG } from '@/models/article.model';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -40,7 +37,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
           const imgSrc = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
           const imgPath = isFileExists(imgSrc)
             ? imgSrc
-            : ARTICLE_CARD_IMAGE.defaultImgSrc;
+            : BLOG_CARD_IMAGE.defaultImgSrc;
 
           return (
             <li key={id}>
@@ -60,7 +57,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
                     placeholder="blur"
                     blurDataURL={IMG_PROPERTIES.defaultImgBlur}
                     alt={ARTICLE_IMG.getAlt(title)[lang]}
-                    {...ARTICLE_CARD_IMAGE.size}
+                    {...BLOG_CARD_IMAGE.size}
                   />
                 }
                 articleDescription={cutText(description, 250)}

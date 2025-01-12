@@ -7,6 +7,7 @@ import { TArticleLocalized, tblArticle } from './schema';
 import { getDB } from './root';
 import { ELanguage } from '@/models/language.model';
 import { TArticleFormValues } from '@/lib/schemas/articleFormSchema';
+import { cache } from 'react';
 
 const { UA } = ELanguage;
 
@@ -73,41 +74,38 @@ export const getArticlesChunk = async ({
   }
 };
 
-export async function getArticleBySlug({
-  slug,
-  lang,
-}: {
-  slug: string;
-  lang: ELanguage;
-}) {
-  try {
-    const res = await db
-      .select({
-        id: tblArticle.id,
-        title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
-        description:
-          tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
-        text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
-        keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
-        updatedAt: tblArticle.updatedAt,
-        imageName: tblArticle.imageName,
-        view: tblArticle.view,
-      })
-      .from(tblArticle)
-      .where(eq(tblArticle.slug, slug))
-      .limit(1);
+export const getArticleBySlug = cache(
+  async ({ slug, lang }: { slug: string; lang: ELanguage }) => {
+    try {
+      const res = await db
+        .select({
+          id: tblArticle.id,
+          title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
+          description:
+            tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
+          text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
+          keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
+          updatedAt: tblArticle.updatedAt,
+          imageName: tblArticle.imageName,
+          view: tblArticle.view,
+        })
+        .from(tblArticle)
+        .where(eq(tblArticle.slug, slug))
+        .limit(1);
 
-    return res[0];
-  } catch (error) {
-    console.error(
-      'Failed to get 1 article from database',
-      'Error Name: ',
-      (error as Error).name
-    );
-    return null;
-    // throw error;
+      return res[0];
+    } catch (error) {
+      console.error(
+        'Failed to get 1 article from database',
+        'Error Name: ',
+        (error as Error).name
+      );
+      return null;
+      // throw error;
+    }
   }
-}
+);
+
 export async function getArticleByIdForUpdate(id: number) {
   try {
     const [res] = await db
