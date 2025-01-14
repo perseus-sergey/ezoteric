@@ -18,6 +18,7 @@ import { isAdminAuth } from '@/lib/utils/loggedUser';
 // поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // get email for ezoteric
+// check json-ld on production
 // chat: save to db || ls
 // chat: add message time
 // blog: search input

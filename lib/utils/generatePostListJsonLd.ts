@@ -60,6 +60,11 @@ export const generatePostListJsonLd = ({
             '@type': 'WebPage',
             '@id': `${BASE_URL}/${lang}/${BLOG}/${post.slug}`,
           },
+          author: {
+            '@type': 'Person',
+            name: 'Ezoteric',
+            url: BASE_URL,
+          },
           position: index + 1,
         };
       }),

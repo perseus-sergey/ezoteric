@@ -5,7 +5,7 @@ import hands_with_artifacts_500 from '@/public/images/hands_with_artifacts_500.j
 import main_h1_21 from '@/public/images/main_h1_21.jpg';
 import { MAIN_TEXT } from '@/models/meta/home.model';
 import NumerologyForm from '@/components/custom/numerology-form';
-import { TParams } from '@/models/url.model';
+import { MAIN_URL, TParams } from '@/models/url.model';
 import { Title } from '@/components/custom/Title';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
@@ -14,6 +14,7 @@ import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
 const { h1, startText, ourServices, startTextImgAlt, numerForm } = MAIN_TEXT;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 export const revalidate = 86400; // 3600 * 24 invalidate cache every 24 hours
 
@@ -25,6 +26,9 @@ export default async function Page({ params }: { params: TParams }) {
 
   const jsonLD = generatePostJsonLd({
     lang,
+    imgSrc: `${BASE_URL}/images/main_h1_21.jpg`,
+    imgHeight: main_h1_21.height,
+    imgWidth: main_h1_21.width,
     article: {
       id: 0,
       slug: '',

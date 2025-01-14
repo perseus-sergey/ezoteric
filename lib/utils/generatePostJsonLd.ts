@@ -11,11 +11,21 @@ const { BLOG } = ESegment;
 export const generatePostJsonLd = ({
   lang,
   article,
+  imgSrc,
+  imgHeight,
+  imgWidth,
+  isMainPage = false,
 }: {
   lang: ELanguage;
   article: TArticleLocalized;
+  imgSrc?: string;
+  imgWidth?: number;
+  imgHeight?: number;
+  isMainPage?: boolean;
 }) => {
-  const imgPath = `${ARTICLE_IMG.path}${article.imageName || `${article.slug}.jpg`}`;
+  const imgPath =
+    imgSrc ||
+    `${ARTICLE_IMG.path}${article.imageName || `${article.slug}.jpg`}`;
   const isImgExists = isFileExists(imgPath);
   const relativeImgPath = isImgExists ? imgPath : undefined;
   return {
@@ -30,6 +40,8 @@ export const generatePostJsonLd = ({
           image: {
             '@type': 'ImageObject',
             url: `${BASE_URL}${relativeImgPath}`,
+            width: imgHeight || 1024,
+            height: imgWidth || 1024,
           },
         }
       : {}),
@@ -37,6 +49,7 @@ export const generatePostJsonLd = ({
     author: {
       '@type': 'Person',
       name: 'Ezoteric',
+      url: `${BASE_URL}/${lang}`,
     },
 
     datePublished: article.createdAt.toISOString(),
@@ -47,7 +60,7 @@ export const generatePostJsonLd = ({
 
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${BASE_URL}/${lang}/${BLOG}/${article.slug}`,
+      '@id': `${BASE_URL}/${lang}${isMainPage ? '' : `/${BLOG}/${article.slug}`}`,
     },
 
     publisher: {
