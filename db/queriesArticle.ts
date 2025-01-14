@@ -1,7 +1,7 @@
 'use server';
 import 'server-only';
 
-import { desc, eq, ilike, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, sql } from 'drizzle-orm';
 
 import { TArticleLocalized, tblArticle } from './schema';
 import { getDB } from './root';
@@ -27,23 +27,26 @@ export const getArticlesChunk = async ({
   totalCount: number | null;
   articles: TArticleLocalized[] | null;
 }> => {
-  // Умова пошуку
+  // Search condition
   const searchCondition = searchQuery
     ? ilike(tblArticle.titleEn, `%${searchQuery}%`)
     : undefined;
 
+  // Published condition
+  const publishedCondition = eq(tblArticle.published, true);
+
   try {
-    // Обчислення загальної кількості статей
+    // Calculate total count of PUBLISHED articles
     const totalCountQuery = await db
       .select({
         total_count: sql<number>`COUNT(${tblArticle.id})`.mapWith(Number),
       })
       .from(tblArticle)
-      .where(searchCondition);
+      .where(and(searchCondition, publishedCondition));
 
     const totalCount = totalCountQuery[0]?.total_count || 0;
 
-    // Вибірка статей з пагінацією
+    // Fetch articles with pagination
     const articles = await db
       .select({
         id: tblArticle.id,
@@ -53,12 +56,13 @@ export const getArticlesChunk = async ({
         text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
         keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
         slug: tblArticle.slug,
+        createdAt: tblArticle.createdAt,
         updatedAt: tblArticle.updatedAt,
         imageName: tblArticle.imageName,
         view: tblArticle.view,
       })
       .from(tblArticle)
-      .where(searchCondition)
+      .where(and(searchCondition, publishedCondition))
       .orderBy(desc(tblArticle.updatedAt))
       .limit(perPage)
       .offset(offset);
@@ -75,7 +79,13 @@ export const getArticlesChunk = async ({
 };
 
 export const getArticleBySlug = cache(
-  async ({ slug, lang }: { slug: string; lang: ELanguage }) => {
+  async ({
+    slug,
+    lang,
+  }: {
+    slug: string;
+    lang: ELanguage;
+  }): Promise<TArticleLocalized | null> => {
     try {
       const res = await db
         .select({
@@ -85,6 +95,8 @@ export const getArticleBySlug = cache(
             tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
           text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
           keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
+          slug: tblArticle.slug,
+          createdAt: tblArticle.createdAt,
           updatedAt: tblArticle.updatedAt,
           imageName: tblArticle.imageName,
           view: tblArticle.view,

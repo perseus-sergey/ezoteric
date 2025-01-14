@@ -7,6 +7,8 @@ import { MAIN_TEXT } from '@/models/meta/home.model';
 import NumerologyForm from '@/components/custom/numerology-form';
 import { TParams } from '@/models/url.model';
 import { Title } from '@/components/custom/Title';
+import { DEFAULT_META_DATA } from '@/models/meta/default.model';
+import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 
 // const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
@@ -20,6 +22,26 @@ export const dynamicParams = false;
 export default async function Page({ params }: { params: TParams }) {
   const p = await params;
   const lang = getELangKey(p.lang);
+
+  const jsonLD = generatePostJsonLd({
+    lang,
+    article: {
+      id: 0,
+      slug: '',
+      createdAt: new Date('2024-12-01'),
+      updatedAt: new Date(),
+      imageName: '',
+      view: 1,
+      ...DEFAULT_META_DATA[lang],
+      text: [
+        [...startText[lang].map((text) => `<p>${text}</p>`)],
+        [...ourServices.text[lang].map((text) => `<p>${text}</p>`)],
+        `<ul className="h-full flex flex-col justify-evenly">
+        ${ourServices.serviceList[lang].map((li) => `<li><strong>${li[0]}</strong>: ${li[1]}</li>`)}
+        </ul>`,
+      ].join(''),
+    },
+  });
 
   return (
     <article className="relative mx-auto">
@@ -123,6 +145,12 @@ export default async function Page({ params }: { params: TParams }) {
       </ul> */}
 
       {/* <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} /> */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLD),
+        }}
+      />
     </article>
   );
 }

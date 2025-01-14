@@ -22,7 +22,6 @@ import { isAdminAuth } from '@/lib/utils/loggedUser';
 // post-update: add checkbox 'published'
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
-// robots.txt, sitemap
 // chat: save to db || ls
 // chat: add message time
 // change the text components/custom/overview.tsx

@@ -1,0 +1,1 @@
+ALTER TABLE "ezo_article" ADD COLUMN "published" boolean DEFAULT true NOT NULL;

@@ -81,7 +81,7 @@ export type TArticle = InferSelectModel<typeof tblArticle>;
 
 export type TArticleLocalized = Pick<
   InferSelectModel<typeof tblArticle>,
-  'id' | 'slug' | 'updatedAt' | 'imageName' | 'view'
+  'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageName' | 'view'
 > & {
   title: string;
   description: string;

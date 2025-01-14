@@ -3,6 +3,7 @@ import BrCrumb from '@/components/custom/BrCrumb';
 import Pagination from '@/components/custom/Pagination';
 import { Title } from '@/components/custom/Title';
 import { getArticlesChunk } from '@/db/queriesArticle';
+import { generatePostListJsonLd } from '@/lib/utils/generatePostListJsonLd';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { validSearchParam } from '@/lib/utils/validSearchParam';
@@ -91,6 +92,13 @@ export default async function Page({
 
   const isAdmin = await isAdminAuth();
 
+  const jsonLD = generatePostListJsonLd({
+    lang,
+    title: META_BLOG[lang].title,
+    description: META_BLOG[lang].description,
+    posts: articles,
+  });
+
   return (
     <article className="relative mx-auto">
       <BrCrumb items={[{ title: BLOG_H1[lang] }]} lang={lang} />
@@ -125,6 +133,12 @@ export default async function Page({
         offsetNumber={offsetNumber}
         totalPages={totalPages}
         searchParams={searchParams}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLD),
+        }}
       />
     </article>
   );

@@ -22,6 +22,7 @@ import { BLOG_H1 } from '@/models/blog.model';
 import { Metadata } from 'next';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import { ELanguage } from '@/models/language.model';
+import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -133,6 +134,13 @@ export default async function Page({ params }: { params: TParams }) {
             value: <time dateTime={currDate}>{currDate}</time>,
           },
         ]}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generatePostJsonLd({ lang, article })),
+        }}
       />
     </article>
   );

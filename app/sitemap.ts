@@ -35,7 +35,7 @@ const getSiteMapItem = ({
 
   return {
     url: `${BASE}/${DEFAULT_LANG}${endPath}`,
-    lastModified: new Date(),
+    lastModified: new Date().toISOString(),
     changeFrequency,
     alternates: {
       languages: {
@@ -57,7 +57,9 @@ const getSiteMapItemList = ({
 
     return {
       url: `${BASE}/${DEFAULT_LANG}/${endPath}`,
-      lastModified: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+      lastModified: item.updatedAt
+        ? item.updatedAt.toISOString()
+        : new Date().toISOString(),
       changeFrequency,
       alternates: {
         languages: {
