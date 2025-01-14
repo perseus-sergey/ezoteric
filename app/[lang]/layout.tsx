@@ -17,14 +17,15 @@ import { isAdminAuth } from '@/lib/utils/loggedUser';
 // =================================================================
 // поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
 // можливо створити сторінки в соцмережах з взаємними посиланнями
+// get email for ezoteric
+// chat: save to db || ls
+// chat: add message time
 // blog: search input
 // blog: priority for first img
 // post-update: add checkbox 'published'
+// post-update: image upload blob
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
-// chat: save to db || ls
-// chat: add message time
-// change the text components/custom/overview.tsx
 // =================================================================
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;

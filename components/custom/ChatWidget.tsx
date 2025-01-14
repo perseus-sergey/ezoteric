@@ -3,7 +3,7 @@
 import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { clsx } from 'clsx';
-import { Attachment, Message } from 'ai';
+import { Message } from 'ai';
 import { useChat } from 'ai/react';
 import { Overview } from './overview';
 import { PreviewMessage } from '@/components/custom/message';
@@ -31,7 +31,6 @@ const ChatWidget = ({
   userImgSrc?: string | null;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
   const { messages, handleSubmit, input, setInput, append, isLoading } =
     useChat({
@@ -136,8 +135,6 @@ const ChatWidget = ({
               handleSubmit={handleSubmit}
               isLoading={isLoading}
               stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
               messages={messages}
               append={append}
             />

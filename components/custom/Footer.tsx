@@ -1,6 +1,6 @@
 import { ELanguage } from '@/models/language.model';
 import { FOOTER_MODEL } from '@/models/header.model';
-import { Mail, PhoneCall } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import Link from 'next/link';
 
 const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
@@ -8,7 +8,7 @@ const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
 export const Footer = async ({ lang }: { lang: ELanguage }) => {
   return (
-    <footer className="p-4 font-georgia bg-gradient-to-b from-tertiary/70 via-tertiary/90 to-tertiary/40 flex flex-wrap gap-8">
+    <footer className="p-4 font-georgia bg-gradient-to-b from-tertiary/70 via-tertiary/90 to-tertiary/40 flex flex-wrap gap-6 justify-center">
       <section className="w-44 sm:w-auto">
         <h2 className="text-xl font-bold text-center py-4">
           {FOOTER_MODEL.description[lang]}
@@ -24,7 +24,7 @@ export const Footer = async ({ lang }: { lang: ELanguage }) => {
               {siteMail}
             </Link>
           </li>
-          <li className="flex items-center gap-2">
+          {/* <li className="flex items-center gap-2">
             <PhoneCall className="opacity-50" />{' '}
             {FOOTER_MODEL.phone.caption[lang]}:{' '}
             <Link
@@ -34,7 +34,7 @@ export const Footer = async ({ lang }: { lang: ELanguage }) => {
             >
               {sitePhone}
             </Link>
-          </li>
+          </li> */}
         </ul>
       </section>
     </footer>
