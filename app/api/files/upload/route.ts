@@ -6,8 +6,8 @@ import { z } from 'zod';
 const FileSchema = z.object({
   file: z
     .instanceof(File)
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
-      message: 'File size should be less than 5MB',
+    .refine((file) => file.size <= 2 * 1024 * 1024, {
+      message: 'File size should be less than 2MB',
     })
     .refine(
       (file) =>
@@ -22,7 +22,10 @@ export async function POST(request: Request) {
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Please log in first.' },
+      { status: 401 }
+    );
   }
 
   if (request.body === null) {

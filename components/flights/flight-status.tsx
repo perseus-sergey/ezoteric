@@ -1,41 +1,41 @@
-import { differenceInHours, format } from "date-fns";
+import { differenceInHours, format } from 'date-fns';
 
-import { ArrowUpRightSmallIcon } from "../custom/icons";
+import { ArrowUpRightSmallIcon } from '../custom/icons';
 
 const SAMPLE = {
-  flightNumber: "BA142",
+  flightNumber: 'BA142',
   departure: {
-    cityName: "London",
-    airportCode: "LHR",
-    airportName: "London Heathrow Airport",
-    timestamp: "2024-10-08T18:30:00Z",
-    terminal: "5",
-    gate: "A10",
+    cityName: 'London',
+    airportCode: 'LHR',
+    airportName: 'London Heathrow Airport',
+    timestamp: '2024-10-08T18:30:00Z',
+    terminal: '5',
+    gate: 'A10',
   },
   arrival: {
-    cityName: "New York",
-    airportCode: "JFK",
-    airportName: "John F. Kennedy International Airport",
-    timestamp: "2024-10-09T07:30:00Z",
-    terminal: "7",
-    gate: "B22",
+    cityName: 'New York',
+    airportCode: 'JFK',
+    airportName: 'John F. Kennedy International Airport',
+    timestamp: '2024-10-09T07:30:00Z',
+    terminal: '7',
+    gate: 'B22',
   },
   totalDistanceInMiles: 3450,
 };
 
-export function Row({ row = SAMPLE.arrival, type = "arrival" }) {
+export function Row({ row = SAMPLE.arrival, type = 'arrival' }) {
   return (
     <div className="flex flex-row justify-between">
       <div className="flex flex-row">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row gap-2 items-center">
             <div className="bg-foreground text-background rounded-full size-fit">
-              {type === "arrival" ? (
+              {type === 'arrival' ? (
                 <div className="rotate-90">
-                  <ArrowUpRightSmallIcon size={16} />
+                  <ArrowUpRightSmallIcon />
                 </div>
               ) : (
-                <ArrowUpRightSmallIcon size={16} />
+                <ArrowUpRightSmallIcon />
               )}
             </div>
             <div className="text-sm sm:text-base text-muted-foreground">
@@ -48,7 +48,7 @@ export function Row({ row = SAMPLE.arrival, type = "arrival" }) {
           </div>
 
           <div className="text-2xl sm:text-3xl font-medium">
-            {format(new Date(row.timestamp), "h:mm a")}
+            {format(new Date(row.timestamp), 'h:mm a')}
           </div>
         </div>
       </div>
@@ -83,8 +83,8 @@ export function FlightStatus({ flightStatus = SAMPLE }) {
         <div className="text-xs text-muted-foreground ">
           {differenceInHours(
             new Date(flightStatus.arrival.timestamp),
-            new Date(flightStatus.departure.timestamp),
-          )}{" "}
+            new Date(flightStatus.departure.timestamp)
+          )}{' '}
           hours
         </div>
         <div>·</div>

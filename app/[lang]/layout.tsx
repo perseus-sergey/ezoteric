@@ -11,16 +11,19 @@ import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 import ChatWidget from '@/components/custom/ChatWidget';
 import { generateUUID } from '@/lib/utils/utils';
 import { Footer } from '@/components/custom/Footer';
+import { auth } from '../(auth)/auth';
+import { isAdminAuth } from '@/lib/utils/loggedUser';
 
 // =================================================================
 // поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // blog: search input
 // blog: priority for first img
+// post-update: add checkbox 'published'
 // improve components/custom/NotFoundPage.tsx
 // meta for all pages
-// robots.txt
-// chat: save to db
+// robots.txt, sitemap
+// chat: save to db || ls
 // chat: add message time
 // change the text components/custom/overview.tsx
 // =================================================================
@@ -67,6 +70,9 @@ export default async function Layout({ children, params }: TProps) {
   const p = await params;
   const lang = getELangKey(p.lang);
 
+  const session = (await auth()) || undefined;
+  const isAdmin = await isAdminAuth(session);
+
   const id = generateUUID();
 
   return (
@@ -79,12 +85,19 @@ export default async function Layout({ children, params }: TProps) {
           enableSystem
           // disableTransitionOnChange
         >
-          <Header lang={lang} />
+          <Header isAdmin={isAdmin} session={session} lang={lang} />
 
           <main className="max-w-5xl flex-1 mx-auto pb-4 px-2 sm:px-4">
             <Toaster position="top-center" />
             {children}
-            <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} />
+            <ChatWidget
+              key={id}
+              id={id}
+              initialMessages={[]}
+              lang={lang}
+              userImgSrc={session?.user?.image}
+              userName={session?.user?.name}
+            />
           </main>
         </ThemeProvider>
         <Footer lang={lang} />

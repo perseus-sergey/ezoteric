@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
-import { motion } from "framer-motion";
+import { Attachment, ChatRequestOptions, CreateMessage, Message } from 'ai';
+import { motion } from 'framer-motion';
 import React, {
   useRef,
   useState,
@@ -9,20 +9,21 @@ import React, {
   Dispatch,
   SetStateAction,
   ChangeEvent,
-} from "react";
-import { toast } from "sonner";
+} from 'react';
+import { toast } from 'sonner';
 
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
-import { PreviewAttachment } from "./preview-attachment";
-import useWindowSize from "./use-window-size";
-import { Button } from "../ui/button";
-import { Textarea } from "../ui/textarea";
-import { chatSuggestedActions } from "@/models/meta/chat.model";
-import { ELanguage } from "@/models/language.model";
+import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
+import { PreviewAttachment } from './preview-attachment';
+import useWindowSize from './use-window-size';
+import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
+import { chatSuggestedActions } from '@/models/chat.model';
+import { ELanguage } from '@/models/language.model';
 
 export function MultimodalInput({
   lang,
   input,
+  userName,
   setInput,
   isLoading,
   stop,
@@ -34,6 +35,7 @@ export function MultimodalInput({
 }: {
   lang: ELanguage;
   input: string;
+  userName?: string | null;
   setInput: (value: string) => void;
   isLoading: boolean;
   stop: () => void;
@@ -42,13 +44,13 @@ export function MultimodalInput({
   messages: Array<Message>;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions,
+    chatRequestOptions?: ChatRequestOptions
   ) => Promise<string | null | undefined>;
   handleSubmit: (
     event?: {
       preventDefault?: () => void;
     },
-    chatRequestOptions?: ChatRequestOptions,
+    chatRequestOptions?: ChatRequestOptions
   ) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -76,11 +78,11 @@ export function MultimodalInput({
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     try {
       const response = await fetch(`/api/files/upload`, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       });
 
@@ -101,7 +103,7 @@ export function MultimodalInput({
       toast.error(
         `Failed to upload file, please try again! Error Name: ${
           (error as Error).name
-        }`,
+        }`
       );
     }
   };
@@ -116,7 +118,7 @@ export function MultimodalInput({
         const uploadPromises = files.map((file) => uploadFile(file));
         const uploadedAttachments = await Promise.all(uploadPromises);
         const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined,
+          (attachment) => attachment !== undefined
         );
 
         setAttachments((currentAttachments) => [
@@ -124,20 +126,20 @@ export function MultimodalInput({
           ...successfullyUploadedAttachments,
         ]);
       } catch (error) {
-        console.error("Error uploading files!", error);
+        console.error('Error uploading files!', error);
       } finally {
         setUploadQueue([]);
       }
     },
-    [setAttachments],
+    [setAttachments]
   );
 
   return (
-    <div className="relative w-full flex flex-col gap-4 m-1">
+    <div className="w-full max-h-[70dvh] flex flex-col gap-4 p-1">
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 w-full md:px-0 mx-auto">
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 w-full md:px-0 mx-auto overflow-y-scroll">
             {chatSuggestedActions.map((suggestedAction, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -145,24 +147,32 @@ export function MultimodalInput({
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ delay: 0.05 * index }}
                 key={index}
-                className={index > 1 ? "hidden sm:block" : "block"}
+                // className={index > 1 ? 'hidden sm:block' : 'block'}
               >
                 <button
                   role="button"
                   onClick={async () => {
                     append({
-                      role: "user",
-                      content: suggestedAction.action[lang],
+                      role: 'user',
+                      content: suggestedAction.action(lang),
                     });
                   }}
                   className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
                 >
-                  <span className="font-medium">
-                    {suggestedAction.title[lang]}
-                  </span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    {suggestedAction.label[lang]}
-                  </span>
+                  {suggestedAction.label && suggestedAction.label[lang] ? (
+                    <>
+                      <span className="font-medium">
+                        {suggestedAction.title[lang]}
+                      </span>
+                      <span className="text-zinc-500 dark:text-zinc-400">
+                        {suggestedAction.label[lang]}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-medium">
+                      {suggestedAction.action(lang)}
+                    </span>
+                  )}
                 </button>
               </motion.div>
             ))}
@@ -188,9 +198,9 @@ export function MultimodalInput({
             <PreviewAttachment
               key={filename}
               attachment={{
-                url: "",
+                url: '',
                 name: filename,
-                contentType: "",
+                contentType: '',
               }}
               isUploading={true}
             />
@@ -206,12 +216,12 @@ export function MultimodalInput({
         className="overflow-y-scroll pr-9 resize-none text-base bg-muted border-none"
         rows={3}
         onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
+          if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
 
             if (isLoading) {
               toast.error(
-                "Please wait for the specialist to finish its response!",
+                'Please wait for the specialist to finish its response!'
               );
             } else {
               submitForm();
@@ -228,7 +238,7 @@ export function MultimodalInput({
             stop();
           }}
         >
-          <StopIcon size={14} />
+          <StopIcon />
         </Button>
       ) : (
         <Button
@@ -239,21 +249,23 @@ export function MultimodalInput({
           }}
           disabled={input.length === 0 || uploadQueue.length > 0}
         >
-          <ArrowUpIcon size={14} />
+          <ArrowUpIcon />
         </Button>
       )}
 
-      <Button
-        className="rounded-full p-1.5 h-fit absolute bottom-10 right-2 m-0.5 dark:border-zinc-700"
-        onClick={(event) => {
-          event.preventDefault();
-          fileInputRef.current?.click();
-        }}
-        variant="outline"
-        disabled={isLoading}
-      >
-        <PaperclipIcon size={14} />
-      </Button>
+      {userName && (
+        <Button
+          className="rounded-full p-1.5 h-fit absolute bottom-10 right-2 m-0.5 dark:border-zinc-700"
+          onClick={(event) => {
+            event.preventDefault();
+            fileInputRef.current?.click();
+          }}
+          variant="outline"
+          disabled={isLoading}
+        >
+          <PaperclipIcon className="-rotate-45" />
+        </Button>
+      )}
     </div>
   );
 }

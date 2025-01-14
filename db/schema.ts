@@ -74,6 +74,7 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
   textEn: text(`text${langSuffix.en}`).notNull(),
   imageName: varchar('image_name', { length: 255 }),
   view: integer('view').default(0),
+  published: boolean('published').notNull().default(true),
 });
 
 export type TArticle = InferSelectModel<typeof tblArticle>;

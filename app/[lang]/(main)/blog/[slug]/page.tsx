@@ -113,6 +113,7 @@ export default async function Page({ params }: { params: TParams }) {
           alt={ARTICLE_IMG.getAlt(title)[lang]}
           placeholder="blur"
           blurDataURL={IMG_PROPERTIES.defaultImgBlur}
+          priority
           {...ARTICLE_IMG.size}
         />
       )}

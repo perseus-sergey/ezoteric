@@ -1,38 +1,38 @@
-"use client";
+'use client';
 
-import { differenceInMinutes } from "date-fns";
-import { useState } from "react";
-import { toast } from "sonner";
-import useSWR from "swr";
+import { differenceInMinutes } from 'date-fns';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import useSWR from 'swr';
 
-import { fetcher } from "@/lib/utils/utils";
+import { fetcher } from '@/lib/utils/utils';
 
-import { CheckCircle, InfoIcon } from "../custom/icons";
-import { Input } from "../ui/input";
+import { CheckCircle, InfoIcon } from '../custom/icons';
+import { Input } from '../ui/input';
 
 export function AuthorizePayment({
-  intent = { reservationId: "sample-uuid" },
+  intent = { reservationId: 'sample-uuid' },
 }: {
   intent?: { reservationId: string };
 }) {
   const { data: reservation, mutate } = useSWR(
     `/api/reservation?id=${intent.reservationId}`,
-    fetcher,
+    fetcher
   );
 
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
 
   const handleAuthorize = async (magicWord: string) => {
     try {
       const response = await fetch(
         `/api/reservation?id=${intent.reservationId}`,
         {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ magicWord }),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -46,7 +46,7 @@ export function AuthorizePayment({
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("An unknown error occurred");
+        toast.error('An unknown error occurred');
       }
     }
   };
@@ -57,7 +57,7 @@ export function AuthorizePayment({
         Payment Verified
       </div>
       <div className="dark:text-emerald-950 text-emerald-50">
-        <CheckCircle size={20} />
+        <CheckCircle />
       </div>
     </div>
   ) : differenceInMinutes(new Date(), new Date(reservation?.createdAt)) >
@@ -65,7 +65,7 @@ export function AuthorizePayment({
     <div className="bg-red-500 p-4 rounded-lg gap-4 flex flex-row justify-between items-center">
       <div className="text-background">Payment Gateway Timed Out</div>
       <div className="text-background">
-        <InfoIcon size={20} />
+        <InfoIcon />
       </div>
     </div>
   ) : (
@@ -83,9 +83,9 @@ export function AuthorizePayment({
         className="dark:bg-zinc-700 text-base border-none mt-2"
         onChange={(event) => setInput(event.currentTarget.value)}
         onKeyDown={async (event) => {
-          if (event.key === "Enter") {
+          if (event.key === 'Enter') {
             await handleAuthorize(input);
-            setInput("");
+            setInput('');
           }
         }}
       />

@@ -1,24 +1,27 @@
-import { auth } from '@/app/(auth)/auth';
-
 import { SideBar } from './SideBar';
 import ThemeToggle from './theme-toggle';
 import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
-import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { ESegment } from '@/models/url.model';
 import LanguageSwitcher from './LanguageSwitcher';
 import { HEADER_MODEL } from '@/models/header.model';
 import { EzotericIcon } from '@/svg/EzotericIcon';
 import { UserMenu } from './UserMenu';
 import { LoginProviders } from './LoginProviders';
+import { Session } from 'next-auth';
 
 const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
 
-export const Header = async ({ lang }: { lang: ELanguage }) => {
-  const session = (await auth()) || undefined;
-  const isAdmin = await isAdminAuth(session);
-
+export const Header = async ({
+  lang,
+  isAdmin,
+  session,
+}: {
+  lang: ELanguage;
+  isAdmin: boolean;
+  session?: Session;
+}) => {
   return (
     <header
       id="top"
@@ -28,7 +31,7 @@ export const Header = async ({ lang }: { lang: ELanguage }) => {
         <SideBar isAdmin={isAdmin} session={session} lang={lang} />
 
         <div className="flex flex-row gap-2 items-center">
-          <EzotericIcon strokeWidth={0} />
+          <EzotericIcon />
           <SeoLink
             title={logo[lang]}
             href={`/${lang}`}

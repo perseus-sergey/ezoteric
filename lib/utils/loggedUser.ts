@@ -5,7 +5,8 @@ import { Session } from 'next-auth';
 import { cache } from 'react';
 
 export const isAdminAuth = cache(async (session?: Session) => {
-  const userSession = session || (await auth());
+  const userSession = session === undefined ? await auth() : session;
+
   const adminEmail = process.env.ADMIN_EMAIL || '';
   const adminEmailOlena = process.env.ADMIN_EMAIL_OLENA || '';
 

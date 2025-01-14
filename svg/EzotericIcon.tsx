@@ -28,7 +28,6 @@ import { SVGProps } from 'react';
 export function EzotericIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <SeoSVG
-      {...props}
       width="32"
       height="32"
       viewBox="0 0 32 32"
@@ -37,6 +36,7 @@ export function EzotericIcon(props: SVGProps<SVGSVGElement>) {
       strokeWidth="1"
       strokeLinecap="round"
       strokeLinejoin="round"
+      {...props}
     >
       <circle cx="16" cy="24" r="4" />
       <path d="M16 24V16" />

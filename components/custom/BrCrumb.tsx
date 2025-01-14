@@ -9,6 +9,12 @@ import {
 import { ELanguage } from '@/models/language.model';
 import Link from 'next/link';
 import { Fragment } from 'react';
+import { HomeIcon } from './icons';
+
+const homeAriaLabel = {
+  [ELanguage.UA]: 'На головну сторінку',
+  [ELanguage.EN]: 'Go to the Homepage',
+};
 
 interface EBreadcrumb {
   title: string;
@@ -27,7 +33,8 @@ const BrCrumb = ({
       <BreadcrumbItem>
         <BreadcrumbLink asChild>
           <Link href={`/${lang}`} className="hover:text-muted-foreground">
-            Home
+            <HomeIcon className="size-4" />
+            <span className="sr-only">{homeAriaLabel[lang]}</span>
           </Link>
         </BreadcrumbLink>
       </BreadcrumbItem>

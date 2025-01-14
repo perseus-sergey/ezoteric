@@ -14,16 +14,3 @@ export const ARTICLE_IMG = {
     };
   },
 };
-
-export const META_ARTICLE = {
-  [UA]: {
-    title: '',
-    description: '',
-    keywords: '',
-  },
-  [EN]: {
-    title: '',
-    description: '',
-    keywords: '',
-  },
-};

@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { clsx } from 'clsx';
@@ -11,21 +10,25 @@ import { PreviewMessage } from '@/components/custom/message';
 import { MultimodalInput } from './multimodal-input';
 import useWindowSize from './use-window-size';
 import { ELanguage } from '@/models/language.model';
-import { CHAT_LANG_MODEL } from '@/models/meta/chat.model';
+import { CHAT_MODEL } from '@/models/chat.model';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
-import { CHAT } from '@/models/chat.model';
+import { MessageIcon } from './icons';
 
-const { chatTitle, overviewTexts } = CHAT_LANG_MODEL;
+const { chatTitle, chatBtn, closeBtn } = CHAT_MODEL;
 
 const ChatWidget = ({
   id,
   initialMessages,
   lang,
+  userName,
+  userImgSrc,
 }: {
   id: string;
   initialMessages: Array<Message>;
   lang: ELanguage;
+  userName?: string | null;
+  userImgSrc?: string | null;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
@@ -47,65 +50,33 @@ const ChatWidget = ({
   useEffect(() => {
     // Прокрутка донизу при додаванні нових повідомлень
     if (messagesContainerRef.current && isOpen) {
-      // if (messagesEndRef.current && messagesContainerRef.current && isOpen) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
 
   const toggleChat = () => setIsOpen(!isOpen);
-  const { width, height } = useWindowSize();
-
-  const isSmallScreen = width && width < 400;
-
-  const chatVariants = {
-    open: {
-      width: '300px',
-      height: 'fit-content',
-      opacity: 1,
-    },
-    openSm: {
-      width: '100dvw',
-      height: 'fit-content',
-      opacity: 1,
-      bottom: 0,
-      right: 0,
-    },
-    closed: {
-      width: '50px',
-      height: '50px',
-      opacity: 0.9,
-    },
-  };
-
-  const determineAnimationVariant = () => {
-    if (isSmallScreen) {
-      return isOpen ? 'openSm' : 'closed';
-    } else {
-      return isOpen ? 'open' : 'closed';
-    }
-  };
+  const { height } = useWindowSize();
 
   return (
-    <motion.div
+    <div
       className={clsx(
-        'flex flex-col shadow-lg fixed bottom-4 right-4 z-50 md:bottom-8 md:right-8 overflow-hidden',
+        'flex flex-col max-h-full shadow-lg fixed z-50 overflow-hidden',
         isOpen
-          ? 'bg-background rounded-lg'
-          : 'bg-primary rounded-full text-white'
+          ? 'md:bottom-4 md:right-4 bottom-0 right-0 bg-background h-fit w-dvw md:w-96 rounded-lg'
+          : 'md:bottom-8 md:right-8 bottom-4 right-4 bg-primary size-[50px] hover:scale-110 transition-transform duration-200 font-georgia rounded-full'
       )}
-      variants={chatVariants}
-      animate={determineAnimationVariant()}
-      transition={{ duration: 0.3 }}
-      style={{ originX: 1, originY: 1 }}
     >
       {isOpen && (
         <>
-          <nav className="flex justify-between items-center px-4 py-2 bg-primary">
-            <p className="font-bold">{chatTitle[lang]}</p>
+          <nav className="flex justify-between items-center px-4 sm:py-2 bg-primary">
+            <div className="flex items-center gap-2">
+              <MessageIcon className="size-4 opacity-50" />
+              <span className="font-bold">{chatTitle[lang]}</span>
+            </div>
             <Button onClick={toggleChat}>
-              <X className="size-4" />
-              <span className="sr-only">{CHAT.closeBtn.ariaLabel[lang]}</span>
+              <X className="scale-125" />
+              <span className="sr-only">{closeBtn.ariaLabel[lang]}</span>
             </Button>
           </nav>
 
@@ -118,7 +89,7 @@ const ChatWidget = ({
             ref={messagesContainerRef}
           >
             {messages.length === 0 && height && height > 450 ? (
-              <Overview texts={overviewTexts[lang]} />
+              <Overview lang={lang} />
             ) : (
               <>
                 <div
@@ -135,6 +106,8 @@ const ChatWidget = ({
                       content={message.content}
                       attachments={message.experimental_attachments}
                       toolInvocations={message.toolInvocations}
+                      userName={userName}
+                      userImgSrc={userImgSrc}
                     />
                   ))}
                 </div>
@@ -154,9 +127,10 @@ const ChatWidget = ({
             )}
           </section>
 
-          <form className="flex flex-row gap-2 relative items-end w-full">
+          <form className="w-full max-h-[90dvh]">
             <MultimodalInput
               lang={lang}
+              userName={userName}
               input={input}
               setInput={setInput}
               handleSubmit={handleSubmit}
@@ -174,12 +148,13 @@ const ChatWidget = ({
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="size-full flex items-center justify-center"
+          className="size-full flex items-center justify-center text-white"
+          aria-label={chatBtn.ariaLabel[lang]}
         >
-          {CHAT.chatBtn.caption[lang]}
+          {chatBtn.caption[lang]}
         </button>
       )}
-    </motion.div>
+    </div>
   );
 };
 
