@@ -6,7 +6,7 @@ import Link from 'next/link';
 const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
-export const Footer = async ({ lang }: { lang: ELanguage }) => {
+export default async function Footer({ lang }: { lang: ELanguage }) {
   return (
     <footer className="p-4 font-georgia bg-gradient-to-b from-tertiary/70 via-tertiary/90 to-tertiary/40 flex flex-wrap gap-6 justify-center">
       <section className="w-44 sm:w-auto">
@@ -39,4 +39,4 @@ export const Footer = async ({ lang }: { lang: ELanguage }) => {
       </section>
     </footer>
   );
-};
+}

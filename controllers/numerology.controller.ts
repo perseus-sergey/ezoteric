@@ -1,22 +1,21 @@
-"use server";
+'use server';
 
-import { geminiFlashModel } from "@/ai";
-import { ELanguage } from "@/models/language.model";
+import { geminiFlashModel } from '@/ai';
+import { ELanguage } from '@/models/language.model';
 import {
   BIRTH_DATE_FORMAT,
   INumerologyJsonSchema,
-} from "@/models/meta/home.model";
-import { generateText } from "ai";
+} from '@/models/meta/home.model';
+import { generateText } from 'ai';
 
 export const generateAiNumerology = async (
   userName: string,
   birthdate: string,
-  lang: ELanguage,
+  lang: ELanguage
 ) => {
-  try {
-    const { text } = await generateText({
-      model: geminiFlashModel,
-      system: `
+  const { text } = await generateText({
+    model: geminiFlashModel,
+    system: `
       You are an expert numerologist. You will receive a user's name and birthdate.  Your task is to perform a basic numerological analysis and provide a concise and insightful interpretation **in the specified language**.
 
 **Input Format:**
@@ -113,18 +112,14 @@ If an unsupported language is provided, default to English and include a message
 - Positive Framing: Frame interpretations in a positive and encouraging manner. Focus on potential and growth.
 - No Predictions: Avoid making specific predictions or fortune-telling statements. Focus on providing insights and guidance.
 `,
-      prompt: JSON.stringify({
-        name: userName,
-        birthdate: birthdate,
-        language: lang,
-      }),
-    });
+    prompt: JSON.stringify({
+      name: userName,
+      birthdate: birthdate,
+      language: lang,
+    }),
+  });
 
-    const cleanResult = text.replace(/```json|```/g, "");
+  const cleanResult = text.replace(/```json|```/g, '');
 
-    return (await JSON.parse(cleanResult)) as INumerologyJsonSchema;
-  } catch (error) {
-    console.log("🚀 ~ error:", error);
-    return null;
-  }
+  return (await JSON.parse(cleanResult)) as INumerologyJsonSchema;
 };

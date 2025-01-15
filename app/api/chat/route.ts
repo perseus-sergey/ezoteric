@@ -23,8 +23,6 @@ export async function POST(request: Request) {
     // const { id, messages }: { id: string; messages: Array<Message> } =
     await request.json();
 
-  // console.log('🚀 ~ POST ~ id:', id);
-
   // const session = await auth();
 
   // if (!session) {

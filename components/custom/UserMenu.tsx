@@ -31,7 +31,7 @@ import Image from 'next/image';
 const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
 
-export const UserMenu = ({
+export default function UserMenu({
   lang,
   userEmail,
   userName,
@@ -45,7 +45,7 @@ export const UserMenu = ({
   userName?: string | null;
   userEmail?: string | null;
   userImgSrc?: string | null;
-}) => {
+}) {
   const [isListOpen, setListOpen] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
 
@@ -126,4 +126,4 @@ export const UserMenu = ({
       </AlertDialog>
     </>
   );
-};
+}

@@ -3,17 +3,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
+
 import { ELanguage } from '@/models/language.model';
 import {
   BIRTH_DATE_FORMAT,
   IModalAiResponseProps,
   MAIN_TEXT,
+  MODAL_NUMEROLOGY,
   numerologyFormSchema,
   TNumerologySchema,
 } from '@/models/meta/home.model';
 import { generateAiNumerology } from '@/controllers/numerology.controller';
-import { useState } from 'react';
-import { ModalNumerologyResponse } from './Modals/ModalNumerologyResponse';
 import {
   Form,
   FormControl,
@@ -23,14 +26,20 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { format } from 'date-fns';
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { SubmitButton } from './submit-button';
+import dynamic from 'next/dynamic';
+
+const ModalNumerologyResponse = dynamic(
+  () => import('./Modals/ModalNumerologyResponse'),
+  { ssr: false }
+);
 
 const {
   numerForm: { form: numerForm },
 } = MAIN_TEXT;
+const { modalResponseErrors } = MODAL_NUMEROLOGY;
 
 export default function NumerologyForm({ lang }: { lang: ELanguage }) {
   const [aiResult, setAiResult] = useState<IModalAiResponseProps | null>(null);
@@ -46,20 +55,36 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
   });
 
   async function onSubmit(data: z.infer<TNumerologySchema>) {
+    setIsLoading(false);
+
     setIsLoading(true);
-    const result = await generateAiNumerology(
-      data.username,
-      data.birthdate,
-      lang
-    );
-    setAiResult({
-      aiResponse: result,
-      formData: {
-        username: data.username,
-        birthdate: format(data.birthdate, BIRTH_DATE_FORMAT),
-      },
-    });
-    setHasResult(true);
+
+    try {
+      const result = await generateAiNumerology(
+        data.username,
+        data.birthdate,
+        lang
+      );
+
+      setAiResult({
+        aiResponse: result,
+        formData: {
+          username: data.username,
+          birthdate: format(data.birthdate, BIRTH_DATE_FORMAT),
+        },
+      });
+      setHasResult(true);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
+      toast.error(() => {
+        return (
+          <>
+            <h2 className="font-semibold">{modalResponseErrors[lang][0]}</h2>
+            <p>{modalResponseErrors[lang][1]}</p>
+          </>
+        );
+      });
+    }
     setIsLoading(false);
   }
 
@@ -124,12 +149,14 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
         </form>
       </Form>
 
-      <ModalNumerologyResponse
-        lang={lang}
-        aiResult={aiResult}
-        openDialogFn={setHasResult}
-        isOpen={hasResult}
-      />
+      {hasResult && (
+        <ModalNumerologyResponse
+          lang={lang}
+          aiResult={aiResult}
+          openDialogFn={setHasResult}
+          isOpen={hasResult}
+        />
+      )}
     </>
   );
 }

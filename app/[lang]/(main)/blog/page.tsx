@@ -1,6 +1,7 @@
 import ArticleList from '@/components/custom/ArticleList';
 import BrCrumb from '@/components/custom/BrCrumb';
 import Pagination from '@/components/custom/Pagination';
+import TextUnderH1 from '@/components/custom/TextUnderH1';
 import { Title } from '@/components/custom/Title';
 import { getArticlesChunk } from '@/db/queriesArticle';
 import { generatePostListJsonLd } from '@/lib/utils/generatePostListJsonLd';
@@ -104,6 +105,8 @@ export default async function Page({
       <BrCrumb items={[{ title: BLOG_H1[lang] }]} lang={lang} />
 
       <Title>{BLOG_H1[lang]}</Title>
+
+      <TextUnderH1>{META_BLOG[lang].description}</TextUnderH1>
 
       <Suspense>
         {/* <Filter

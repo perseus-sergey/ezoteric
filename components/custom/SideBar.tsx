@@ -17,14 +17,14 @@ import ThemeToggle from './theme-toggle';
 import { HEADER_MODEL, SIDEBAR } from '@/models/header.model';
 import LanguageSwitcher from './LanguageSwitcher';
 import { BookOpenText } from 'lucide-react';
-import { UserMenu } from './UserMenu';
-import { LoginProviders } from './LoginProviders';
+import UserMenu from './UserMenu';
+import LoginProviders from './LoginProviders';
 
 const { BLOG } = ESegment;
 const { sideBarOpenIcon } = HEADER_MODEL;
 const { links } = HEADER_MODEL;
 
-export const SideBar = ({
+export default function SideBar({
   session,
   isAdmin,
   lang,
@@ -32,7 +32,7 @@ export const SideBar = ({
   session?: Session;
   isAdmin: boolean;
   lang: ELanguage;
-}) => {
+}) {
   return (
     <>
       <Sheet>
@@ -82,5 +82,5 @@ export const SideBar = ({
       </Sheet>
     </>
   );
-};
+}
 // <VisuallyHidden.Root>

@@ -6,13 +6,16 @@ import { ThemeProvider } from '@/components/custom/theme-provider';
 import { ELanguage } from '@/models/language.model';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
-import { DEFAULT_META_OG } from '@/models/root.model';
+import { BACKGROUND_IMG_ALT, DEFAULT_META_OG } from '@/models/root.model';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 import ChatWidget from '@/components/custom/ChatWidget';
 import { generateUUID } from '@/lib/utils/utils';
-import { Footer } from '@/components/custom/Footer';
+import Footer from '@/components/custom/Footer';
 import { auth } from '../(auth)/auth';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
+import Image from 'next/image';
+import bgImg from '@/public/images/ezoteric_1024.jpeg';
+import { Suspense } from 'react';
 
 // =================================================================
 // поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
@@ -78,8 +81,18 @@ export default async function Layout({ children, params }: TProps) {
 
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
-      {/* <body className="antialiased min-h-dvh flex flex-col bg-[url('/images/esoteric_sunrise_meditation.jpg')] bg-no-repeat bg-cover bg-fixed"> */}
-      <body className="antialiased min-h-dvh flex flex-col bg-[url('/images/ezoteric_1024.jpeg')] bg-no-repeat bg-cover bg-fixed">
+      <body className="antialiased">
+        <div className="fixed overflow-hidden w-svw h-dvh -z-10">
+          <Image
+            alt={BACKGROUND_IMG_ALT[lang]}
+            src={bgImg}
+            placeholder="blur"
+            // quality={100}
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -88,17 +101,20 @@ export default async function Layout({ children, params }: TProps) {
         >
           <Header isAdmin={isAdmin} session={session} lang={lang} />
 
-          <main className="max-w-5xl flex-1 mx-auto pb-4 px-2 sm:px-4">
-            <Toaster position="top-center" />
+          <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 px-2 sm:px-4">
+            <Toaster position="top-center" richColors />
             {children}
-            <ChatWidget
-              key={id}
-              id={id}
-              initialMessages={[]}
-              lang={lang}
-              userImgSrc={session?.user?.image}
-              userName={session?.user?.name}
-            />
+
+            <Suspense>
+              <ChatWidget
+                key={id}
+                id={id}
+                initialMessages={[]}
+                lang={lang}
+                userImgSrc={session?.user?.image}
+                userName={session?.user?.name}
+              />
+            </Suspense>
           </main>
         </ThemeProvider>
         <Footer lang={lang} />

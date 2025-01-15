@@ -12,13 +12,13 @@ import { providerMap } from '@/app/(auth)/auth';
 import { AUTH_PROVIDER_LOGOS } from '@/models/auth.model';
 import { restProviderLinksAction } from '@/app/(auth)/actions';
 
-export const LoginProviders = ({
+export default function LoginProviders({
   lang,
   withIcons = false,
 }: {
   lang: ELanguage;
   withIcons?: boolean;
-}) => {
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,7 +51,7 @@ export const LoginProviders = ({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}
 
 // <Link href={`/${lang}/login`}>
 //   {withIcons && <User className="text-muted-foreground" />}

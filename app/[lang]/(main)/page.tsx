@@ -1,14 +1,15 @@
 // import { Mail, PhoneCall } from 'lucide-react';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import Image from 'next/image';
-import hands_with_artifacts_500 from '@/public/images/hands_with_artifacts_500.jpg';
-import main_h1_21 from '@/public/images/main_h1_21.jpg';
 import { MAIN_TEXT } from '@/models/meta/home.model';
 import NumerologyForm from '@/components/custom/numerology-form';
 import { MAIN_URL, TParams } from '@/models/url.model';
 import { Title } from '@/components/custom/Title';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
+
+import hands_with_artifacts_500 from '@/public/images/hands_with_artifacts_500.jpg';
+import main_h1_21 from '@/public/images/main_h1_21.jpg';
 
 // const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
@@ -57,6 +58,7 @@ export default async function Page({ params }: { params: TParams }) {
         <Image
           src={main_h1_21}
           alt={startTextImgAlt[lang]}
+          placeholder="blur"
           className="rounded-md hidden sm:block"
         />
 
@@ -81,6 +83,7 @@ export default async function Page({ params }: { params: TParams }) {
             <Image
               src={hands_with_artifacts_500}
               alt={ourServices.imgAlt[lang]}
+              placeholder="blur"
               className="shrink-0"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-transparent from-80% to-secondary"></div>
