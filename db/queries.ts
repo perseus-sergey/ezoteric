@@ -52,16 +52,19 @@ export async function createUser(
 export async function saveChat({
   id,
   messages,
-  userId,
+  email,
 }: {
   id: string;
   messages: (Message | CoreMessage)[];
-  userId: string;
+  email: string;
 }) {
   try {
     const selectedChats = await db.select().from(chat).where(eq(chat.id, id));
 
     if (selectedChats.length > 0) {
+      // console.log('🚀 ~ selectedChats:', selectedChats);
+      // return;
+
       return await db
         .update(chat)
         .set({
@@ -70,11 +73,17 @@ export async function saveChat({
         .where(eq(chat.id, id));
     }
 
+    // console.log('🚀 ~ id:', id);
+    // console.log('🚀 ~ email:', email);
+    // console.log('🚀 ~ messages:', messages);
+
+    // return;
+
     return await db.insert(chat).values({
       id,
       createdAt: new Date(),
       messages: JSON.stringify(messages),
-      userId,
+      email,
     });
   } catch (error) {
     console.error('Failed to save chat in database');
@@ -91,12 +100,16 @@ export async function deleteChatById({ id }: { id: string }) {
   }
 }
 
-export async function getChatsByUserId({ id }: { id: string }) {
+export async function getChatsByUserEmail({
+  userEmail,
+}: {
+  userEmail: string;
+}) {
   try {
     return await db
       .select()
       .from(chat)
-      .where(eq(chat.userId, id))
+      .where(eq(chat.email, userEmail))
       .orderBy(desc(chat.createdAt));
   } catch (error) {
     console.error('Failed to get chats by user from database');
@@ -116,17 +129,17 @@ export async function getChatById({ id }: { id: string }) {
 
 export async function createReservation({
   id,
-  userId,
+  email,
   details,
 }: {
   id: string;
-  userId: string;
+  email: string;
   details: string;
 }) {
   return await db.insert(reservation).values({
     id,
     createdAt: new Date(),
-    userId,
+    email,
     hasCompletedPayment: false,
     details: JSON.stringify(details),
   });

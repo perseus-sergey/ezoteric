@@ -13,21 +13,23 @@ import {
   deleteChatById,
   getChatById,
   getReservationById,
-  // saveChat,
+  saveChat,
 } from '@/db/queries';
 import { generateUUID } from '@/lib/utils/utils';
 import { auth } from '@/app/(auth)/auth';
 
 export async function POST(request: Request) {
-  const { messages }: { messages: Array<Message> } =
-    // const { id, messages }: { id: string; messages: Array<Message> } =
+  // const { messages }: { messages: Array<Message> } =
+  const { id, messages }: { id: string; messages: Array<Message> } =
     await request.json();
 
-  // const session = await auth();
+  // console.log('🚀 ~ POST ~ id:', id);
 
-  // if (!session) {
-  //   return new Response('Unauthorized', { status: 401 });
-  // }
+  const session = await auth();
+
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
 
   const coreMessages = convertToCoreMessages(messages).filter(
     (message) => message.content.length > 0
@@ -167,10 +169,10 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
 
           const id = generateUUID();
 
-          if (session && session.user && session.user.id) {
+          if (session && session.user && session.user.email) {
             await createReservation({
               id,
-              userId: session.user.id,
+              email: session.user.email,
               details: { ...props, totalPriceInUSD },
             });
 
@@ -248,24 +250,20 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
     },
 
     onFinish: async ({ responseMessages }) => {
-      console.log(
-        '🚀 ~ onFinish: ~ responseMessages:',
-        responseMessages.at(-1)
-      );
-      // if (session.user && session.user.id) {
-      //   try {
-      //     await saveChat({
-      //       id,
-      //       messages: [...coreMessages, ...responseMessages],
-      //       userId: session.user.id,
-      //     });
-      //   } catch (error) {
-      //     console.error(
-      //       "Failed to save chat. Error Name: ",
-      //       (error as Error).name,
-      //     );
-      //   }
-      // }
+      console.log('🚀 ~ onFinish: ~ responseMessages: session: ', session);
+      if (session.user && session.user.email) {
+        try {
+          await saveChat({
+            id,
+            messages: [...coreMessages, ...responseMessages],
+            email: session.user.email,
+          });
+        } catch (error) {
+          console.error(
+            `${(error as Error).name}. Failed to save chat. Error Name: `
+          );
+        }
+      }
     },
 
     experimental_telemetry: {
@@ -294,7 +292,7 @@ export async function DELETE(request: Request) {
   try {
     const chat = await getChatById({ id });
 
-    if (chat.userId !== session.user.id) {
+    if (chat.email !== session.user.email) {
       return new Response('Unauthorized', { status: 401 });
     }
 

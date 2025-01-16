@@ -31,9 +31,9 @@ export const chat = pgTable(TBL_CHAT, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   createdAt: timestamp('createdAt').notNull(),
   messages: json('messages').notNull(),
-  userId: uuid('userId')
+  email: varchar('email', { length: 64 })
     .notNull()
-    .references(() => user.id),
+    .references(() => user.email),
 });
 
 export type TChat = Omit<InferSelectModel<typeof chat>, 'messages'> & {
@@ -45,9 +45,9 @@ export const reservation = pgTable(TBL_RESERVATION, {
   createdAt: timestamp('createdAt').notNull(),
   details: json('details').notNull(),
   hasCompletedPayment: boolean('hasCompletedPayment').notNull().default(false),
-  userId: uuid('userId')
+  email: varchar('email', { length: 64 })
     .notNull()
-    .references(() => user.id),
+    .references(() => user.email),
 });
 
 export type TReservation = InferSelectModel<typeof reservation>;

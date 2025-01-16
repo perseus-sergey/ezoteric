@@ -15,6 +15,7 @@ import { ELanguage } from '@/models/language.model';
 export function MultimodalInput({
   lang,
   input,
+  // userName,
   setInput,
   isLoading,
   stop,
