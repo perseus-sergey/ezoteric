@@ -1,5 +1,5 @@
 import { Message } from 'ai';
-import { InferSelectModel } from 'drizzle-orm';
+import { InferSelectModel, sql } from 'drizzle-orm';
 import {
   pgTable,
   varchar,
@@ -10,10 +10,21 @@ import {
   text,
   integer,
   pgEnum,
+  index,
+  pgMaterializedView,
 } from 'drizzle-orm/pg-core';
-import { DB_TABLE_NAME, langSuffix } from './root';
 
-const { TBL_USER, TBL_CHAT, TBL_RESERVATION, TBL_ARTICLE } = DB_TABLE_NAME;
+const langSuffix = {
+  uk: '_ua',
+  en: '_en',
+};
+
+const TBL_USER = 'ezo_user';
+const TBL_CHAT = 'ezo_chat';
+const TBL_RESERVATION = 'ezo_reservation';
+const TBL_ARTICLE = 'ezo_article';
+const TBL_ARTICLE_VIEWS = 'ezo_article_views';
+const TBL_ARTICLE_VIEWS_COUNTS = 'ezo_article_view_counts';
 
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin', 'editor']);
 
@@ -73,18 +84,50 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
   textUa: text(`text${langSuffix.uk}`).notNull(),
   textEn: text(`text${langSuffix.en}`).notNull(),
   imageName: varchar('image_name', { length: 255 }),
-  view: integer('view').default(0),
   published: boolean('published').notNull().default(true),
 });
 
 export type TArticle = InferSelectModel<typeof tblArticle>;
 
+// export type TArticleLocalized = Pick<
+//   InferSelectModel<typeof tblArticle>,
+//   'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageName'
+// > & {
+//   title: string;
+//   description: string;
+//   text: string;
+//   keywords: string;
+// };
 export type TArticleLocalized = Pick<
   InferSelectModel<typeof tblArticle>,
-  'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageName' | 'view'
+  'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageName'
 > & {
   title: string;
   description: string;
   text: string;
   keywords: string;
+  viewCount: number | null;
 };
+
+export const tblArticleViews = pgTable(
+  TBL_ARTICLE_VIEWS,
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    articleId: integer('article_id')
+      .notNull()
+      .references(() => tblArticle.id),
+    viewTimestamp: timestamp('view_timestamp').defaultNow().notNull(),
+  },
+  (table) => ({
+    articleIdIdx: index('article_id_idx').on(table.articleId),
+  })
+);
+
+export const articleViewCounts = pgMaterializedView(TBL_ARTICLE_VIEWS_COUNTS, {
+  articleId: integer('article_id'),
+  viewCount: integer('view_count'),
+}).as(
+  sql`SELECT article_id, COUNT(*) AS view_count 
+      FROM ${TBL_ARTICLE_VIEWS} 
+      GROUP BY article_id`
+);

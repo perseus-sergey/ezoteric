@@ -8,7 +8,9 @@ pnpm exec lint-staged
 echo "Check changes in drizzle schemas..."
 if git diff --cached --name-only | grep -E 'schema\.(ts|sql)|migrations/'; then
   echo "Schema or migrations changed. Running migration commands..."
+  echo "\n🚀 ~ generate"
   pnpm d:generate
+  echo "\n🚀 ~ migrate"
   pnpm d:migrate
 fi
 

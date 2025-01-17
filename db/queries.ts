@@ -1,8 +1,10 @@
+'use server';
+
 import 'server-only';
 
 import { CoreMessage, Message } from 'ai';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { user, chat, TUser, reservation } from './schema';
 import { getDB } from './root';
@@ -62,9 +64,6 @@ export async function saveChat({
     const selectedChats = await db.select().from(chat).where(eq(chat.id, id));
 
     if (selectedChats.length > 0) {
-      // console.log('🚀 ~ selectedChats:', selectedChats);
-      // return;
-
       return await db
         .update(chat)
         .set({
@@ -72,12 +71,6 @@ export async function saveChat({
         })
         .where(eq(chat.id, id));
     }
-
-    // console.log('🚀 ~ id:', id);
-    // console.log('🚀 ~ email:', email);
-    // console.log('🚀 ~ messages:', messages);
-
-    // return;
 
     return await db.insert(chat).values({
       id,
@@ -91,41 +84,65 @@ export async function saveChat({
   }
 }
 
-export async function deleteChatById({ id }: { id: string }) {
+export async function deleteChatByEmail({ email }: { email: string }) {
   try {
-    return await db.delete(chat).where(eq(chat.id, id));
+    return await db.delete(chat).where(eq(chat.email, email));
   } catch (error) {
-    console.error('Failed to delete chat by id from database');
+    console.error('Failed to delete chat by email from database');
     throw error;
   }
 }
 
-export async function getChatsByUserEmail({
-  userEmail,
-}: {
-  userEmail: string;
-}) {
+// export async function deleteChatById({ id }: { id: string }) {
+//   try {
+//     return await db.delete(chat).where(eq(chat.id, id));
+//   } catch (error) {
+//     console.error('Failed to delete chat by id from database');
+//     throw error;
+//   }
+// }
+
+// export async function getChatsByUserEmail({
+//   userEmail,
+// }: {
+//   userEmail: string;
+// }) {
+//   try {
+//     return await db
+//       .select()
+//       .from(chat)
+//       .where(eq(chat.email, userEmail))
+//       .orderBy(desc(chat.createdAt));
+//   } catch (error) {
+//     console.error('Failed to get chats by user from database');
+//     throw error;
+//   }
+// }
+
+export async function getChatByEmail({ email }: { email: string }) {
   try {
-    return await db
+    const [selectedChat] = await db
       .select()
       .from(chat)
-      .where(eq(chat.email, userEmail))
-      .orderBy(desc(chat.createdAt));
-  } catch (error) {
-    console.error('Failed to get chats by user from database');
-    throw error;
-  }
-}
-
-export async function getChatById({ id }: { id: string }) {
-  try {
-    const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
+      .where(eq(chat.email, email))
+      .limit(1);
     return selectedChat;
   } catch (error) {
-    console.error('Failed to get chat by id from database');
-    throw error;
+    console.error(
+      `${(error as Error).name}. Failed to get chat by email from database`
+    );
+    return undefined;
   }
 }
+// export async function getChatById({ id }: { id: string }) {
+//   try {
+//     const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
+//     return selectedChat;
+//   } catch (error) {
+//     console.error('Failed to get chat by id from database');
+//     throw error;
+//   }
+// }
 
 export async function createReservation({
   id,

@@ -5,29 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1728635586378,
-      "tag": "0000_absurd_joshua_kane",
+      "when": 1737128239907,
+      "tag": "0000_lame_zombie",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1735646812656,
-      "tag": "0001_colorful_smasher",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1735911840327,
-      "tag": "0002_orange_anthem",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1736842857989,
-      "tag": "0003_moaning_moira_mactaggert",
+      "when": 1737128372119,
+      "tag": "0001_green_misty_knight",
       "breakpoints": true
     }
   ]

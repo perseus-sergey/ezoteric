@@ -32,7 +32,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
   articleList && articleList.length > 0 ? (
     <ul className="space-y-4">
       {articleList.map(
-        ({ id, title, description, view, updatedAt, imageName, slug }) => {
+        ({ id, title, description, viewCount, updatedAt, imageName, slug }) => {
           const currDate = getFormattedDateStrYearFirst(updatedAt);
           const imgSrc = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
           const imgPath = isFileExists(imgSrc)
@@ -63,7 +63,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
                 articleDescription={cutText(description, 250)}
                 href={`/${lang}/${BLOG}/${slug}`}
                 infoPanelItems={[
-                  { name: viewsTitle[lang], value: view },
+                  { name: viewsTitle[lang], value: viewCount },
                   {
                     name: dateTitle[lang],
                     value: <time dateTime={currDate}>{currDate}</time>,

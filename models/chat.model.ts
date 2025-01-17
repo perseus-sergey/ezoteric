@@ -2,6 +2,9 @@ import { ELanguage } from './language.model';
 
 const { UA, EN } = ELanguage;
 
+export const LS_CHAT_NAME = 'ezo-chat';
+export const LS_CHAT_MAX_MESSAGES = 200;
+
 export const CHAT_MODEL = {
   chatTitle: {
     [UA]: 'Чат',

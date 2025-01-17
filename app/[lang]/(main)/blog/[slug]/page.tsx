@@ -73,7 +73,8 @@ export default async function Page({ params }: { params: TParams }) {
 
   if (!article) notFound();
 
-  const { title, text, description, updatedAt, imageName, view, id } = article;
+  const { title, text, description, updatedAt, imageName, viewCount, id } =
+    article;
 
   const currDate = getFormattedDateStrYearFirst(updatedAt);
 
@@ -127,7 +128,7 @@ export default async function Page({ params }: { params: TParams }) {
         items={[
           {
             name: INFO_PANEL_TITLES.views[lang],
-            value: (view || 0) + 1,
+            value: (viewCount || 0) + 1,
           },
           {
             name: INFO_PANEL_TITLES.date[lang],

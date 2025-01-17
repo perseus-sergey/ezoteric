@@ -20,6 +20,7 @@ import { Suspense } from 'react';
 // =================================================================
 // поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
 // можливо створити сторінки в соцмережах з взаємними посиланнями
+// **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // get email for ezoteric
 // check json-ld on production
 // chat: save to db || ls
@@ -109,10 +110,10 @@ export default async function Layout({ children, params }: TProps) {
               <ChatWidget
                 key={id}
                 id={id}
-                initialMessages={[]}
                 lang={lang}
                 userImgSrc={session?.user?.image}
                 userName={session?.user?.name}
+                userEmail={session?.user?.email}
               />
             </Suspense>
           </main>

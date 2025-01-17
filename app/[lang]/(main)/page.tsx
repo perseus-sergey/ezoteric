@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: TParams }) {
       createdAt: new Date('2024-12-01'),
       updatedAt: new Date(),
       imageName: '',
-      view: 1,
+      viewCount: 1,
       ...DEFAULT_META_DATA[lang],
       text: [
         [...startText[lang].map((text) => `<p>${text}</p>`)],

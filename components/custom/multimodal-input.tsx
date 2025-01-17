@@ -2,20 +2,24 @@
 
 import { ChatRequestOptions, CreateMessage, Message } from 'ai';
 import { motion } from 'framer-motion';
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { ArrowUpIcon, StopIcon } from './icons';
 import useWindowSize from './use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
-import { chatSuggestedActions } from '@/models/chat.model';
+import {
+  chatSuggestedActions,
+  LS_CHAT_MAX_MESSAGES,
+  LS_CHAT_NAME,
+} from '@/models/chat.model';
 import { ELanguage } from '@/models/language.model';
 
 export function MultimodalInput({
   lang,
+  userEmail,
   input,
-  // userName,
   setInput,
   isLoading,
   stop,
@@ -24,8 +28,8 @@ export function MultimodalInput({
   handleSubmit,
 }: {
   lang: ELanguage;
+  userEmail?: string | null;
   input: string;
-  userName?: string | null;
   setInput: (value: string) => void;
   isLoading: boolean;
   stop: () => void;
@@ -43,6 +47,16 @@ export function MultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+
+  useEffect(() => {
+    // if user is not logged in save last LS_CHAT_MAX_MESSAGES messages to LS at each messages change
+    if (!messages.length || userEmail) return;
+
+    localStorage.setItem(
+      LS_CHAT_NAME,
+      JSON.stringify(messages.slice(-LS_CHAT_MAX_MESSAGES))
+    );
+  }, [messages, userEmail]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);

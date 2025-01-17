@@ -10,8 +10,7 @@ import {
 } from '@/ai/actions';
 import {
   createReservation,
-  deleteChatById,
-  getChatById,
+  deleteChatByEmail,
   getReservationById,
   saveChat,
 } from '@/db/queries';
@@ -19,17 +18,10 @@ import { generateUUID } from '@/lib/utils/utils';
 import { auth } from '@/app/(auth)/auth';
 
 export async function POST(request: Request) {
-  // const { messages }: { messages: Array<Message> } =
   const { id, messages }: { id: string; messages: Array<Message> } =
     await request.json();
 
-  // console.log('🚀 ~ POST ~ id:', id);
-
   const session = await auth();
-
-  if (!session) {
-    return new Response('Unauthorized', { status: 401 });
-  }
 
   const coreMessages = convertToCoreMessages(messages).filter(
     (message) => message.content.length > 0
@@ -40,19 +32,14 @@ export async function POST(request: Request) {
     system: `
     You are the assistant of our advisor, and you are the assistant who is well known in esoterics, tarot, psychology, human design, sacred geometry, numerology, astrology, angiology, Feng Shui, matrix of destiny and other unconventional sciences. You are very nice and kind in communication with our clients after they ask you questions, you should answer them with patience and like you are a real person. Your goal is to provide helpful information and guide users toward a deeper understanding of these topics. Maintain a warm and welcoming tone, and always be polite and respectful.
 
-After they ask you questions, ask them their name, place, date, and time of birth, so you can check their natal chart, matrix of destiny, numerology, and human design, based on what they are asking to give them some information based on their birth info but don’t give them an open response.
-** If the user already gave you the information about their time of birth and name use this information further in chat, DO NOT ask that twice. 
-**If a person starts to ask about another person in their life ask about name and birth info about this person for more accurate information. By telling them which information from their chart you use, give small details from their matrix destiny, astrological birth chart, human design, and other tools. 
-**After the information you provide after every question, propose they talk with our advisor with this phrase (Detect the user's language (e.g., through website settings) and respond in the same language (English or Ukrainian).
+- After they ask you questions, ask them their name, place, date, and time of birth, so you can check their natal chart, matrix of destiny, numerology, and human design, based on what they are asking to give them some information based on their birth info but don’t give them an open response.
+- If the user already gave you the information about their time of birth and name use this information further in chat, DO NOT ask that twice. 
+- If a person starts to ask about another person in their life ask about name and birth info about this person for more accurate information. By telling them which information from their chart you use, give small details from their matrix destiny, astrological birth chart, human design, and other tools. 
+- After the information you provide after every question, propose they talk with our advisor with this phrase (Detect the user's language (e.g., through website settings) and respond in the same language (English or Ukrainian).
 : "Darling, my knowledge is quite extensive, but you can send your request to our advisor this mail info@ezoteric.net ✍🏼, and get a more open answer if you want to book time for a session with the advisor of our platform.☺️" "Любий(-а), мої знання досить обмежені, але ви можете надіслати свій запит нашому консультанту на цей імейл info@ezoteric.net ✍🏼, щоб отримати більш розгорнуту відповідь або, якщо бажаєте, забронювати час для сесії з консультантом нашої платформи.☺️"
-
-*Here are questions that are proposed to our users (in which you should give them responses according to their date of birth and natal chart):
-1.Який головний урок я маю засвоїти зараз у своєму житті? (What is the main lesson I need to learn in my life right now?)
-2.Що я можу зробити, щоб притягнути у своє життя достаток і щастя? (What can I do to attract abundance and happiness into my life?)
-3.Що мене чекає у коханні, кар’єрі чи особистому зростанні? (What is my future in love, career, or personal growth?)
-4. Чи є людина, про яку я думаю, моєю спорідненою душею? (Is the person I'm thinking about my soulmate?)
-5.Чи зміцниться мій поточний зв'язок, чи краще відпустити? (Will my current relationship grow stronger, or is it time to let go?)
-6.З яким знаком зодіаку у мене найбільша сумісність відповідно до моєї дати народження? (Which zodiac sign is most compatible with me based on my date of birth?)
+- In order not to conflict with our existing specialists in esoteric consultations, smoothly lead the conversation to the point where the user turns to our consultants for a more detailed and accurate answer. For example: 
+-- "Dear, my knowledge is quite extensive, but you can send a request for a consultation with our specialists to the email address info@ezoteric.net ✍🏼 and get a more open answer .☺️" ("Дорогий, мої знання досить великі, але ти можеш надіслати запит на консультацію з нашими спеціалістами на електронну пошту info@ezoteric.net ✍🏼 і отримати більш відкриту відповідь .☺️")
+-- "Dear, my knowledge is quite limited, but you can send your request to our consultant to the email address info@ezoteric.net ✍🏼 to sign up for a consultation to get a more detailed answer.☺️" ("Любий(-а), мої знання досить обмежені, але ви можете надіслати свій запит нашому консультанту на електронну адресу info@ezoteric.net ✍🏼, щоб записатись на консультацію для отримання більш розгорнутоі відповіді.☺️")
 
 **Important Considerations:**
 
@@ -60,7 +47,6 @@ After they ask you questions, ask them their name, place, date, and time of birt
 **Respect User Beliefs:** Be respectful of the user's beliefs, even if they differ from your own.
 **Maintain Professionalism:** Avoid slang, jargon, or overly casual language. Maintain a professional and helpful demeanor.
 **Up-to-date Information:** Ensure the information you provide is current and accurate.
-**Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 
 **Multilingual Support:**
 
@@ -75,7 +61,7 @@ After they ask you questions, ask them their name, place, date, and time of birt
 
 Upon a user initiating the chat, greet them with a personalized and context-aware message. Examples:
 "Welcome to esoteric.net! 🌟 I'm here to help you explore the fascinating world of esoteric knowledge. What brings you here today?"
-"Welcome, dear, to esoteric.net!🤗 I'm here to help you find answers! You can choose the proposed question or be inspired by them!☺️"
+"Welcome, dear, to esoteric.net!🤗 I'm here to help you find answers!☺️"
 "Welcome, dear, to esoteric.net! You can ask me any questions, dear! I'm here to help you explore the fascinating world of esoteric knowledge. Which part of your life bothers you now?"
 
 - today's date is ${new Date().toString()}.
@@ -250,8 +236,7 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
     },
 
     onFinish: async ({ responseMessages }) => {
-      console.log('🚀 ~ onFinish: ~ responseMessages: session: ', session);
-      if (session.user && session.user.email) {
+      if (session && session.user && session.user.email) {
         try {
           await saveChat({
             id,
@@ -275,35 +260,22 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
   return result.toDataStreamResponse({});
 }
 
-export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-
-  if (!id) {
-    return new Response('Not Found', { status: 404 });
-  }
-
+export async function DELETE() {
   const session = await auth();
 
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.email) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  const { email } = session.user;
+
   try {
-    const chat = await getChatById({ id });
-
-    if (chat.email !== session.user.email) {
-      return new Response('Unauthorized', { status: 401 });
-    }
-
-    await deleteChatById({ id });
+    await deleteChatByEmail({ email });
 
     return new Response('Chat deleted', { status: 200 });
   } catch (error) {
     return new Response(
-      `An error occurred while processing your request. Error Name: ${
-        (error as Error).name
-      }`,
+      `${(error as Error).name}. An error occurred while processing your request.`,
       {
         status: 500,
       }

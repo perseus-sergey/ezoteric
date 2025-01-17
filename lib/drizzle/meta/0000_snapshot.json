@@ -1,11 +1,11 @@
 {
-  "id": "58eec28f-3819-47cc-9b8d-26bc712b203c",
+  "id": "d83136c9-b5ad-4f74-a955-d2774cba8bb4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.Chat": {
-      "name": "Chat",
+    "public.ezo_chat": {
+      "name": "ezo_chat",
       "schema": "",
       "columns": {
         "id": {
@@ -27,21 +27,21 @@
           "primaryKey": false,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
-          "type": "uuid",
+        "email": {
+          "name": "email",
+          "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "Chat_userId_User_id_fk": {
-          "name": "Chat_userId_User_id_fk",
-          "tableFrom": "Chat",
-          "tableTo": "User",
-          "columnsFrom": ["userId"],
-          "columnsTo": ["id"],
+        "ezo_chat_email_ezo_user_email_fk": {
+          "name": "ezo_chat_email_ezo_user_email_fk",
+          "tableFrom": "ezo_chat",
+          "tableTo": "ezo_user",
+          "columnsFrom": ["email"],
+          "columnsTo": ["email"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -49,8 +49,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.Reservation": {
-      "name": "Reservation",
+    "public.ezo_reservation": {
+      "name": "ezo_reservation",
       "schema": "",
       "columns": {
         "id": {
@@ -79,21 +79,21 @@
           "notNull": true,
           "default": false
         },
-        "userId": {
-          "name": "userId",
-          "type": "uuid",
+        "email": {
+          "name": "email",
+          "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "Reservation_userId_User_id_fk": {
-          "name": "Reservation_userId_User_id_fk",
-          "tableFrom": "Reservation",
-          "tableTo": "User",
-          "columnsFrom": ["userId"],
-          "columnsTo": ["id"],
+        "ezo_reservation_email_ezo_user_email_fk": {
+          "name": "ezo_reservation_email_ezo_user_email_fk",
+          "tableFrom": "ezo_reservation",
+          "tableTo": "ezo_user",
+          "columnsFrom": ["email"],
+          "columnsTo": ["email"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -101,9 +101,138 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-
-    "public.User": {
-      "name": "User",
+    "public.ezo_article": {
+      "name": "ezo_article",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "ezo_article_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title_ua": {
+          "name": "title_ua",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title_en": {
+          "name": "title_en",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description_ua": {
+          "name": "description_ua",
+          "type": "varchar(640)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description_en": {
+          "name": "description_en",
+          "type": "varchar(640)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keywords_ua": {
+          "name": "keywords_ua",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "keywords_en": {
+          "name": "keywords_en",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text_ua": {
+          "name": "text_ua",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text_en": {
+          "name": "text_en",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_name": {
+          "name": "image_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "view": {
+          "name": "view",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "published": {
+          "name": "published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ezo_article_slug_unique": {
+          "name": "ezo_article_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": ["slug"]
+        },
+        "ezo_article_title_ua_unique": {
+          "name": "ezo_article_title_ua_unique",
+          "nullsNotDistinct": false,
+          "columns": ["title_ua"]
+        },
+        "ezo_article_title_en_unique": {
+          "name": "ezo_article_title_en_unique",
+          "nullsNotDistinct": false,
+          "columns": ["title_en"]
+        }
+      }
+    },
+    "public.ezo_user": {
+      "name": "ezo_user",
       "schema": "",
       "columns": {
         "id": {
@@ -119,20 +248,46 @@
           "primaryKey": false,
           "notNull": true
         },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "password": {
           "name": "password",
           "type": "varchar(64)",
           "primaryKey": false,
           "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "ezo_user_email_unique": {
+          "name": "ezo_user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": ["email"]
+        }
+      }
     }
   },
-  "enums": {},
+  "enums": {
+    "public.user_role": {
+      "name": "user_role",
+      "schema": "public",
+      "values": ["user", "admin", "editor"]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "_meta": {

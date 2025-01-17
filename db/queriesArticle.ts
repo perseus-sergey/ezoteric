@@ -1,9 +1,15 @@
 'use server';
+
 import 'server-only';
 
 import { and, desc, eq, ilike, sql } from 'drizzle-orm';
 
-import { TArticleLocalized, tblArticle } from './schema';
+import {
+  articleViewCounts,
+  TArticleLocalized,
+  tblArticle,
+  tblArticleViews,
+} from './schema';
 import { getDB } from './root';
 import { ELanguage } from '@/models/language.model';
 import { TArticleFormValues } from '@/lib/schemas/articleFormSchema';
@@ -59,9 +65,13 @@ export const getArticlesChunk = async ({
         createdAt: tblArticle.createdAt,
         updatedAt: tblArticle.updatedAt,
         imageName: tblArticle.imageName,
-        view: tblArticle.view,
+        viewCount: articleViewCounts.viewCount,
       })
       .from(tblArticle)
+      .leftJoin(
+        articleViewCounts,
+        eq(tblArticle.id, articleViewCounts.articleId)
+      )
       .where(and(searchCondition, publishedCondition))
       .orderBy(desc(tblArticle.updatedAt))
       .limit(perPage)
@@ -72,6 +82,7 @@ export const getArticlesChunk = async ({
     console.error(
       'Failed to get articles from database.',
       'Error: ',
+      error,
       (error as Error).message
     );
     return { totalCount: null, articles: null };
@@ -99,9 +110,13 @@ export const getArticleBySlug = cache(
           createdAt: tblArticle.createdAt,
           updatedAt: tblArticle.updatedAt,
           imageName: tblArticle.imageName,
-          view: tblArticle.view,
+          viewCount: articleViewCounts.viewCount,
         })
         .from(tblArticle)
+        .leftJoin(
+          articleViewCounts,
+          eq(tblArticle.id, articleViewCounts.articleId)
+        )
         .where(eq(tblArticle.slug, slug))
         .limit(1);
 
@@ -113,7 +128,6 @@ export const getArticleBySlug = cache(
         (error as Error).name
       );
       return null;
-      // throw error;
     }
   }
 );
@@ -163,10 +177,17 @@ export const updateArticle = async (
   }
 };
 
-export const updateArticleView = async (id: number) => {
-  return await db
-    .update(tblArticle)
-    .set({ view: sql`${tblArticle.view || 0} + 1` })
-    .where(eq(tblArticle.id, id))
-    .returning();
+// export const updateArticleView = async (id: number) => {
+//   return await db
+//     .update(tblArticle)
+//     .set({ view: sql`${tblArticle.view || 0} + 1` })
+//     .where(eq(tblArticle.id, id))
+//     .returning();
+// };
+export const updateArticleView = async (articleId: number) => {
+  try {
+    await db.insert(tblArticleViews).values({ articleId });
+  } catch (error) {
+    console.error('Помилка при додаванні перегляду статті:', error);
+  }
 };
