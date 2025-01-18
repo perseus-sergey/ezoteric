@@ -8,16 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { AlertDialog } from '@/components/ui/alert-dialog';
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
@@ -27,6 +18,7 @@ import { logout } from '@/app/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
 import { LOGOUT_MODAL } from '@/models/modal.model';
 import Image from 'next/image';
+import { ConfirmDialog } from './ConfirmDialog';
 
 const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
@@ -107,22 +99,13 @@ export default function UserMenu({
       </DropdownMenu>
 
       <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{title[lang]}</AlertDialogTitle>
-            <AlertDialogDescription>{description[lang]}</AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>{cancelBtn[lang]}</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground"
-              onClick={() => logout(`/${lang}`)}
-            >
-              {confirmBtn[lang]}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+        <ConfirmDialog
+          title={title[lang]}
+          description={description[lang]}
+          confirmBtnCaption={confirmBtn[lang]}
+          cancelBtnCaption={cancelBtn[lang]}
+          action={() => logout(`/${lang}`)}
+        />
       </AlertDialog>
     </>
   );

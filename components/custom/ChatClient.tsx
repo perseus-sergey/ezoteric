@@ -10,13 +10,27 @@ import { PreviewMessage } from '@/components/custom/message';
 import { MultimodalInput } from './multimodal-input';
 import useWindowSize from './use-window-size';
 import { ELanguage } from '@/models/language.model';
-import { CHAT_MODEL, LS_CHAT_NAME } from '@/models/chat.model';
+import {
+  CHAT_MODEL,
+  LS_CHAT_MAX_MESSAGES,
+  LS_CHAT_NAME,
+} from '@/models/chat.model';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 import { MessageIcon } from './icons';
-import { saveChatToDb } from '@/app/actions/chat.action';
+import { removeChatFromDb, saveChatToDb } from '@/app/actions/chat.action';
+import { toast } from 'sonner';
 
 const { chatTitle, chatBtn, closeBtn } = CHAT_MODEL;
+
+const parseMessages = (storedMessages: string | null): Message[] => {
+  try {
+    return JSON.parse(storedMessages || '[]');
+  } catch (error) {
+    console.error('Error parsing messages:', error);
+    return [];
+  }
+};
 
 const ChatClient = ({
   id,
@@ -37,54 +51,68 @@ const ChatClient = ({
 
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
 
+  const {
+    messages,
+    setMessages,
+    handleSubmit,
+    input,
+    setInput,
+    append,
+    isLoading,
+  } = useChat({
+    id,
+    body: { id },
+    initialMessages,
+    maxSteps: 10,
+  });
+
+  // якщо користувач не авторизован - setInitialMessages із localStorage
+  // якщо користувач авторизован - setInitialMessages із бд (serverInitialMessages)
+  // якщо користувач був не авторизован, спілкувався в чаті і входить в акаунт - переносимо initialMessages із localStorage в бд і очищуємо localStorage
   useEffect(() => {
-    // start rendering
-    // if user is not logged in get his messages from LS
-    if (!userEmail) {
-      const storedMessages = localStorage.getItem(LS_CHAT_NAME);
-      if (storedMessages) {
-        try {
-          const parsedMessages: Message[] = JSON.parse(storedMessages);
+    const loadMessages = async () => {
+      try {
+        const storedMessages = localStorage.getItem(LS_CHAT_NAME);
+        const parsedMessages = parseMessages(storedMessages);
+
+        if (!userEmail) {
           setInitialMessages(parsedMessages);
-        } catch (error) {
-          console.error((error as Error).message);
-          localStorage.removeItem(LS_CHAT_NAME);
+        } else {
+          if (storedMessages) {
+            try {
+              await saveChatToDb(parsedMessages, userEmail);
+              localStorage.removeItem(LS_CHAT_NAME);
+              setInitialMessages(parsedMessages);
+            } catch (dbError) {
+              console.error('Error saving messages to database:', dbError);
+              setInitialMessages(
+                storedMessages ? parsedMessages : serverInitialMessages
+              );
+              // TODO: Повідомити користувача про помилку?
+            }
+          } else setInitialMessages(serverInitialMessages);
+        }
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        localStorage.removeItem(LS_CHAT_NAME);
+        if (userEmail) {
+          setInitialMessages(serverInitialMessages);
         }
       }
-    } else {
-      // change behavior
-      setInitialMessages(serverInitialMessages);
-    }
-  }, [serverInitialMessages, userEmail]);
+    };
+
+    loadMessages();
+  }, [userEmail, serverInitialMessages]);
 
   useEffect(() => {
-    // if user become authorized, save his messages from LS to DB
-    if (!userEmail) return;
+    // if user is not logged in save last LS_CHAT_MAX_MESSAGES messages to LS at each messages change
+    if (!messages.length || userEmail) return;
 
-    const storedMessages = localStorage.getItem(LS_CHAT_NAME);
-    if (storedMessages) {
-      try {
-        const parsedMessages: Message[] = JSON.parse(storedMessages);
-        // setInitialMessages(parsedMessages);
-        saveChatToDb(parsedMessages, id, userEmail);
-
-        localStorage.removeItem(LS_CHAT_NAME);
-      } catch (error) {
-        console.error((error as Error).message);
-      }
-    }
-  }, [userEmail]);
-
-  const { messages, handleSubmit, input, setInput, append, isLoading } =
-    useChat({
-      id,
-      body: { id },
-      initialMessages,
-      maxSteps: 10,
-      //   onFinish: () => {
-      //     window.history.replaceState({}, "", `${lang}/chat/${id}`);
-      //   },
-    });
+    localStorage.setItem(
+      LS_CHAT_NAME,
+      JSON.stringify(messages.slice(-LS_CHAT_MAX_MESSAGES))
+    );
+  }, [messages, userEmail]);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +123,27 @@ const ChatClient = ({
         messagesContainerRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  const clearChat = async () => {
+    console.log('🚀 ~ clearChat ~ setMessages:');
+    setMessages([]);
+
+    if (userEmail) {
+      try {
+        await removeChatFromDb(userEmail);
+      } catch (error) {
+        toast.error(
+          `${(error as Error).name}. Failed to remove chat from database.`
+        );
+      }
+    } else {
+      try {
+        localStorage.removeItem(LS_CHAT_NAME);
+      } catch (error) {
+        toast.error(`${(error as Error).name}. Failed to remove chat.`);
+      }
+    }
+  };
 
   const toggleChat = () => setIsOpen(!isOpen);
   const { height } = useWindowSize();
@@ -171,14 +220,13 @@ const ChatClient = ({
           <form className="w-full max-h-[90dvh]">
             <MultimodalInput
               lang={lang}
-              userEmail={userEmail}
               input={input}
               setInput={setInput}
               handleSubmit={handleSubmit}
               isLoading={isLoading}
-              stop={stop}
               messages={messages}
               append={append}
+              clearChat={clearChat}
             />
           </form>
         </>

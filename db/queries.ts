@@ -52,16 +52,17 @@ export async function createUser(
 }
 
 export async function saveChat({
-  id,
   messages,
   email,
 }: {
-  id: string;
   messages: (Message | CoreMessage)[];
   email: string;
 }) {
   try {
-    const selectedChats = await db.select().from(chat).where(eq(chat.id, id));
+    const selectedChats = await db
+      .select()
+      .from(chat)
+      .where(eq(chat.email, email));
 
     if (selectedChats.length > 0) {
       return await db
@@ -69,17 +70,15 @@ export async function saveChat({
         .set({
           messages: JSON.stringify(messages),
         })
-        .where(eq(chat.id, id));
+        .where(eq(chat.email, email));
     }
 
     return await db.insert(chat).values({
-      id,
       createdAt: new Date(),
       messages: JSON.stringify(messages),
       email,
     });
   } catch (error) {
-    console.error('Failed to save chat in database');
     throw error;
   }
 }
@@ -92,32 +91,6 @@ export async function deleteChatByEmail({ email }: { email: string }) {
     throw error;
   }
 }
-
-// export async function deleteChatById({ id }: { id: string }) {
-//   try {
-//     return await db.delete(chat).where(eq(chat.id, id));
-//   } catch (error) {
-//     console.error('Failed to delete chat by id from database');
-//     throw error;
-//   }
-// }
-
-// export async function getChatsByUserEmail({
-//   userEmail,
-// }: {
-//   userEmail: string;
-// }) {
-//   try {
-//     return await db
-//       .select()
-//       .from(chat)
-//       .where(eq(chat.email, userEmail))
-//       .orderBy(desc(chat.createdAt));
-//   } catch (error) {
-//     console.error('Failed to get chats by user from database');
-//     throw error;
-//   }
-// }
 
 export async function getChatByEmail({ email }: { email: string }) {
   try {

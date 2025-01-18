@@ -2,37 +2,33 @@
 
 import { ChatRequestOptions, CreateMessage, Message } from 'ai';
 import { motion } from 'framer-motion';
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 import { ArrowUpIcon, StopIcon } from './icons';
 import useWindowSize from './use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
-import {
-  chatSuggestedActions,
-  LS_CHAT_MAX_MESSAGES,
-  LS_CHAT_NAME,
-} from '@/models/chat.model';
+import { chatSuggestedActions } from '@/models/chat.model';
 import { ELanguage } from '@/models/language.model';
+import { Eraser } from 'lucide-react';
+import { AlertDialog } from '../ui/alert-dialog';
+import { ConfirmDialog } from './ConfirmDialog';
 
 export function MultimodalInput({
   lang,
-  userEmail,
   input,
   setInput,
   isLoading,
-  stop,
   messages,
   append,
   handleSubmit,
+  clearChat,
 }: {
   lang: ELanguage;
-  userEmail?: string | null;
   input: string;
   setInput: (value: string) => void;
   isLoading: boolean;
-  stop: () => void;
   messages: Array<Message>;
   append: (
     message: Message | CreateMessage,
@@ -44,19 +40,12 @@ export function MultimodalInput({
     },
     chatRequestOptions?: ChatRequestOptions
   ) => void;
+  clearChat: () => Promise<void>;
 }) {
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-
-  useEffect(() => {
-    // if user is not logged in save last LS_CHAT_MAX_MESSAGES messages to LS at each messages change
-    if (!messages.length || userEmail) return;
-
-    localStorage.setItem(
-      LS_CHAT_NAME,
-      JSON.stringify(messages.slice(-LS_CHAT_MAX_MESSAGES))
-    );
-  }, [messages, userEmail]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
@@ -72,92 +61,120 @@ export function MultimodalInput({
   }, [handleSubmit, width]);
 
   return (
-    <div className="w-full max-h-[70dvh] flex flex-col gap-4 p-1">
-      {messages.length === 0 && (
-        <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 w-full md:px-0 mx-auto overflow-y-scroll">
-          {chatSuggestedActions.map((suggestedAction, index) => (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ delay: 0.05 * index }}
-              key={index}
-              // className={index > 1 ? 'hidden sm:block' : 'block'}
-            >
-              <button
-                role="button"
-                onClick={async () => {
-                  append({
-                    role: 'user',
-                    content: suggestedAction.action(lang),
-                  });
-                }}
-                className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+    <>
+      <div className="w-full max-h-[70dvh] flex flex-col gap-4 p-1">
+        {messages.length === 0 && (
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 w-full md:px-0 mx-auto overflow-y-scroll">
+            {chatSuggestedActions.map((suggestedAction, index) => (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ delay: 0.05 * index }}
+                key={index}
+                // className={index > 1 ? 'hidden sm:block' : 'block'}
               >
-                {suggestedAction.label && suggestedAction.label[lang] ? (
-                  <>
+                <button
+                  role="button"
+                  onClick={async () => {
+                    append({
+                      role: 'user',
+                      content: suggestedAction.action(lang),
+                    });
+                  }}
+                  className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+                >
+                  {suggestedAction.label && suggestedAction.label[lang] ? (
+                    <>
+                      <span className="font-medium">
+                        {suggestedAction.title[lang]}
+                      </span>
+                      <span className="text-zinc-500 dark:text-zinc-400">
+                        {suggestedAction.label[lang]}
+                      </span>
+                    </>
+                  ) : (
                     <span className="font-medium">
-                      {suggestedAction.title[lang]}
+                      {suggestedAction.action(lang)}
                     </span>
-                    <span className="text-zinc-500 dark:text-zinc-400">
-                      {suggestedAction.label[lang]}
-                    </span>
-                  </>
-                ) : (
-                  <span className="font-medium">
-                    {suggestedAction.action(lang)}
-                  </span>
-                )}
-              </button>
-            </motion.div>
-          ))}
-        </div>
-      )}
+                  )}
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-      <Textarea
-        ref={textareaRef}
-        placeholder="Send a message..."
-        value={input}
-        onChange={handleInput}
-        className="overflow-y-scroll pr-9 resize-none text-base bg-muted border-none"
-        rows={3}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
+        <Textarea
+          ref={textareaRef}
+          placeholder="Send a message..."
+          value={input}
+          onChange={handleInput}
+          className="overflow-y-scroll pr-9 resize-none text-base bg-muted border-none"
+          rows={3}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
 
-            if (isLoading) {
-              toast.error(
-                'Please wait for the specialist to finish its response!'
-              );
-            } else {
-              submitForm();
+              if (isLoading) {
+                toast.error(
+                  'Please wait for the specialist to finish its response!'
+                );
+              } else {
+                submitForm();
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
 
-      {isLoading ? (
-        <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-          onClick={(event) => {
-            event.preventDefault();
-            stop();
-          }}
-        >
-          <StopIcon />
-        </Button>
-      ) : (
-        <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-          onClick={(event) => {
-            event.preventDefault();
-            submitForm();
-          }}
-          disabled={input.length === 0}
-        >
-          <ArrowUpIcon />
-        </Button>
-      )}
-    </div>
+        {isLoading ? (
+          <Button
+            className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+            onClick={(event) => {
+              event.preventDefault();
+              stop();
+            }}
+          >
+            <StopIcon />
+          </Button>
+        ) : (
+          <>
+            <Button
+              className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+              onClick={(event) => {
+                event.preventDefault();
+                submitForm();
+              }}
+              disabled={input.length === 0}
+            >
+              <ArrowUpIcon />
+            </Button>
+
+            {messages.length > 0 && (
+              <Button
+                className="rounded-full p-1.5 h-fit absolute bottom-10 right-2 m-0.5 bg-destructive/30 hover:bg-destructive/40"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setDialogOpen(true);
+                }}
+                variant="outline"
+                disabled={isLoading}
+              >
+                <Eraser />
+              </Button>
+            )}
+          </>
+        )}
+      </div>
+
+      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+        <ConfirmDialog
+          title={'title[lang]'}
+          description={'description[lang]'}
+          confirmBtnCaption={'confirmBtn[lang]'}
+          cancelBtnCaption={'cancelBtn[lang]'}
+          action={clearChat}
+        />
+      </AlertDialog>
+    </>
   );
 }

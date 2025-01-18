@@ -1,16 +1,12 @@
 'use server';
 
-import { saveChat } from '@/db/queries';
+import { deleteChatByEmail, saveChat } from '@/db/queries';
 import { Message } from 'ai';
 
-export const saveChatToDb = async (
-  messages: Message[],
-  id: string,
-  email: string
-) => {
-  await saveChat({
-    id,
-    messages,
-    email,
-  });
+export const saveChatToDb = async (messages: Message[], email: string) => {
+  await saveChat({ messages, email });
+};
+
+export const removeChatFromDb = async (email: string) => {
+  await deleteChatByEmail({ email });
 };

@@ -34,6 +34,33 @@ export const CHAT_MODEL = {
   },
 };
 
+export const CLEAR_CHAT = {
+  ariaLabel: {
+    [UA]: 'Почати новий чат',
+    [EN]: 'Start a new chat',
+  },
+
+  title: {
+    [UA]: 'Очищення чату',
+    [EN]: 'Clear the chat',
+  },
+
+  description: {
+    [UA]: 'Ви дійсно бажаєте видалити історію чату?',
+    [EN]: 'Are you sure you want to clear the chat history?',
+  },
+
+  cancelBtn: {
+    [UA]: 'Відмінити',
+    [EN]: 'Cancel',
+  },
+
+  confirmBtn: {
+    [UA]: 'Очистити',
+    [EN]: 'Clear',
+  },
+};
+
 export const chatSuggestedActions = [
   // {
   //   title: {
