@@ -1,40 +1,37 @@
 import { ReactNode } from 'react';
 import { localeStringMaker } from '@/lib/utils/localeStringMaker';
-import { twMerge } from 'tailwind-merge';
+import { TBottomInfoPanelCaption } from '@/models/infoPanel.model';
+import { ELanguage } from '@/models/language.model';
 
 export interface IBottomInfoPanelItem {
-  name: string;
+  caption: TBottomInfoPanelCaption;
   value: ReactNode | null;
 }
 
 interface IBottomInfoPanel {
   items: IBottomInfoPanelItem[];
+  lang: ELanguage;
 }
 
-const BottomInfoPanel = ({ items }: IBottomInfoPanel) => {
+const BottomInfoPanel = ({ items, lang }: IBottomInfoPanel) => {
   const filteredItems = items.filter((item) => item.value);
-  const lastId = filteredItems.length - 1;
 
   return (
     <ul
-      style={{
-        background:
-          'linear-gradient(to bottom,rgb(30, 87, 153) 20%,rgb(2, 118, 214) 50%,rgb(30, 87, 153) 80%)',
-      }}
-      className="text-stone-300 font-verdana text-xs py-1 px-4 flex gap-2"
+      className="font-verdana text-xs flex gap-4 list-none"
       data-testid="BottomInfoPanel"
     >
-      {filteredItems.map(({ name, value }, i) => (
-        <li key={name}>
+      {filteredItems.map(({ caption: { title, icon }, value }, i) => (
+        <li key={i}>
           <figure
-            className={twMerge(
-              'text-center',
-              i !== lastId ? `border-r pr-2 border-solid border-stone-300` : ''
-            )}
-            key={name}
+            className={
+              'flex gap-2 [&>svg]:size-4 [&>svg]:text-muted-foreground'
+            }
+            key={i}
           >
-            <span>{name}: </span>
-            <figcaption className="inline-block text-white">
+            {icon}
+            <span className="sr-only">{title[lang]}</span>
+            <figcaption>
               {typeof value === 'number' ? localeStringMaker(value) : value}
             </figcaption>
           </figure>

@@ -1,17 +1,10 @@
-// import { ELanguage } from '@/models/language.model';
+import { ELanguage } from '@/models/language.model';
 import BottomInfoPanel, { IBottomInfoPanelItem } from './BottomInfoPanel';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../ui/card';
+import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
 import SeoLink from './SeoLink';
 
 interface IArticleCardProps {
-  // lang: ELanguage;
+  lang: ELanguage;
   articleTitle: React.ReactNode;
   href: string;
   seoCardLinkTitle: string;
@@ -19,18 +12,16 @@ interface IArticleCardProps {
   // isTitleCentered?: boolean;
   articleDescription: React.ReactNode;
   infoPanelItems: IBottomInfoPanelItem[];
-  date: Date;
 }
 
 const ArticleCard = ({
-  // lang,
+  lang,
   articleDescription,
   articleTitle,
   image,
   infoPanelItems,
   href,
   seoCardLinkTitle,
-  date,
   // isTitleCentered = false,
 }: IArticleCardProps) => (
   <Card className="min-h-[410px] flex">
@@ -40,15 +31,12 @@ const ArticleCard = ({
       className="min-h-full flex flex-col md:flex-row items-center justify-between gap-4 p-4"
     >
       <div className="h-full flex flex-col flex-1 justify-between">
-        <CardHeader>
-          <CardTitle>{articleTitle}</CardTitle>
-          <CardDescription>{date.toLocaleDateString('en-CA')}</CardDescription>
-        </CardHeader>
+        <CardTitle className="p-6">{articleTitle}</CardTitle>
         <CardContent>
           <p className="text-muted-foreground">{articleDescription}</p>
         </CardContent>
         <CardFooter>
-          <BottomInfoPanel items={infoPanelItems} />
+          <BottomInfoPanel items={infoPanelItems} lang={lang} />
         </CardFooter>
       </div>
       {image}

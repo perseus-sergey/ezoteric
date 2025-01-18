@@ -9,7 +9,6 @@ import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { isFileExists } from '@/lib/utils/imagePathValidate';
 import { IMG_PROPERTIES } from '@/models/image.model';
-import { INFO_PANEL_TITLES } from '@/models/infoPanel.model';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
@@ -23,6 +22,7 @@ import { Metadata } from 'next';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import { ELanguage } from '@/models/language.model';
 import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
+import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -124,25 +124,28 @@ export default async function Page({ params }: { params: TParams }) {
         <DangerHtml text={text} />
       </div>
 
-      <BottomInfoPanel
-        items={[
-          {
-            name: INFO_PANEL_TITLES.views[lang],
-            value: (viewCount || 0) + 1,
-          },
-          {
-            name: INFO_PANEL_TITLES.date[lang],
-            value: <time dateTime={currDate}>{currDate}</time>,
-          },
-        ]}
-      />
+      <div className="py-1 px-4 sm:w-fit rounded-sm bg-gradient-to-b from-tertiary/20 to-tertiary/20 via-tertiary">
+        <BottomInfoPanel
+          lang={lang}
+          items={[
+            {
+              caption: INFO_PANEL_CAPTION.views,
+              value: viewCount || 0,
+            },
+            {
+              caption: INFO_PANEL_CAPTION.date,
+              value: <time dateTime={currDate}>{currDate}</time>,
+            },
+          ]}
+        />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generatePostJsonLd({ lang, article })),
-        }}
-      />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generatePostJsonLd({ lang, article })),
+          }}
+        />
+      </div>
     </article>
   );
 }

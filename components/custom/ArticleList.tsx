@@ -1,5 +1,5 @@
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
-import { INFO_PANEL_TITLES } from '@/models/infoPanel.model';
+import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { ELanguage } from '@/models/language.model';
 import ArticleCard from './ArticleCard';
 import { cutText } from '@/lib/utils/cutText';
@@ -15,12 +15,6 @@ import { IMG_PROPERTIES } from '@/models/image.model';
 import { ARTICLE_IMG } from '@/models/article.model';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
-
-const {
-  date: dateTitle,
-  views: viewsTitle,
-  // comments: commentsTitle,
-} = INFO_PANEL_TITLES;
 
 interface IArticleListProps {
   lang: ELanguage;
@@ -47,7 +41,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
                 </Link>
               )}
               <ArticleCard
-                date={updatedAt}
+                lang={lang}
                 seoCardLinkTitle={getSeoCardLinkTitle(title)[lang]}
                 articleTitle={title}
                 image={
@@ -63,9 +57,9 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
                 articleDescription={cutText(description, 250)}
                 href={`/${lang}/${BLOG}/${slug}`}
                 infoPanelItems={[
-                  { name: viewsTitle[lang], value: viewCount },
+                  { caption: INFO_PANEL_CAPTION.views, value: viewCount },
                   {
-                    name: dateTitle[lang],
+                    caption: INFO_PANEL_CAPTION.date,
                     value: <time dateTime={currDate}>{currDate}</time>,
                   },
                   // { name: commentsTitle[lang], value: comment_count },

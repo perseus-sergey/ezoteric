@@ -89,7 +89,6 @@ export default async function Page({
 
   const articlesCount =
     !articles || articles.length === 0 ? 0 : totalCount || 0;
-  console.log('🚀 ~ articles:', articles);
   const totalPages = Math.ceil(articlesCount / perPage);
 
   const isAdmin = await isAdminAuth();
