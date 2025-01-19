@@ -1,7 +1,7 @@
 'use client';
 
 import { Attachment, ToolInvocation, Message } from 'ai';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { clsx } from 'clsx';
 import { ReactNode } from 'react';
 

@@ -22,15 +22,12 @@ import { Suspense } from 'react';
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // get email for ezoteric
-// check json-ld on production
-// chat: save to db || ls
 // chat: add message time
 // blog: search input
 // blog: priority for first img
 // post-update: add checkbox 'published'
 // post-update: image upload blob
 // improve components/custom/NotFoundPage.tsx
-// meta for all pages
 // =================================================================
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
@@ -102,7 +99,7 @@ export default async function Layout({ children, params }: TProps) {
         >
           <Header isAdmin={isAdmin} session={session} lang={lang} />
 
-          <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 px-2 sm:px-4">
+          <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 px-2 sm:px-4 flex flex-col">
             <Toaster position="top-center" richColors />
             {children}
 

@@ -1,3 +1,5 @@
+import * as motion from 'motion/react-client';
+
 import { ReactNode } from 'react';
 import { localeStringMaker } from '@/lib/utils/localeStringMaker';
 import { TBottomInfoPanelCaption } from '@/models/infoPanel.model';
@@ -22,7 +24,13 @@ const BottomInfoPanel = ({ items, lang }: IBottomInfoPanel) => {
       data-testid="BottomInfoPanel"
     >
       {filteredItems.map(({ caption: { title, icon }, value }, i) => (
-        <li key={i}>
+        <motion.li
+          key={i}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ delay: 0.05 * i, type: 'spring' }}
+        >
           <figure
             className={
               'flex gap-2 [&>svg]:size-4 [&>svg]:text-muted-foreground'
@@ -35,7 +43,7 @@ const BottomInfoPanel = ({ items, lang }: IBottomInfoPanel) => {
               {typeof value === 'number' ? localeStringMaker(value) : value}
             </figcaption>
           </figure>
-        </li>
+        </motion.li>
       ))}
     </ul>
   );

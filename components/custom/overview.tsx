@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { EzotericIcon } from '@/svg/EzotericIcon';
 import { ELanguage } from '@/models/language.model';

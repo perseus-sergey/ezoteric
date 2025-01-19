@@ -1,7 +1,8 @@
 'use client';
 
+import { motion } from 'motion/react';
+
 import { ChatRequestOptions, CreateMessage, Message } from 'ai';
-import { motion } from 'framer-motion';
 import React, { useRef, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
