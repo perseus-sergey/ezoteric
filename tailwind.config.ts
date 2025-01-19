@@ -22,6 +22,12 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+
+      backgroundImage: {
+        'tertiary-gradient':
+          'linear-gradient(to bottom,hsl(var(--tertiary) / 0.2),hsl(var(--tertiary)),hsl(var(--tertiary) / 0.2))',
+      },
+
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

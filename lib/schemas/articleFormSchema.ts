@@ -28,6 +28,7 @@ export const articleFormSchema = z.object({
     .min(10, { message: 'Keywords is too short' }),
   textUa: z.string().min(20, { message: 'Текст занадто короткий' }),
   textEn: z.string().min(20, { message: 'Text is too short' }),
+  published: z.boolean().default(true),
   imageName: z.string().optional(),
 });
 

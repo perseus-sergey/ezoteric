@@ -22,6 +22,7 @@ import { updateArticle } from '@/db/queriesArticle';
 import { TArticle } from '@/db/schema';
 import { toast } from 'sonner';
 import { TinyEditor } from './TinyEditor';
+import { Checkbox } from '../ui/checkbox';
 
 export const FormEditArticle = ({
   article,
@@ -63,7 +64,10 @@ export const FormEditArticle = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 bg-tertiary p-6 rounded-md"
+      >
         {/* Title UA */}
         <FormField
           control={form.control}
@@ -199,7 +203,7 @@ export const FormEditArticle = ({
             <FormItem>
               <FormLabel>Image Name</FormLabel>
               <FormControl>
-                <Textarea placeholder="imageName.jpg" {...field} />
+                <Input placeholder="imageName.jpg" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -220,6 +224,29 @@ export const FormEditArticle = ({
                 Унікальний ідентифікатор статті.
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Published */}
+        <FormField
+          control={form.control}
+          name="published"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start w-fit space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Is Article published</FormLabel>
+                <FormDescription>
+                  If you uncheck it, the article will not be displayed on the
+                  site.
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />

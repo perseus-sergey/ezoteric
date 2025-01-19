@@ -24,10 +24,10 @@ import { Suspense } from 'react';
 // get email for ezoteric
 // chat: add message time
 // blog: search input
-// blog: priority for first img
+// blog: check pagination
+// blog: priority for first img?
 // post-update: add checkbox 'published'
 // post-update: image upload blob
-// improve components/custom/NotFoundPage.tsx
 // =================================================================
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;

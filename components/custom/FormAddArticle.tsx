@@ -82,7 +82,10 @@ export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 bg-tertiary p-6 rounded-md"
+      >
         {/* Title EN */}
         <FormField
           control={form.control}
@@ -240,7 +243,7 @@ export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
             <FormItem>
               <FormLabel>Image Name</FormLabel>
               <FormControl>
-                <Textarea placeholder="imageName.jpg" {...field} />
+                <Input placeholder="imageName.jpg" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

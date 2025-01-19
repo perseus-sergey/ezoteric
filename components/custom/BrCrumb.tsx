@@ -28,7 +28,7 @@ const BrCrumb = ({
   items: EBreadcrumb[];
   lang: ELanguage;
 }) => (
-  <Breadcrumb className="w-fit my-2 py-2 px-4 bg-gradient-to-b from-tertiary/20 to-tertiary/20 via-tertiary rounded-lg">
+  <Breadcrumb className="w-fit my-2 py-2 px-4 bg-tertiary-gradient rounded-lg">
     <BreadcrumbList className="text-foreground font-bold">
       <BreadcrumbItem>
         <BreadcrumbLink asChild>

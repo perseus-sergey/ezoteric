@@ -16,7 +16,7 @@ export const Title = ({
   return (
     <TitleType
       className={cn(
-        'mx-auto font-bold font-georgia px-4 sm:px-8 py-2 sm:py-6 text-center text-2xl sm:text-3xl bg-gradient-to-b from-tertiary/20 to-tertiary/20 via-tertiary rounded-lg',
+        'mx-auto font-bold font-georgia px-4 sm:px-8 py-2 sm:py-6 text-center text-2xl sm:text-3xl bg-tertiary-gradient rounded-lg',
         className
       )}
       {...attributes}

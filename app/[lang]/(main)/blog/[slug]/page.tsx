@@ -124,7 +124,7 @@ export default async function Page({ params }: { params: TParams }) {
         <DangerHtml text={text} />
       </div>
 
-      <div className="py-1 px-4 sm:w-fit rounded-sm bg-gradient-to-b from-tertiary/20 to-tertiary/20 via-tertiary">
+      <div className="py-1 px-4 sm:w-fit rounded-sm bg-tertiary-gradient">
         <BottomInfoPanel
           lang={lang}
           items={[
