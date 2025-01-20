@@ -18,7 +18,7 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 import { Suspense } from 'react';
 
 // =================================================================
-// поговорити з дочею про консультаціі (можливо поки що прибрати телефон та імейл)
+// змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // get email for ezoteric

@@ -17,6 +17,8 @@ import {
 import { generateUUID } from '@/lib/utils/utils';
 import { auth } from '@/app/(auth)/auth';
 
+const siteEmail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
+
 export async function POST(request: Request) {
   const { messages }: { id: string; messages: Array<Message> } =
     await request.json();
@@ -37,8 +39,8 @@ export async function POST(request: Request) {
 - If the user already gave you the information about their time of birth and name use this information further in chat, DO NOT ask that twice. 
 - If a person starts to ask about another person in their life ask about name and birth info about this person for more accurate information. By telling them which information from their chart you use, give small details from their matrix destiny, astrological birth chart, human design, and other tools. 
 - In order not to conflict with our existing specialists in esoteric consultations, smoothly lead the conversation to the point where the user turns to our consultants for a more detailed and accurate answer. For example: 
--- "Dear, my knowledge is quite extensive, but you can send a request for a consultation with our specialists to the email address info@ezoteric.net ✍🏼 and get a more open answer .☺️"
--- "Dear, my knowledge is quite limited, but you can send your request to our consultant to the email address info@ezoteric.net ✍🏼 to sign up for a consultation to get a more detailed answer.☺️"
+-- "Dear, my knowledge is quite extensive, but you can send a request for a consultation with our specialists to the email address ${siteEmail} ✍🏼 and get a more open answer .☺️"
+-- "Dear, my knowledge is quite limited, but you can send your request to our consultant to the email address ${siteEmail} ✍🏼 to sign up for a consultation to get a more detailed answer.☺️"
 
 **Important Considerations:**
 

@@ -1,4 +1,4 @@
-import { auth } from '@/app/(auth)/auth';
+import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -11,7 +11,9 @@ const FileSchema = z.object({
     })
     .refine(
       (file) =>
-        ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type),
+        ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'].includes(
+          file.type
+        ),
       {
         message: 'File type should be JPEG, PNG, or PDF',
       }
@@ -19,11 +21,11 @@ const FileSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const session = await auth();
+  const isAdmin = await isAdminAuth();
 
-  if (!session) {
+  if (!isAdmin) {
     return NextResponse.json(
-      { error: 'Please log in first.' },
+      { error: 'Please log in as Admin first.' },
       { status: 401 }
     );
   }
@@ -54,23 +56,22 @@ export async function POST(request: Request) {
     const fileBuffer = await file.arrayBuffer();
 
     try {
-      const data = await put(`${filename}`, fileBuffer, {
+      const data = await put(`post/${filename}`, fileBuffer, {
         access: 'public',
+        addRandomSuffix: false,
       });
 
       return NextResponse.json(data);
     } catch (error) {
       return NextResponse.json(
-        { error: `Upload failed: Error Name: ${(error as Error).name}` },
+        { error: `Upload failed: Error: ${(error as Error).message}` },
         { status: 500 }
       );
     }
   } catch (error) {
     return NextResponse.json(
       {
-        error: `Failed to process request: Error Name: ${
-          (error as Error).name
-        }`,
+        error: `Failed to process request: Error: ${(error as Error).message}`,
       },
       { status: 500 }
     );
