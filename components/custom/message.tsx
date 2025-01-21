@@ -7,7 +7,6 @@ import { ReactNode } from 'react';
 
 import { UserIcon } from './icons';
 import { Markdown } from './markdown';
-import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
 import { AuthorizePayment } from '../flights/authorize-payment';
 import { DisplayBoardingPass } from '../flights/boarding-pass';
@@ -18,6 +17,7 @@ import { SelectSeats } from '../flights/select-seats';
 import { VerifyPayment } from '../flights/verify-payment';
 import { Meditation } from '@/svg/Meditation';
 import Image from 'next/image';
+import { PreviewUploaded } from './PreviewUploaded';
 
 export const PreviewMessage = ({
   chatId,
@@ -131,7 +131,7 @@ export const PreviewMessage = ({
         {attachments && (
           <div className="flex flex-row gap-2">
             {attachments.map((attachment) => (
-              <PreviewAttachment key={attachment.url} attachment={attachment} />
+              <PreviewUploaded key={attachment.url} uploadFile={attachment} />
             ))}
           </div>
         )}

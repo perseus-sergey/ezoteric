@@ -10,7 +10,7 @@ import { ArrowUpIcon, StopIcon } from './icons';
 import useWindowSize from './use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
-import { chatSuggestedActions } from '@/models/chat.model';
+import { chatSuggestedActions, CLEAR_CHAT } from '@/models/chat.model';
 import { ELanguage } from '@/models/language.model';
 import { Eraser } from 'lucide-react';
 import { AlertDialog } from '../ui/alert-dialog';
@@ -161,6 +161,7 @@ export function MultimodalInput({
                 disabled={isLoading}
               >
                 <Eraser />
+                <span className="sr-only">{CLEAR_CHAT.ariaLabel[lang]}</span>
               </Button>
             )}
           </>
@@ -169,10 +170,10 @@ export function MultimodalInput({
 
       <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <ConfirmDialog
-          title={'title[lang]'}
-          description={'description[lang]'}
-          confirmBtnCaption={'confirmBtn[lang]'}
-          cancelBtnCaption={'cancelBtn[lang]'}
+          title={CLEAR_CHAT.title[lang]}
+          description={CLEAR_CHAT.description[lang]}
+          confirmBtnCaption={CLEAR_CHAT.confirmBtn[lang]}
+          cancelBtnCaption={CLEAR_CHAT.cancelBtn[lang]}
           action={clearChat}
         />
       </AlertDialog>

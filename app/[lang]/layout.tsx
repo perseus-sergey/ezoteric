@@ -20,6 +20,7 @@ import { Suspense } from 'react';
 // =================================================================
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
+// add page with chat conversation list
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // get email for ezoteric
 // chat: add message time

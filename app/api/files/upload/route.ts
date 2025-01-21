@@ -33,10 +33,12 @@ export async function POST(request: Request) {
   if (request.body === null) {
     return new Response('Request body is empty', { status: 400 });
   }
+  console.log('🚀 ~ POST ~ request:', request.body);
 
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const uploadDir = formData.get('uploadDir') || '';
 
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
@@ -53,13 +55,18 @@ export async function POST(request: Request) {
     }
 
     const filename = file.name;
+
     const fileBuffer = await file.arrayBuffer();
 
     try {
-      const data = await put(`post/${filename}`, fileBuffer, {
-        access: 'public',
-        addRandomSuffix: false,
-      });
+      const data = await put(
+        `${uploadDir ? `${uploadDir}/` : ''}${filename}`,
+        fileBuffer,
+        {
+          access: 'public',
+          addRandomSuffix: false,
+        }
+      );
 
       return NextResponse.json(data);
     } catch (error) {

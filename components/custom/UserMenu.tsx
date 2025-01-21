@@ -20,7 +20,7 @@ import { LOGOUT_MODAL } from '@/models/modal.model';
 import Image from 'next/image';
 import { ConfirmDialog } from './ConfirmDialog';
 
-const { BLOG, MASTER, ARTICLE_ADD } = ESegment;
+const { BLOG, MASTER, ARTICLE_ADD, UPLOAD_IMAGE } = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
 
 export default function UserMenu({
@@ -75,11 +75,19 @@ export default function UserMenu({
 
         <DropdownMenuContent align="end">
           {isAdmin ? (
-            <DropdownMenuItem>
-              <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
-                Add New Post
-              </Link>
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem>
+                <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
+                  Add New Post
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <Link href={`/${lang}/${MASTER}/${BLOG}/${UPLOAD_IMAGE}`}>
+                  Upload Images
+                </Link>
+              </DropdownMenuItem>
+            </>
           ) : null}
 
           <DropdownMenuItem className="p-1 z-50">

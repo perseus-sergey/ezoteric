@@ -1,16 +1,15 @@
-import { Attachment } from 'ai';
-
+import { IUploadFile } from '@/models/uploadFile.model';
 import { LoaderIcon } from './icons';
 import Image from 'next/image';
 
-export const PreviewAttachment = ({
-  attachment,
+export const PreviewUploaded = ({
+  uploadFile,
   isUploading = false,
 }: {
-  attachment: Attachment;
+  uploadFile: IUploadFile;
   isUploading?: boolean;
 }) => {
-  const { name, url, contentType } = attachment;
+  const { name, url, contentType } = uploadFile;
 
   return (
     <div className="flex flex-col gap-2 max-w-16">
@@ -22,7 +21,7 @@ export const PreviewAttachment = ({
               src={url}
               width={64}
               height={80}
-              alt={`An image attachment${name ? `: ${name}` : ''}`}
+              alt={`An image uploadFile${name ? `: ${name}` : ''}`}
               className="rounded-md size-full"
             />
           ) : (
