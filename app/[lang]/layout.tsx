@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next';
 import { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
@@ -116,7 +117,10 @@ export default async function Layout({ children, params }: TProps) {
             </Suspense>
           </main>
         </ThemeProvider>
+
         <Footer lang={lang} />
+
+        <Analytics />
       </body>
     </html>
   );
