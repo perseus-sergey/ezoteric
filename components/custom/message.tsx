@@ -42,7 +42,7 @@ export const PreviewMessage = ({
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
     >
-      <div className="size-10 flex flex-col justify-center items-center shrink-0 text-zinc-500">
+      <div className="size-10 flex flex-col justify-center items-center shrink-0 rounded-full bg-tertiary/70 text-tertiary-foreground/80">
         {role === 'assistant' ? (
           <Meditation />
         ) : userImgSrc ? (

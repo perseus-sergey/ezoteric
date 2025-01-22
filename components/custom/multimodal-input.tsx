@@ -135,7 +135,7 @@ export function MultimodalInput({
               stop();
             }}
           >
-            <StopIcon />
+            <StopIcon className="size-4" />
           </Button>
         ) : (
           <>
@@ -147,12 +147,12 @@ export function MultimodalInput({
               }}
               disabled={input.length === 0}
             >
-              <ArrowUpIcon />
+              <ArrowUpIcon className="size-4" />
             </Button>
 
             {messages.length > 0 && (
               <Button
-                className="rounded-full p-1.5 h-fit absolute bottom-10 right-2 m-0.5 bg-destructive/30 hover:bg-destructive/40"
+                className="rounded-full p-1.5 h-fit absolute bottom-12 right-2 m-0.5 bg-destructive/30 hover:bg-destructive/40"
                 onClick={(event) => {
                   event.preventDefault();
                   setDialogOpen(true);
@@ -160,7 +160,7 @@ export function MultimodalInput({
                 variant="outline"
                 disabled={isLoading}
               >
-                <Eraser />
+                <Eraser className="size-4" />
                 <span className="sr-only">{CLEAR_CHAT.ariaLabel[lang]}</span>
               </Button>
             )}

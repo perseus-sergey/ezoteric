@@ -1,5 +1,6 @@
 import { isAdminAuth } from '@/lib/utils/loggedUser';
-import { put } from '@vercel/blob';
+import { EUrlSearchParam } from '@/models/url.model';
+import { del, list, put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -20,6 +21,38 @@ const FileSchema = z.object({
     ),
 });
 
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const cursor = searchParams.get('cursor');
+
+    const {
+      blobs,
+      cursor: nextCursor,
+      hasMore,
+    } = await list({
+      limit: 5,
+      cursor: cursor || undefined,
+      // Optionally add prefix if you want to filter blobs
+      // prefix: 'your-specific-folder/'
+    });
+
+    return NextResponse.json({
+      blobs,
+      cursor: nextCursor,
+      hasMore,
+    });
+  } catch (error) {
+    console.error('Blob listing error:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to list blobs',
+      },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   const isAdmin = await isAdminAuth();
 
@@ -31,9 +64,11 @@ export async function POST(request: Request) {
   }
 
   if (request.body === null) {
-    return new Response('Request body is empty', { status: 400 });
+    return NextResponse.json(
+      { error: 'Request body is empty' },
+      { status: 400 }
+    );
   }
-  console.log('🚀 ~ POST ~ request:', request.body);
 
   try {
     const formData = await request.formData();
@@ -83,4 +118,30 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function DELETE(request: Request) {
+  const isAdmin = await isAdminAuth();
+
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: 'Please log in as Admin first.' },
+      { status: 401 }
+    );
+  }
+
+  const { searchParams } = new URL(request.url);
+
+  const urlToDelete = searchParams.get(EUrlSearchParam.URL) as string;
+
+  if (!urlToDelete) {
+    return NextResponse.json(
+      { error: 'Request url is empty' },
+      { status: 400 }
+    );
+  }
+
+  await del(urlToDelete);
+
+  return NextResponse.json({});
 }

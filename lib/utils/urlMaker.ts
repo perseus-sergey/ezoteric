@@ -1,7 +1,7 @@
-import { TSearchParams } from '@/models/url.model';
+import { TUrlSearchParams } from '@/models/url.model';
 
 export const makeUrlSearchParams = (
-  searchParams: TSearchParams
+  searchParams: TUrlSearchParams
 ): URLSearchParams => {
   const params = new URLSearchParams();
   Object.entries(searchParams).forEach(([key, value]) => {
@@ -19,7 +19,7 @@ export const makeUrlSearchParams = (
 
 export const createURLWithParams = (
   baseURL: string,
-  searchParams?: TSearchParams
+  searchParams?: TUrlSearchParams
 ): URL => {
   const url = new URL(baseURL);
   if (!searchParams) return url;

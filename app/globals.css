@@ -184,7 +184,7 @@
   }
 
   img {
-    @apply max-w-full h-auto rounded-lg shadow-md my-4;
+    @apply max-w-full h-auto rounded-md shadow-md my-4;
   }
 
   table {
@@ -210,5 +210,9 @@
 
   code {
     @apply bg-gray-200 px-1 py-0.5 rounded font-mono text-sm;
+  }
+
+  .section-image__wrapper {
+    @apply flex justify-center items-center flex-wrap lg:flex-nowrap gap-10 px-4;
   }
 }

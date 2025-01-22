@@ -1,25 +1,23 @@
-import { EUrlSearchParam, TSearchParams } from '@/models/url.model';
+import { EUrlSearchParam, TUrlSearchParams } from '@/models/url.model';
 
-export const validSearchParam = async (
+export const validSearchParam = (
   paramName: EUrlSearchParam,
-  searchParams?: TSearchParams
+  searchParams?: TUrlSearchParams
 ) => {
-  const sp = await searchParams;
-
-  return sp && sp[paramName] && typeof sp[paramName] === 'string'
-    ? decodeURIComponent(sp[paramName] as string)
+  return searchParams &&
+    searchParams[paramName] &&
+    typeof searchParams[paramName] === 'string'
+    ? decodeURIComponent(searchParams[paramName] as string)
     : '';
 };
 
-export const validSearchParamArray = async (
+export const validSearchParamArray = (
   paramName: EUrlSearchParam,
-  searchParams?: TSearchParams
-): Promise<undefined | string[]> => {
-  const sp = await searchParams;
+  searchParams?: TUrlSearchParams
+): undefined | string[] => {
+  if (!searchParams || !searchParams[paramName]) return undefined;
 
-  if (!sp || !sp[paramName]) return undefined;
-
-  const serPar = sp[paramName];
+  const serPar = searchParams[paramName];
   if (!serPar || (Array.isArray(serPar) && serPar.length === 0))
     return undefined;
 

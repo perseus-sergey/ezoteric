@@ -120,7 +120,7 @@ export default async function Page({ params }: { params: TParams }) {
         />
       )}
 
-      <div className="article-text px-4 py-2 bg-tertiary rounded-lg">
+      <div className="article-text py-8 px-16 bg-tertiary rounded-2xl">
         <DangerHtml text={text} />
       </div>
 

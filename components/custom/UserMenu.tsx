@@ -12,7 +12,7 @@ import { AlertDialog } from '@/components/ui/alert-dialog';
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
-import { LogOut } from 'lucide-react';
+import { FilePlus, ImagesIcon, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '@/app/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
@@ -77,14 +77,20 @@ export default function UserMenu({
           {isAdmin ? (
             <>
               <DropdownMenuItem>
-                <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}>
-                  Add New Post
+                <Link
+                  href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}
+                  className="flex items-center gap-2"
+                >
+                  <FilePlus className="size-4 opacity-40" /> Add New Post
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <Link href={`/${lang}/${MASTER}/${BLOG}/${UPLOAD_IMAGE}`}>
-                  Upload Images
+                <Link
+                  href={`/${lang}/${MASTER}/${BLOG}/${UPLOAD_IMAGE}`}
+                  className="flex items-center gap-2"
+                >
+                  <ImagesIcon className="size-4 opacity-40" /> Image Storage
                 </Link>
               </DropdownMenuItem>
             </>
@@ -93,14 +99,14 @@ export default function UserMenu({
           <DropdownMenuItem className="p-1 z-50">
             <Button
               variant="destructive"
-              className="py-2 px-4 size-fit"
+              className="py-2 px-4 w-full flex justify-evenly items-center"
               onClick={() => {
                 setListOpen(false);
                 setDialogOpen(true);
               }}
             >
               {HEADER_LOGIN.signout[lang]}
-              <LogOut />
+              <LogOut className="size-5" />
             </Button>
           </DropdownMenuItem>
         </DropdownMenuContent>

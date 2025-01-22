@@ -18,7 +18,7 @@ import {
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 import { MessageIcon } from './icons';
-import { removeChatFromDb, saveChatToDb } from '@/app/actions/chat.action';
+import { removeChatFromDb, saveChatToDb } from '@/actions/chat.action';
 import { toast } from 'sonner';
 import SeoSVG from './SeoSVG';
 
@@ -126,8 +126,8 @@ const ChatClient = ({
   }, [messages, isOpen]);
 
   const clearChat = async () => {
-    console.log('🚀 ~ clearChat ~ setMessages:');
     setMessages([]);
+    setInitialMessages([]);
 
     if (userEmail) {
       try {
@@ -249,7 +249,6 @@ const ChatClient = ({
               d="M22.26 14.57c0-2.84-2.87-5.14-6.41-5.14s-6.41 2.3-6.41 5.14s2.87 5.14 6.41 5.14c.58 0 1.14-.08 1.67-.2L20.98 21l-1.2-2.4c1.5-.94 2.48-2.38 2.48-4.03m-8.34-.32a.96.96 0 1 1 .96-.96c.01.53-.43.96-.96.96m3.85 0a.96.96 0 1 1 0-1.92a.96.96 0 0 1 0 1.92"
             ></path>
           </SeoSVG>
-          {/* {chatBtn.caption[lang]} */}
         </button>
       )}
     </div>

@@ -9,14 +9,11 @@ import { getELangKey } from '@/lib/utils/getLanguage';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import { BACKGROUND_IMG_ALT, DEFAULT_META_OG } from '@/models/root.model';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
-import ChatWidget from '@/components/custom/ChatWidget';
-import { generateUUID } from '@/lib/utils/utils';
 import Footer from '@/components/custom/Footer';
 import { auth } from '../(auth)/auth';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
-import { Suspense } from 'react';
 
 // =================================================================
 // змінити промпт чату на віртуального помічника
@@ -30,6 +27,7 @@ import { Suspense } from 'react';
 // blog: priority for first img?
 // post-update: add checkbox 'published'
 // post-update: image upload blob
+// message: review all tools components/custom/message.tsx
 // =================================================================
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
@@ -77,8 +75,6 @@ export default async function Layout({ children, params }: TProps) {
   const session = (await auth()) || undefined;
   const isAdmin = await isAdminAuth(session);
 
-  const id = generateUUID();
-
   return (
     <html lang={lang} className="!scroll-smooth" suppressHydrationWarning>
       <body className="antialiased">
@@ -104,17 +100,6 @@ export default async function Layout({ children, params }: TProps) {
           <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 px-2 sm:px-4 flex flex-col">
             <Toaster position="top-center" richColors />
             {children}
-
-            <Suspense>
-              <ChatWidget
-                key={id}
-                id={id}
-                lang={lang}
-                userImgSrc={session?.user?.image}
-                userName={session?.user?.name}
-                userEmail={session?.user?.email}
-              />
-            </Suspense>
           </main>
         </ThemeProvider>
 

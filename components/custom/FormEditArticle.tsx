@@ -23,6 +23,7 @@ import { TArticle } from '@/db/schema';
 import { toast } from 'sonner';
 import { TinyEditor } from './TinyEditor';
 import { Checkbox } from '../ui/checkbox';
+import CopyClipboardBtn from './CopyClipboardBtn';
 
 export const FormEditArticle = ({
   article,
@@ -176,6 +177,8 @@ export const FormEditArticle = ({
           )}
         />
 
+        <CodeBlock code={`class="section-image__wrapper"`} />
+
         {/* TinyMCE Editor for textEn */}
         <Controller
           name="textEn"
@@ -254,5 +257,20 @@ export const FormEditArticle = ({
         <Button type="submit">Save</Button>
       </form>
     </Form>
+  );
+};
+
+export const CodeBlock = ({ code }: { code: string }) => {
+  return (
+    <div className="relative w-fit bg-gray-900 text-white rounded-md p-4 pr-12">
+      <pre className="text-sm overflow-x-auto">
+        <code>{code}</code>
+      </pre>
+      <CopyClipboardBtn
+        value={code}
+        title="Copy code"
+        className="size-fit p-2 bg-secondary/70 rounded-full absolute right-2 bottom-3"
+      />
+    </div>
   );
 };

@@ -1,7 +1,7 @@
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
 import { BLOG_PAGINATION_PARAMS } from '@/models/blog.model';
 import { ELanguage } from '@/models/language.model';
-import { EUrlSearchParam, TSearchParams } from '@/models/url.model';
+import { EUrlSearchParam, TUrlSearchParams } from '@/models/url.model';
 import { TooltipSimple } from './TooltipSimple';
 import SeoLink from './SeoLink';
 
@@ -17,7 +17,7 @@ interface IPaginationProps {
   page: number;
   offsetNumber: number;
   totalPages: number;
-  searchParams?: TSearchParams;
+  searchParams?: TUrlSearchParams;
   lang: ELanguage;
 }
 

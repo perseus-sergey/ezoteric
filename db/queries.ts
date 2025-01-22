@@ -11,17 +11,6 @@ import { getDB } from './root';
 
 const db = getDB();
 
-// export async function getUser(email: string): Promise<Array<TUser>> {
-//   return [
-//     {
-//       id: '1',
-//       email,
-//       password: 'password',
-//       name: null,
-//     },
-//   ];
-// }
-
 export async function getUser(email: string): Promise<Array<TUser>> {
   try {
     return await db.select().from(user).where(eq(user.email, email)).limit(1);
@@ -107,13 +96,27 @@ export async function getChatByEmail({ email }: { email: string }) {
     return undefined;
   }
 }
-// export async function getChatById({ id }: { id: string }) {
+
+// export async function getChatListChunk({
+//   offset,
+//   perPage,
+// }: {
+//   offset: number;
+//   perPage: number;
+// }): Promise<{
+//   totalCount: number | null;
+//   chatList: TChat[] | null;
+// }> {
 //   try {
-//     const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
+//     const [selectedChat] = await db
+//       .select()
+//       .from(chat)
 //     return selectedChat;
 //   } catch (error) {
-//     console.error('Failed to get chat by id from database');
-//     throw error;
+//     console.error(
+//       `${(error as Error).name}. Failed to get chat by email from database`
+//     );
+//     return undefined;
 //   }
 // }
 

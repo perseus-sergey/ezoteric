@@ -8,6 +8,7 @@ export enum EUrlSearchParam {
   LANGUAGE_URL = 'lang',
   LATITUDE = 'lat',
   LONGITUDE = 'lng',
+  URL = 'url',
 }
 
 export enum ESegment {
@@ -18,7 +19,7 @@ export enum ESegment {
   BLOG = 'blog',
   ARTICLE_EDIT = 'edit',
   ARTICLE_ADD = 'add',
-  UPLOAD_IMAGE = 'upload-image',
+  UPLOAD_IMAGE = 'blob-storage',
 }
 
 export type TParams = Promise<{ [key in ESegment]: string }>;
@@ -26,3 +27,7 @@ export type TParams = Promise<{ [key in ESegment]: string }>;
 export type TSearchParams = Promise<{
   [key in EUrlSearchParam]: string | string[] | undefined;
 }>;
+
+export type TUrlSearchParams = Partial<
+  Record<EUrlSearchParam, string | string[]>
+>;

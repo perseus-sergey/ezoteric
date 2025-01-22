@@ -68,14 +68,11 @@ export default async function Page({
   searchParams: TSearchParams;
 }) {
   const p = await params;
+  const sParams = await searchParams;
   const lang = getELangKey(p.lang);
 
-  const page =
-    (await validSearchParam(EUrlSearchParam.PAGE, searchParams)) || '1';
-  const searchQuery = await validSearchParam(
-    EUrlSearchParam.QUERY,
-    searchParams
-  );
+  const page = validSearchParam(EUrlSearchParam.PAGE, sParams) || '1';
+  const searchQuery = validSearchParam(EUrlSearchParam.QUERY, sParams);
 
   const pageNumber = parseInt(page, 10);
   if (isNaN(pageNumber)) notFound();
@@ -125,7 +122,7 @@ export default async function Page({
         page={pageNumber || 1}
         offsetNumber={offsetNumber}
         totalPages={totalPages}
-        searchParams={searchParams}
+        searchParams={sParams}
       />
 
       <ArticleList articleList={articles} lang={lang} isAdmin={isAdmin} />
@@ -135,7 +132,7 @@ export default async function Page({
         page={pageNumber || 1}
         offsetNumber={offsetNumber}
         totalPages={totalPages}
-        searchParams={searchParams}
+        searchParams={sParams}
       />
       <script
         type="application/ld+json"
