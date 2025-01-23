@@ -16,6 +16,9 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
+// try to find another wisiwig editor
+// view+1 only production
+// edit articles preview
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // add page with chat conversation list

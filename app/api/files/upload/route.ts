@@ -4,6 +4,8 @@ import { del, list, put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+const PAGINATION_LIMIT = 300;
+
 const FileSchema = z.object({
   file: z
     .instanceof(File)
@@ -31,7 +33,7 @@ export async function GET(request: Request) {
       cursor: nextCursor,
       hasMore,
     } = await list({
-      limit: 5,
+      limit: PAGINATION_LIMIT,
       cursor: cursor || undefined,
       // Optionally add prefix if you want to filter blobs
       // prefix: 'your-specific-folder/'

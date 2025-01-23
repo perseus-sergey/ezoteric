@@ -12,7 +12,7 @@ import { AlertDialog } from '@/components/ui/alert-dialog';
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
-import { FilePlus, ImagesIcon, LogOut } from 'lucide-react';
+import { Eye, FilePlus, ImagesIcon, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '@/app/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
@@ -20,7 +20,7 @@ import { LOGOUT_MODAL } from '@/models/modal.model';
 import Image from 'next/image';
 import { ConfirmDialog } from './ConfirmDialog';
 
-const { BLOG, MASTER, ARTICLE_ADD, UPLOAD_IMAGE } = ESegment;
+const { BLOG, MASTER, ARTICLE_ADD, UPLOAD_IMAGE, CHAT_VIEWER } = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
 
 export default function UserMenu({
@@ -91,6 +91,15 @@ export default function UserMenu({
                   className="flex items-center gap-2"
                 >
                   <ImagesIcon className="size-4 opacity-40" /> Image Storage
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <Link
+                  href={`/${lang}/${MASTER}/${CHAT_VIEWER}`}
+                  className="flex items-center gap-2"
+                >
+                  <Eye className="size-4 opacity-40" /> Chat Viewer
                 </Link>
               </DropdownMenuItem>
             </>

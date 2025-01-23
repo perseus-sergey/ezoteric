@@ -4,10 +4,11 @@ import 'server-only';
 
 import { CoreMessage, Message } from 'ai';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
-import { user, chat, TUser, reservation } from './schema';
+import { user, chat, TUser, reservation, TChat } from './schema';
 import { getDB } from './root';
+import { convertToUIMessages } from '@/lib/utils/utils';
 
 const db = getDB();
 
@@ -97,28 +98,42 @@ export async function getChatByEmail({ email }: { email: string }) {
   }
 }
 
-// export async function getChatListChunk({
-//   offset,
-//   perPage,
-// }: {
-//   offset: number;
-//   perPage: number;
-// }): Promise<{
-//   totalCount: number | null;
-//   chatList: TChat[] | null;
-// }> {
-//   try {
-//     const [selectedChat] = await db
-//       .select()
-//       .from(chat)
-//     return selectedChat;
-//   } catch (error) {
-//     console.error(
-//       `${(error as Error).name}. Failed to get chat by email from database`
-//     );
-//     return undefined;
-//   }
-// }
+export async function getChatListChunk({
+  offset,
+  perPage,
+}: {
+  offset: number;
+  perPage: number;
+}): Promise<{
+  totalCount: number | null;
+  chatList: TChat[] | null;
+}> {
+  try {
+    const totalCountRes = await db
+      .select({
+        total_count: sql<number>`COUNT(${chat.id})`.mapWith(Number),
+      })
+      .from(chat);
+
+    const totalCount = totalCountRes[0]?.total_count || 0;
+
+    const chatListRaw = await db
+      .select()
+      .from(chat)
+      .limit(perPage)
+      .offset(offset);
+
+    const chatList: TChat[] = chatListRaw.map((rawChat) => ({
+      ...rawChat,
+      messages: convertToUIMessages(rawChat.messages as Array<CoreMessage>),
+    }));
+
+    return { chatList, totalCount };
+  } catch (error) {
+    console.error(error);
+    return { totalCount: null, chatList: null };
+  }
+}
 
 export async function createReservation({
   id,

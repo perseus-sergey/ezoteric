@@ -29,7 +29,7 @@ const CopyClipboardBtn = ({
       onClick={handleCopy}
       {...props}
     >
-      <Copy size={iconSize} className="hover:scale-125 duration-100" />
+      <Copy size={iconSize} />
     </button>
   );
 };

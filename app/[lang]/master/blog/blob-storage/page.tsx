@@ -5,7 +5,7 @@ const Page = async () => {
   return (
     <>
       <Title>Images for Articles Storage</Title>
-      <article className="container bg-tertiary/70 grow p-4 rounded-lg">
+      <article className="bg-tertiary/70 grow p-4 rounded-lg">
         <VercelBlobWidget />
       </article>
     </>

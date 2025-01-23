@@ -22,6 +22,7 @@ import { insertNewArticle } from '@/db/queriesArticle';
 import { toast } from 'sonner';
 import { TinyEditor } from './TinyEditor';
 import { useEffect } from 'react';
+import { CodeBlock } from './CodeBlock';
 
 export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
   const form = useForm<TArticleFormValues>({
@@ -213,6 +214,18 @@ export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
             </FormItem>
           )}
         />
+
+        <div className="flex gap-4 items-center">
+          <CodeBlock code={`class="section-image__wrapper"`} />
+
+          <div className="flex items-center gap-2 w-fit px-2 py-1 bg-muted-foreground rounded-md">
+            <div className="bg-muted rounded-md size-6" />
+            <div className="space-y-1">
+              <div className="bg-muted rounded-md h-2 w-24" />
+              <div className="bg-muted rounded-md h-2 w-24" />
+            </div>
+          </div>
+        </div>
 
         {/* TinyMCE Editor for textEn */}
         <Controller

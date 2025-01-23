@@ -20,6 +20,7 @@ export enum ESegment {
   ARTICLE_EDIT = 'edit',
   ARTICLE_ADD = 'add',
   UPLOAD_IMAGE = 'blob-storage',
+  CHAT_VIEWER = 'chat-viewer',
 }
 
 export type TParams = Promise<{ [key in ESegment]: string }>;

@@ -23,7 +23,7 @@ import { TArticle } from '@/db/schema';
 import { toast } from 'sonner';
 import { TinyEditor } from './TinyEditor';
 import { Checkbox } from '../ui/checkbox';
-import CopyClipboardBtn from './CopyClipboardBtn';
+import { CodeBlock } from './CodeBlock';
 
 export const FormEditArticle = ({
   article,
@@ -177,7 +177,17 @@ export const FormEditArticle = ({
           )}
         />
 
-        <CodeBlock code={`class="section-image__wrapper"`} />
+        <div className="flex gap-4 items-center">
+          <CodeBlock code={`class="section-image__wrapper"`} />
+
+          <div className="flex items-center gap-2 w-fit px-2 py-1 bg-muted-foreground rounded-md">
+            <div className="bg-muted rounded-md size-6" />
+            <div className="space-y-1">
+              <div className="bg-muted rounded-md h-2 w-24" />
+              <div className="bg-muted rounded-md h-2 w-24" />
+            </div>
+          </div>
+        </div>
 
         {/* TinyMCE Editor for textEn */}
         <Controller
@@ -257,20 +267,5 @@ export const FormEditArticle = ({
         <Button type="submit">Save</Button>
       </form>
     </Form>
-  );
-};
-
-export const CodeBlock = ({ code }: { code: string }) => {
-  return (
-    <div className="relative w-fit bg-gray-900 text-white rounded-md p-4 pr-12">
-      <pre className="text-sm overflow-x-auto">
-        <code>{code}</code>
-      </pre>
-      <CopyClipboardBtn
-        value={code}
-        title="Copy code"
-        className="size-fit p-2 bg-secondary/70 rounded-full absolute right-2 bottom-3"
-      />
-    </div>
   );
 };

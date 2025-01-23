@@ -185,6 +185,8 @@ export const updateArticle = async (
 //     .returning();
 // };
 export const updateArticleView = async (articleId: number) => {
+  if (process.env.NODE_ENV !== 'production') return;
+
   try {
     await db.insert(tblArticleViews).values({ articleId });
   } catch (error) {
