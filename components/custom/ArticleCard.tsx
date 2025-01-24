@@ -1,47 +1,71 @@
 import { ELanguage } from '@/models/language.model';
-import BottomInfoPanel, { IBottomInfoPanelItem } from './BottomInfoPanel';
+import BottomInfoPanel from './BottomInfoPanel';
 import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
 import SeoLink from './SeoLink';
+import Image from 'next/image';
+import { IMG_PROPERTIES } from '@/models/image.model';
+import { ARTICLE_IMG } from '@/models/article.model';
+import { BLOG_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/blog.model';
+import { TArticleLocalized } from '@/db/schema';
+import { ESegment } from '@/models/url.model';
+import { cutText } from '@/lib/utils/cutText';
+import { getImageSrc } from '@/controllers/articles.controller';
+import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
+import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 
 interface IArticleCardProps {
   lang: ELanguage;
-  articleTitle: React.ReactNode;
-  href: string;
-  seoCardLinkTitle: string;
-  image: React.ReactNode;
-  // isTitleCentered?: boolean;
-  articleDescription: React.ReactNode;
-  infoPanelItems: IBottomInfoPanelItem[];
+  article: TArticleLocalized;
 }
 
-const ArticleCard = ({
-  lang,
-  articleDescription,
-  articleTitle,
-  image,
-  infoPanelItems,
-  href,
-  seoCardLinkTitle,
-  // isTitleCentered = false,
-}: IArticleCardProps) => (
-  <Card className="min-h-[410px]">
-    <SeoLink
-      href={href}
-      title={seoCardLinkTitle}
-      className="min-h-full flex flex-col md:flex-row items-center justify-between gap-4 p-4"
-    >
-      <div className="h-full flex flex-col flex-1 justify-between">
-        <CardTitle className="p-6">{articleTitle}</CardTitle>
-        <CardContent>
-          <p className="text-muted-foreground">{articleDescription}</p>
-        </CardContent>
-        <CardFooter>
-          <BottomInfoPanel items={infoPanelItems} lang={lang} />
-        </CardFooter>
-      </div>
-      {image}
-    </SeoLink>
-  </Card>
-);
+const ArticleCard = ({ lang, article }: IArticleCardProps) => {
+  const imgSrc = getImageSrc(article.slug, article.imageSrc);
+  const currDate = getFormattedDateStrYearFirst(article.updatedAt);
+
+  return (
+    <Card className="min-h-[410px]">
+      <SeoLink
+        href={`/${lang}/${ESegment.BLOG}/${article.slug}`}
+        title={getSeoCardLinkTitle(article.title)[lang]}
+        className="min-h-full flex flex-col md:flex-row items-center justify-between gap-4 p-4"
+      >
+        <div className="h-full flex flex-col flex-1 justify-between">
+          <CardTitle className="p-6">{article.title}</CardTitle>
+
+          <CardContent>
+            <p className="text-muted-foreground">
+              {cutText(article.description, 250)}
+            </p>
+          </CardContent>
+
+          <CardFooter>
+            <BottomInfoPanel
+              items={[
+                { caption: INFO_PANEL_CAPTION.views, value: article.viewCount },
+                {
+                  caption: INFO_PANEL_CAPTION.date,
+                  value: <time dateTime={currDate}>{currDate}</time>,
+                },
+                // { name: commentsTitle[lang], value: comment_count },
+              ]}
+              lang={lang}
+            />
+          </CardFooter>
+        </div>
+
+        <Image
+          className="rounded-sm"
+          sizes="300px"
+          // sizes="(max-width: 768px) 20vw, 10vw"
+          src={imgSrc}
+          placeholder="blur"
+          blurDataURL={IMG_PROPERTIES.defaultImgBlur}
+          alt={ARTICLE_IMG.getAlt(article.title)[lang]}
+          {...BLOG_CARD_IMAGE.size}
+        />
+      </SeoLink>
+    </Card>
+  );
+};
 
 export default ArticleCard;

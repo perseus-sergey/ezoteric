@@ -16,6 +16,7 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
+// article translation doesn't work on production
 // article image try to wrap into parent to increase size
 // JSON-LD img sizes check
 // article categories (tegs)

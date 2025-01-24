@@ -48,6 +48,7 @@ export const aiTranslateArticle = async (
     }),
   });
 
+  console.log('🚀 ~ text:', text);
   const cleanResult = text.replace(/```json|```/g, '');
 
   return (await JSON.parse(cleanResult)) as IEditArticleTranslate;

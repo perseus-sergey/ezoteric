@@ -1,6 +1,5 @@
-import { LoaderIcon } from '@/components/custom/icons';
-
 import { Button } from '../ui/button';
+import { LoadingAnimated } from '@/svg/LoadingAnimated';
 
 export function SubmitButton({
   pending,
@@ -19,11 +18,7 @@ export function SubmitButton({
       className="flex gap-2 items-center text-white"
     >
       {pending ? pendingCaption : submitCaption}
-      {pending && (
-        <span className="animate-spin" aria-live="polite" role="status">
-          <LoaderIcon />
-        </span>
-      )}
+      {pending && <LoadingAnimated />}
     </Button>
   );
 }

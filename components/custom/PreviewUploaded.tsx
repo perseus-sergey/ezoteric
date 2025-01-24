@@ -1,11 +1,11 @@
 import { IUploadFile } from '@/models/uploadFile.model';
-import { LoaderIcon } from './icons';
 import Image from 'next/image';
 import CopyClipboardBtn from './CopyClipboardBtn';
 import { Trash } from 'lucide-react';
 import { AlertDialog } from '../ui/alert-dialog';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useState } from 'react';
+import { LoadingAnimated } from '@/svg/LoadingAnimated';
 
 export const PreviewUploaded = ({
   uploadFile,
@@ -40,11 +40,7 @@ export const PreviewUploaded = ({
           <div className=""></div>
         )}
 
-        {isUploading && (
-          <div className="animate-spin absolute text-zinc-500">
-            <LoaderIcon />
-          </div>
-        )}
+        {isUploading && <LoadingAnimated />}
 
         {onRemove !== undefined && (
           <>

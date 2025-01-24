@@ -24,7 +24,7 @@ import {
 } from '@/models/editArticle.model';
 import { aiTranslateArticle } from '@/controllers/aiTranslateArticle.controller';
 import { toast } from 'sonner';
-import { LoaderIcon } from './icons';
+import { LoadingAnimated } from '@/svg/LoadingAnimated';
 
 export const FormAddEditArticle = ({
   editorApiKey,
@@ -162,7 +162,7 @@ export const FormAddEditArticle = ({
           onClick={handleTranslate}
           disabled={isTranslating}
         >
-          {isTranslating && <LoaderIcon />}{' '}
+          {isTranslating && <LoadingAnimated />}{' '}
           {isTranslating ? 'Перекладається...' : 'Перекласти'}
         </Button>
 
@@ -307,7 +307,7 @@ export const FormAddEditArticle = ({
         />
 
         <Button type="submit">
-          {isSaving && <LoaderIcon />} {isSaving ? 'Saving...' : 'Save'}
+          {isSaving && <LoadingAnimated />} {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </form>
     </Form>

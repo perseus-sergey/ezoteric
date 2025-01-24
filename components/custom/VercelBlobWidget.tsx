@@ -11,10 +11,10 @@ import {
   IBlobListResponse,
 } from '@/models/uploadFile.model';
 import { ESegment, EUrlSearchParam } from '@/models/url.model';
+import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import {
   AlertCircle,
   DownloadCloud,
-  Loader,
   LucideLink,
   UploadCloud,
 } from 'lucide-react';
@@ -250,7 +250,7 @@ const VercelBlobWidget = () => {
                 disabled={isLoading}
                 className="w-fit duration-300 my-4"
               >
-                {isLoading ? <Loader /> : <DownloadCloud />} Load More
+                {isLoading ? <LoadingAnimated /> : <DownloadCloud />} Load More
               </Button>
             )}
 
