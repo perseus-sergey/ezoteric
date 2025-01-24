@@ -4,6 +4,8 @@ import { geminiFlashModel } from '@/ai';
 import { IEditArticleTranslate } from '@/models/editArticle.model';
 import { generateText } from 'ai';
 
+export const maxDuration = 60;
+
 export const aiTranslateArticle = async (
   titleUa: string,
   descriptionUa: string,
@@ -48,7 +50,6 @@ export const aiTranslateArticle = async (
     }),
   });
 
-  console.log('🚀 ~ text:', text);
   const cleanResult = text.replace(/```json|```/g, '');
 
   return (await JSON.parse(cleanResult)) as IEditArticleTranslate;
