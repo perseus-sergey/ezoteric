@@ -4,8 +4,6 @@ import { geminiFlashModel } from '@/ai';
 import { IEditArticleTranslate } from '@/models/editArticle.model';
 import { generateText } from 'ai';
 
-export const maxDuration = 60;
-
 export const aiTranslateArticle = async (
   titleUa: string,
   descriptionUa: string,

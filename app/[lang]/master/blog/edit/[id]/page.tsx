@@ -9,6 +9,8 @@ import * as React from 'react';
 
 export const dynamic = 'force-dynamic';
 
+export const maxDuration = 60;
+
 const Page = async ({ params }: { params: TParams }) => {
   const p = await params;
 

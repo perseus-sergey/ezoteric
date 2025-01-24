@@ -1,6 +1,10 @@
 import { FormAddArticle } from '@/components/custom/FormAddArticle';
 import { Title } from '@/components/custom/Title';
 
+export const dynamic = 'force-dynamic';
+
+export const maxDuration = 60;
+
 const Page = async () => {
   return (
     <>
