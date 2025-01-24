@@ -1,0 +1,1 @@
+ALTER TABLE "ezo_article" ALTER COLUMN "createdAt" SET DEFAULT now();

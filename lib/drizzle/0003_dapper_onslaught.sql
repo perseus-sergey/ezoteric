@@ -1,0 +1,1 @@
+ALTER TABLE "ezo_article" RENAME COLUMN "image_name" TO "image_src";

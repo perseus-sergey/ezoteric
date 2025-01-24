@@ -16,7 +16,7 @@ import BrCrumb from '@/components/custom/BrCrumb';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
-import { ARTICLE_IMG } from '@/models/article.model';
+import { ARTICLE_IMG, NOT_PUBLISHED } from '@/models/article.model';
 import { BLOG_H1 } from '@/models/blog.model';
 import { Metadata } from 'next';
 import { DEFAULT_META_OG } from '@/models/root.model';
@@ -73,17 +73,29 @@ export default async function Page({ params }: { params: TParams }) {
 
   if (!article) notFound();
 
-  const { title, text, description, updatedAt, imageName, viewCount, id } =
-    article;
+  const {
+    title,
+    text,
+    description,
+    updatedAt,
+    imageSrc,
+    viewCount,
+    id,
+    published,
+  } = article;
 
   const currDate = getFormattedDateStrYearFirst(updatedAt);
 
-  const imgPath = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
-  const isImgExists = isFileExists(imgPath);
-
+  const localImgPath = `${ARTICLE_IMG.path}${`${slug}.jpg`}`;
+  const imgSrc =
+    imageSrc && imageSrc.startsWith('https://')
+      ? imageSrc
+      : isFileExists(localImgPath)
+        ? localImgPath
+        : null;
   const isAdmin = await isAdminAuth();
 
-  await updateArticleView(id);
+  await updateArticleView(id, isAdmin);
 
   return (
     <article className="relative mx-auto">
@@ -101,17 +113,31 @@ export default async function Page({ params }: { params: TParams }) {
       <Title>{title}</Title>
 
       {isAdmin && (
-        <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}>
-          <PencilLine className="size-4 text-muted-foreground" />
+        <Link
+          href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}
+          className="flex items-center gap-4 bg-muted w-fit p-1 rounded-sm text-muted-foreground"
+        >
+          <PencilLine className="size-5" />
+          {!published && <span>Not Published</span>}
         </Link>
+      )}
+
+      {!published && (
+        <section
+          role="alert"
+          aria-live="polite"
+          className="max-w-xl mx-auto text-yellow-100 bg-destructive font-georgia text-xl p-6 my-6 border border-slate-400 rounded-lg shadow-md"
+        >
+          {NOT_PUBLISHED[lang]}
+        </section>
       )}
 
       {description && <TextUnderH1>{description}</TextUnderH1>}
 
-      {isImgExists && (
+      {!!imgSrc && (
         <Image
           className="my-4 mx-auto sm:border-2 border-white sm:shadow-md rounded"
-          src={imgPath}
+          src={imgSrc}
           alt={ARTICLE_IMG.getAlt(title)[lang]}
           placeholder="blur"
           blurDataURL={IMG_PROPERTIES.defaultImgBlur}

@@ -55,8 +55,6 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
   });
 
   async function onSubmit(data: z.infer<TNumerologySchema>) {
-    setIsLoading(false);
-
     setIsLoading(true);
 
     try {
@@ -84,8 +82,9 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
           </>
         );
       });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   return (

@@ -3,6 +3,9 @@ import { LoaderIcon } from './icons';
 import Image from 'next/image';
 import CopyClipboardBtn from './CopyClipboardBtn';
 import { Trash } from 'lucide-react';
+import { AlertDialog } from '../ui/alert-dialog';
+import { ConfirmDialog } from './ConfirmDialog';
+import { useState } from 'react';
 
 export const PreviewUploaded = ({
   uploadFile,
@@ -13,6 +16,8 @@ export const PreviewUploaded = ({
   onRemove?: () => void;
   isUploading?: boolean;
 }) => {
+  const [delModalOpen, setDelModalOpen] = useState(false);
+
   const { name, url, contentType } = uploadFile;
 
   return (
@@ -52,10 +57,20 @@ export const PreviewUploaded = ({
             <button
               className="group-hover:visible invisible size-fit p-2 bg-destructive/70 text-white rounded-full absolute left-1 bottom-1"
               title="Delete image"
-              onClick={onRemove}
+              onClick={() => setDelModalOpen(true)}
             >
               <Trash size={12} className="hover:scale-125 duration-100" />
             </button>
+
+            <AlertDialog open={delModalOpen} onOpenChange={setDelModalOpen}>
+              <ConfirmDialog
+                title="Delete image"
+                description="Are you sure you want to delete this image from storage?"
+                confirmBtnCaption="Delete"
+                cancelBtnCaption="Cancel"
+                action={onRemove}
+              />
+            </AlertDialog>
           </>
         )}
       </div>

@@ -24,8 +24,7 @@ export const generatePostJsonLd = ({
   isMainPage?: boolean;
 }) => {
   const imgPath =
-    imgSrc ||
-    `${ARTICLE_IMG.path}${article.imageName || `${article.slug}.jpg`}`;
+    imgSrc || `${ARTICLE_IMG.path}${article.imageSrc || `${article.slug}.jpg`}`;
   const isImgExists = isFileExists(imgPath);
   const relativeImgPath = isImgExists ? imgPath : undefined;
   return {

@@ -35,7 +35,7 @@ export default async function Page({ params }: { params: TParams }) {
       slug: '',
       createdAt: new Date('2024-12-01'),
       updatedAt: new Date(),
-      imageName: '',
+      imageSrc: '',
       viewCount: 1,
       ...DEFAULT_META_DATA[lang],
       text: [

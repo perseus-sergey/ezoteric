@@ -15,6 +15,20 @@
       "when": 1737128372119,
       "tag": "0001_green_misty_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1737640370632,
+      "tag": "0002_wild_paibok",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1737668345064,
+      "tag": "0003_dapper_onslaught",
+      "breakpoints": true
     }
   ]
 }

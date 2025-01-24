@@ -24,7 +24,7 @@ const ArticleCard = ({
   seoCardLinkTitle,
   // isTitleCentered = false,
 }: IArticleCardProps) => (
-  <Card className="min-h-[410px] flex">
+  <Card className="min-h-[410px]">
     <SeoLink
       href={href}
       title={seoCardLinkTitle}

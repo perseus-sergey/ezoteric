@@ -2,14 +2,23 @@
 
 import { PreviewUploaded } from '@/components/custom/PreviewUploaded';
 import { Button } from '@/components/ui/button';
+import { getArticleByImage } from '@/db/queriesArticle';
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
+import { DEFAULT_LANG } from '@/models/language.model';
 import {
   IUploadFile,
   IUploadBlobResponse,
   IBlobListResponse,
 } from '@/models/uploadFile.model';
-import { EUrlSearchParam } from '@/models/url.model';
-import { DownloadCloud, Loader, UploadCloud } from 'lucide-react';
+import { ESegment, EUrlSearchParam } from '@/models/url.model';
+import {
+  AlertCircle,
+  DownloadCloud,
+  Loader,
+  LucideLink,
+  UploadCloud,
+} from 'lucide-react';
+import Link from 'next/link';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -148,6 +157,33 @@ const VercelBlobWidget = () => {
   );
 
   const handleRemove = async (fileUrl: string) => {
+    const findDbRes = await getArticleByImage(fileUrl);
+    console.log('🚀 ~ handleRemove ~ findDbRes:', findDbRes);
+    if (findDbRes instanceof Error) {
+      toast.error('Error occurred while searching for this image in database');
+      return;
+    }
+    if (findDbRes) {
+      toast.error(
+        <div className="flex flex-col gap-2 items-center w-full">
+          <p className="flex items-center gap-2">
+            <AlertCircle className="size-5" />
+            File is already used in published article
+          </p>
+          <Link
+            href={`/${DEFAULT_LANG}/${ESegment.BLOG}/${findDbRes.slug}`}
+            className="flex gap-2 items-center justify-center"
+          >
+            -={findDbRes.title}=-{' '}
+            <LucideLink className="size-3 text-stone-600" />
+          </Link>
+          <p className="text-right">First remove the article from published</p>
+        </div>,
+        { duration: 8000 }
+      );
+      return;
+    }
+
     const searchParams = makeUrlSearchParams({
       [EUrlSearchParam.URL]: fileUrl,
     }).toString();
@@ -229,7 +265,7 @@ const VercelBlobWidget = () => {
 
       <Button
         title="Add Images"
-        className="group fixed z-50 md:bottom-8 md:right-8 bottom-4 right-4 bg-primary size-14 rounded-full"
+        className="group fixed z-50 md:bottom-8 bottom-4 right-1/4 bg-primary size-14 rounded-full"
         onClick={(event) => {
           event.preventDefault();
           fileInputRef.current?.click();

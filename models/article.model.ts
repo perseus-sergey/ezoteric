@@ -14,3 +14,8 @@ export const ARTICLE_IMG = {
     };
   },
 };
+
+export const NOT_PUBLISHED = {
+  [UA]: 'Ви переглядаєте неопубліковану версію статті. Будь ласка, зверніть увагу, що інформація може бути застарілою або неточною. Слідкуйте за оновленнями.',
+  [EN]: 'You are viewing an unpublished version of the article. Please note that the information may be out of date or inaccurate. Stay tuned for updates.',
+};

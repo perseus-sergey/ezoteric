@@ -16,20 +16,13 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// try to find another wisiwig editor
-// view+1 only production
-// edit articles preview
+// article image try to wrap into parent to increase size
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
-// add page with chat conversation list
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
-// get email for ezoteric
 // chat: add message time
 // blog: search input
-// blog: check pagination
 // blog: priority for first img?
-// post-update: add checkbox 'published'
-// post-update: image upload blob
 // message: review all tools components/custom/message.tsx
 // =================================================================
 

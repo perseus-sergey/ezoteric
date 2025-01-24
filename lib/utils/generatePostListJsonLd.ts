@@ -37,7 +37,7 @@ export const generatePostListJsonLd = ({
       '@type': 'ItemList',
       itemListOrder: 'http://schema.org/ItemListOrderAscending',
       itemListElement: posts.map((post, index) => {
-        const imgSrc = `${ARTICLE_IMG.path}${post.imageName || `${post.slug}.jpg`}`;
+        const imgSrc = `${ARTICLE_IMG.path}${post.imageSrc || `${post.slug}.jpg`}`;
         const imgPath = isFileExists(imgSrc)
           ? imgSrc
           : BLOG_CARD_IMAGE.defaultImgSrc;

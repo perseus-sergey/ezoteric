@@ -2,7 +2,7 @@
 
 import 'server-only';
 
-import { and, desc, eq, ilike, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 import {
   articleViewCounts,
@@ -24,11 +24,13 @@ export const getArticlesChunk = async ({
   perPage,
   searchQuery = '',
   lang,
+  isAdmin,
 }: {
   offset: number;
   perPage: number;
   searchQuery?: string;
   lang: ELanguage;
+  isAdmin: boolean;
 }): Promise<{
   totalCount: number | null;
   articles: TArticleLocalized[] | null;
@@ -64,7 +66,8 @@ export const getArticlesChunk = async ({
         slug: tblArticle.slug,
         createdAt: tblArticle.createdAt,
         updatedAt: tblArticle.updatedAt,
-        imageName: tblArticle.imageName,
+        imageSrc: tblArticle.imageSrc,
+        published: tblArticle.published,
         viewCount: articleViewCounts.viewCount,
       })
       .from(tblArticle)
@@ -72,7 +75,7 @@ export const getArticlesChunk = async ({
         articleViewCounts,
         eq(tblArticle.id, articleViewCounts.articleId)
       )
-      .where(and(searchCondition, publishedCondition))
+      .where(and(searchCondition, isAdmin ? undefined : publishedCondition))
       .orderBy(desc(tblArticle.updatedAt))
       .limit(perPage)
       .offset(offset);
@@ -109,7 +112,8 @@ export const getArticleBySlug = cache(
           slug: tblArticle.slug,
           createdAt: tblArticle.createdAt,
           updatedAt: tblArticle.updatedAt,
-          imageName: tblArticle.imageName,
+          imageSrc: tblArticle.imageSrc,
+          published: tblArticle.published,
           viewCount: articleViewCounts.viewCount,
         })
         .from(tblArticle)
@@ -131,6 +135,33 @@ export const getArticleBySlug = cache(
     }
   }
 );
+
+export const getArticleByImage = async (imageSrc: string) => {
+  const filters = [];
+
+  filters.push(eq(tblArticle.published, true));
+  filters.push(
+    or(
+      eq(tblArticle.imageSrc, imageSrc),
+      sql`${tblArticle.textEn} LIKE ${`%${imageSrc}%`}`
+    )
+  );
+
+  try {
+    const res = await db
+      .select({
+        title: tblArticle.titleEn,
+        slug: tblArticle.slug,
+      })
+      .from(tblArticle)
+      .where(and(...filters))
+      .limit(1);
+
+    return res[0];
+  } catch (error) {
+    return error as Error;
+  }
+};
 
 export async function getArticleByIdForUpdate(id: number) {
   try {
@@ -184,8 +215,11 @@ export const updateArticle = async (
 //     .where(eq(tblArticle.id, id))
 //     .returning();
 // };
-export const updateArticleView = async (articleId: number) => {
-  if (process.env.NODE_ENV !== 'production') return;
+export const updateArticleView = async (
+  articleId: number,
+  isAdmin: boolean
+) => {
+  if (process.env.NODE_ENV !== 'production' || isAdmin) return;
 
   try {
     await db.insert(tblArticleViews).values({ articleId });

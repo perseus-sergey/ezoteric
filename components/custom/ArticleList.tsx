@@ -26,18 +26,35 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
   articleList && articleList.length > 0 ? (
     <ul className="space-y-4">
       {articleList.map(
-        ({ id, title, description, viewCount, updatedAt, imageName, slug }) => {
+        ({
+          id,
+          title,
+          description,
+          viewCount,
+          updatedAt,
+          imageSrc,
+          slug,
+          published,
+        }) => {
           const currDate = getFormattedDateStrYearFirst(updatedAt);
-          const imgSrc = `${ARTICLE_IMG.path}${imageName || `${slug}.jpg`}`;
-          const imgPath = isFileExists(imgSrc)
-            ? imgSrc
-            : BLOG_CARD_IMAGE.defaultImgSrc;
+
+          const localImgPath = `${ARTICLE_IMG.path}${`${slug}.jpg`}`;
+          const imgSrc =
+            imageSrc && imageSrc.startsWith('https://')
+              ? imageSrc
+              : isFileExists(localImgPath)
+                ? localImgPath
+                : BLOG_CARD_IMAGE.defaultImgSrc;
 
           return (
             <li key={id}>
               {isAdmin && (
-                <Link href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}>
-                  <PencilLine className="size-4 text-muted-foreground" />
+                <Link
+                  className="flex items-center gap-4 bg-muted w-fit p-1 rounded-sm text-muted-foreground"
+                  href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}
+                >
+                  <PencilLine className="size-5" />
+                  {!published && <span>Not Published</span>}
                 </Link>
               )}
               <ArticleCard
@@ -47,7 +64,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
                 image={
                   <Image
                     className="rounded-sm"
-                    src={imgPath}
+                    src={imgSrc}
                     placeholder="blur"
                     blurDataURL={IMG_PROPERTIES.defaultImgBlur}
                     alt={ARTICLE_IMG.getAlt(title)[lang]}

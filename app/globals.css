@@ -180,7 +180,7 @@
   }
 
   a {
-    @apply text-blue-600 underline hover:text-blue-800;
+    @apply opacity-70 hover:opacity-100;
   }
 
   img {

@@ -1,6 +1,8 @@
 import { Title } from '@/components/custom/Title';
 import VercelBlobWidget from '@/components/custom/VercelBlobWidget';
 
+export const dynamic = 'force-dynamic';
+
 const Page = async () => {
   return (
     <>

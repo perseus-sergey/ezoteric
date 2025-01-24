@@ -77,18 +77,19 @@ export default async function Page({
   const pageNumber = parseInt(page, 10);
   if (isNaN(pageNumber)) notFound();
 
+  const isAdmin = await isAdminAuth();
+
   const { articles, totalCount } = await getArticlesChunk({
     perPage,
     offset: (pageNumber - 1) * perPage,
     searchQuery,
     lang,
+    isAdmin,
   });
 
   const articlesCount =
     !articles || articles.length === 0 ? 0 : totalCount || 0;
   const totalPages = Math.ceil(articlesCount / perPage);
-
-  const isAdmin = await isAdminAuth();
 
   const jsonLD = generatePostListJsonLd({
     lang,

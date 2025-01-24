@@ -65,7 +65,7 @@ export type TReservation = InferSelectModel<typeof reservation>;
 
 export const tblArticle = pgTable(TBL_ARTICLE, {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  createdAt: timestamp('createdAt').notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
     .$onUpdateFn(() => new Date())
@@ -83,30 +83,22 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
   keywordsEn: varchar(`keywords${langSuffix.en}`, { length: 255 }).notNull(),
   textUa: text(`text${langSuffix.uk}`).notNull(),
   textEn: text(`text${langSuffix.en}`).notNull(),
-  imageName: varchar('image_name', { length: 255 }),
+  imageSrc: varchar('image_src', { length: 255 }),
   published: boolean('published').notNull().default(true),
 });
 
 export type TArticle = InferSelectModel<typeof tblArticle>;
 
-// export type TArticleLocalized = Pick<
-//   InferSelectModel<typeof tblArticle>,
-//   'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageName'
-// > & {
-//   title: string;
-//   description: string;
-//   text: string;
-//   keywords: string;
-// };
 export type TArticleLocalized = Pick<
   InferSelectModel<typeof tblArticle>,
-  'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageName'
+  'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageSrc'
 > & {
   title: string;
   description: string;
   text: string;
   keywords: string;
   viewCount: number | null;
+  published?: boolean;
 };
 
 export const tblArticleViews = pgTable(
