@@ -15,11 +15,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { TinyEditor } from './TinyEditor';
 import { CodeBlock } from './CodeBlock';
 import { Checkbox } from '../ui/checkbox';
-import { TArticleFormValues } from '@/lib/schemas/articleFormSchema';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Controller, UseFormReturn } from 'react-hook-form';
-import { IEditArticleTranslate } from '@/models/editArticle.model';
+import {
+  IEditArticleTranslate,
+  TArticleFormValues,
+} from '@/models/editArticle.model';
 import { aiTranslateArticle } from '@/controllers/aiTranslateArticle.controller';
 import { toast } from 'sonner';
 import { LoaderIcon } from './icons';

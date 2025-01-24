@@ -9,10 +9,10 @@ import { TArticleLocalized } from '@/db/schema';
 import EmptyData from './EmptyData';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
-import { isFileExists } from '@/lib/utils/imagePathValidate';
 import Image from 'next/image';
 import { IMG_PROPERTIES } from '@/models/image.model';
 import { ARTICLE_IMG } from '@/models/article.model';
+import { getImageSrc } from '@/controllers/articles.controller';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -38,13 +38,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
         }) => {
           const currDate = getFormattedDateStrYearFirst(updatedAt);
 
-          const localImgPath = `${ARTICLE_IMG.path}${`${slug}.jpg`}`;
-          const imgSrc =
-            imageSrc && imageSrc.startsWith('https://')
-              ? imageSrc
-              : isFileExists(localImgPath)
-                ? localImgPath
-                : BLOG_CARD_IMAGE.defaultImgSrc;
+          const imgSrc = getImageSrc(slug, imageSrc);
 
           return (
             <li key={id}>

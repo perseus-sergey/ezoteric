@@ -27,7 +27,6 @@ export default async function Page({ params }: { params: TParams }) {
 
   const jsonLD = generatePostJsonLd({
     lang,
-    imgSrc: `${BASE_URL}/images/main_h1_21.jpg`,
     imgHeight: main_h1_21.height,
     imgWidth: main_h1_21.width,
     article: {
@@ -35,7 +34,7 @@ export default async function Page({ params }: { params: TParams }) {
       slug: '',
       createdAt: new Date('2024-12-01'),
       updatedAt: new Date(),
-      imageSrc: '',
+      imageSrc: `${BASE_URL}/images/main_h1_21.jpg`,
       viewCount: 1,
       ...DEFAULT_META_DATA[lang],
       text: [

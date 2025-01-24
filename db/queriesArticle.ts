@@ -12,8 +12,8 @@ import {
 } from './schema';
 import { getDB } from './root';
 import { ELanguage } from '@/models/language.model';
-import { TArticleFormValues } from '@/lib/schemas/articleFormSchema';
 import { cache } from 'react';
+import { TArticleFormValues } from '@/models/editArticle.model';
 
 const { UA } = ELanguage;
 

@@ -7,7 +7,6 @@ import { Title } from '@/components/custom/Title';
 import { getArticleBySlug, updateArticleView } from '@/db/queriesArticle';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import { getELangKey } from '@/lib/utils/getLanguage';
-import { isFileExists } from '@/lib/utils/imagePathValidate';
 import { IMG_PROPERTIES } from '@/models/image.model';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -23,6 +22,7 @@ import { DEFAULT_META_OG } from '@/models/root.model';
 import { ELanguage } from '@/models/language.model';
 import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
+import { getImageSrc } from '@/controllers/articles.controller';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -86,13 +86,8 @@ export default async function Page({ params }: { params: TParams }) {
 
   const currDate = getFormattedDateStrYearFirst(updatedAt);
 
-  const localImgPath = `${ARTICLE_IMG.path}${`${slug}.jpg`}`;
-  const imgSrc =
-    imageSrc && imageSrc.startsWith('https://')
-      ? imageSrc
-      : isFileExists(localImgPath)
-        ? localImgPath
-        : null;
+  const imgSrc = getImageSrc(slug, imageSrc, false, '');
+
   const isAdmin = await isAdminAuth();
 
   await updateArticleView(id, isAdmin);

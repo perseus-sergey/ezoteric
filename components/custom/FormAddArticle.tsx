@@ -1,15 +1,15 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  articleFormSchema,
-  TArticleFormValues,
-} from '@/lib/schemas/articleFormSchema';
 import { insertNewArticle } from '@/db/queriesArticle';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { FormAddEditArticle } from './FormAddEditArticle';
 import { useForm } from 'react-hook-form';
+import {
+  articleFormSchema,
+  TArticleFormValues,
+} from '@/models/editArticle.model';
 
 export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
   const [isSaving, setIsSaving] = useState(false);

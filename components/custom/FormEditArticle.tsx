@@ -2,15 +2,15 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import {
-  articleFormSchema,
-  TArticleFormValues,
-} from '@/lib/schemas/articleFormSchema';
 import { updateArticle } from '@/db/queriesArticle';
 import { TArticle } from '@/db/schema';
 import { toast } from 'sonner';
 import { FormAddEditArticle } from './FormAddEditArticle';
 import { useState } from 'react';
+import {
+  articleFormSchema,
+  TArticleFormValues,
+} from '@/models/editArticle.model';
 
 export const FormEditArticle = ({
   article,

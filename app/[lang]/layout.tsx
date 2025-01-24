@@ -17,6 +17,12 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
 // article image try to wrap into parent to increase size
+// JSON-LD img sizes check
+// article categories (tegs)
+// ai generate list of articles with popular keywords
+
+// - add site to google search
+// - check JSON-LD (imgs, emails)
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
@@ -24,6 +30,7 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 // blog: search input
 // blog: priority for first img?
 // message: review all tools components/custom/message.tsx
+// JsonLd: add site logo
 // =================================================================
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;

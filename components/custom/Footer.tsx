@@ -4,7 +4,7 @@ import { Mail } from 'lucide-react';
 import Link from 'next/link';
 
 const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
-const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
+// const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
 export default async function Footer({ lang }: { lang: ELanguage }) {
   return (
@@ -19,7 +19,7 @@ export default async function Footer({ lang }: { lang: ELanguage }) {
             <Link
               className="hover:opacity-75"
               href={`mailto:${siteMail}`}
-              aria-label={`Send mail to ${sitePhone}`}
+              aria-label={`Send mail to ${siteMail}`}
             >
               {siteMail}
             </Link>

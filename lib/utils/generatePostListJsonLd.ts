@@ -1,9 +1,7 @@
-import { ARTICLE_IMG } from '@/models/article.model';
 import { ELanguage } from '@/models/language.model';
 import { ESegment, MAIN_URL } from '@/models/url.model';
-import { isFileExists } from './imagePathValidate';
 import { TArticleLocalized } from '@/db/schema';
-import { BLOG_CARD_IMAGE } from '@/models/blog.model';
+import { getImageSrc } from '@/controllers/articles.controller';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -37,10 +35,7 @@ export const generatePostListJsonLd = ({
       '@type': 'ItemList',
       itemListOrder: 'http://schema.org/ItemListOrderAscending',
       itemListElement: posts.map((post, index) => {
-        const imgSrc = `${ARTICLE_IMG.path}${post.imageSrc || `${post.slug}.jpg`}`;
-        const imgPath = isFileExists(imgSrc)
-          ? imgSrc
-          : BLOG_CARD_IMAGE.defaultImgSrc;
+        const imgPath = getImageSrc(post.slug, post.imageSrc, true);
 
         return {
           '@type': 'BlogPosting',
@@ -52,7 +47,7 @@ export const generatePostListJsonLd = ({
 
           image: {
             '@type': 'ImageObject',
-            url: `${BASE_URL}${imgPath}`,
+            url: imgPath,
             width: 1024,
             height: 1024,
           },

@@ -1,8 +1,7 @@
 import { TArticleLocalized } from '@/db/schema';
-import { ARTICLE_IMG } from '@/models/article.model';
 import { ELanguage } from '@/models/language.model';
 import { ESegment, MAIN_URL } from '@/models/url.model';
-import { isFileExists } from './imagePathValidate';
+import { getImageSrc } from '@/controllers/articles.controller';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -11,22 +10,18 @@ const { BLOG } = ESegment;
 export const generatePostJsonLd = ({
   lang,
   article,
-  imgSrc,
   imgHeight,
   imgWidth,
   isMainPage = false,
 }: {
   lang: ELanguage;
   article: TArticleLocalized;
-  imgSrc?: string;
   imgWidth?: number;
   imgHeight?: number;
   isMainPage?: boolean;
 }) => {
-  const imgPath =
-    imgSrc || `${ARTICLE_IMG.path}${article.imageSrc || `${article.slug}.jpg`}`;
-  const isImgExists = isFileExists(imgPath);
-  const relativeImgPath = isImgExists ? imgPath : undefined;
+  const imageSrc = getImageSrc(article.slug, article.imageSrc, true, '');
+  const imgPath = imageSrc || undefined;
   return {
     '@context': 'https://schema.org/',
     '@type': 'Article',
@@ -34,11 +29,11 @@ export const generatePostJsonLd = ({
 
     inLanguage: lang,
 
-    ...(relativeImgPath
+    ...(imgPath
       ? {
           image: {
             '@type': 'ImageObject',
-            url: `${BASE_URL}${relativeImgPath}`,
+            url: imgPath,
             width: imgHeight || 1024,
             height: imgWidth || 1024,
           },
