@@ -2,7 +2,6 @@ import { ELanguage } from '@/models/language.model';
 import BottomInfoPanel from './BottomInfoPanel';
 import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
 import SeoLink from './SeoLink';
-import Image from 'next/image';
 import { IMG_PROPERTIES } from '@/models/image.model';
 import { ARTICLE_IMG } from '@/models/article.model';
 import { BLOG_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/blog.model';
@@ -12,6 +11,7 @@ import { cutText } from '@/lib/utils/cutText';
 import { getImageSrc } from '@/controllers/articles.controller';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
+import ValidImage from './ValidImage';
 
 interface IArticleCardProps {
   lang: ELanguage;
@@ -53,9 +53,10 @@ const ArticleCard = ({ lang, article }: IArticleCardProps) => {
           </CardFooter>
         </div>
 
-        <Image
+        <ValidImage
+          defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
           className="rounded-sm"
-          sizes="300px"
+          sizes={`${BLOG_CARD_IMAGE.size.width * 0.7}px`}
           // sizes="(max-width: 768px) 20vw, 10vw"
           src={imgSrc}
           placeholder="blur"

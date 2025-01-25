@@ -8,7 +8,6 @@ import { getArticleBySlug, updateArticleView } from '@/db/queriesArticle';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { IMG_PROPERTIES } from '@/models/image.model';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import BrCrumb from '@/components/custom/BrCrumb';
@@ -16,13 +15,15 @@ import { isAdminAuth } from '@/lib/utils/loggedUser';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
 import { ARTICLE_IMG, NOT_PUBLISHED } from '@/models/article.model';
-import { BLOG_H1 } from '@/models/blog.model';
+import { BLOG_CARD_IMAGE, BLOG_H1 } from '@/models/blog.model';
 import { Metadata } from 'next';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import { ELanguage } from '@/models/language.model';
 import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getImageSrc } from '@/controllers/articles.controller';
+import ValidImage from '@/components/custom/ValidImage';
+import SpotifyPlayer from '@/components/custom/SpotifyPlayer';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -130,13 +131,15 @@ export default async function Page({ params }: { params: TParams }) {
       {description && <TextUnderH1>{description}</TextUnderH1>}
 
       {!!imgSrc && (
-        <Image
+        <ValidImage
+          defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
           className="my-4 mx-auto sm:border-2 border-white sm:shadow-md rounded"
           src={imgSrc}
           alt={ARTICLE_IMG.getAlt(title)[lang]}
           placeholder="blur"
           blurDataURL={IMG_PROPERTIES.defaultImgBlur}
           priority
+          sizes={`${ARTICLE_IMG.size.width * 0.5}px`}
           {...ARTICLE_IMG.size}
         />
       )}
@@ -167,6 +170,8 @@ export default async function Page({ params }: { params: TParams }) {
           }}
         />
       </div>
+
+      <SpotifyPlayer trackId="6pnwfWyaWjQiHCKTiZLItr" />
     </article>
   );
 }

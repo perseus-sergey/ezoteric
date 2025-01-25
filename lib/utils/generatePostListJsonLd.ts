@@ -48,8 +48,8 @@ export const generatePostListJsonLd = ({
           image: {
             '@type': 'ImageObject',
             url: imgPath,
-            width: 1024,
-            height: 1024,
+            width: 640,
+            height: 640,
           },
           mainEntityOfPage: {
             '@type': 'WebPage',

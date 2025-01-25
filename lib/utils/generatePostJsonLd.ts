@@ -34,8 +34,8 @@ export const generatePostJsonLd = ({
           image: {
             '@type': 'ImageObject',
             url: imgPath,
-            width: imgHeight || 1024,
-            height: imgWidth || 1024,
+            width: imgHeight || 828,
+            height: imgWidth || 828,
           },
         }
       : {}),

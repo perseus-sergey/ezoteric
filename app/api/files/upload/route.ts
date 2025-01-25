@@ -4,6 +4,8 @@ import { del, list, put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const revalidate = 0;
+
 const PAGINATION_LIMIT = 300;
 
 const FileSchema = z.object({

@@ -30,6 +30,7 @@ const VercelBlobWidget = () => {
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteProcess, setIsDeleteProcess] = useState(false);
 
   const fetchBlobs = useCallback(async () => {
     if (!hasMore || isLoading) return;
@@ -156,9 +157,10 @@ const VercelBlobWidget = () => {
     [setFiles, files]
   );
 
-  const handleRemove = async (fileUrl: string) => {
+  const handleRemove = useCallback(async (fileUrl: string) => {
+    setIsDeleteProcess(true);
     const findDbRes = await getArticleByImage(fileUrl);
-    console.log('🚀 ~ handleRemove ~ findDbRes:', findDbRes);
+
     if (findDbRes instanceof Error) {
       toast.error('Error occurred while searching for this image in database');
       return;
@@ -204,8 +206,10 @@ const VercelBlobWidget = () => {
       }
     } catch (error) {
       toast.error(`Error deleting file! ${error}`);
+    } finally {
+      setIsDeleteProcess(false);
     }
-  };
+  }, []);
 
   return (
     <>
@@ -223,7 +227,6 @@ const VercelBlobWidget = () => {
           <div className="flex flex-wrap justify-center gap-2">
             {uploadQueue.map((filename) => (
               <PreviewUploaded
-                onRemove={() => handleRemove('')}
                 key={filename}
                 uploadFile={{
                   url: '',
@@ -237,6 +240,7 @@ const VercelBlobWidget = () => {
             {files.map((file) => (
               <PreviewUploaded
                 onRemove={() => handleRemove(file.url)}
+                isDeleteProcess={isDeleteProcess}
                 key={file.url}
                 uploadFile={file}
               />

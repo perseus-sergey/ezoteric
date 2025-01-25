@@ -6,14 +6,17 @@ import { AlertDialog } from '../ui/alert-dialog';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useState } from 'react';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
+import clsx from 'clsx';
 
 export const PreviewUploaded = ({
   uploadFile,
   onRemove,
   isUploading = false,
+  isDeleteProcess = false,
 }: {
   uploadFile: IUploadFile;
   onRemove?: () => void;
+  isDeleteProcess?: boolean;
   isUploading?: boolean;
 }) => {
   const [delModalOpen, setDelModalOpen] = useState(false);
@@ -31,7 +34,10 @@ export const PreviewUploaded = ({
               width={64}
               height={64}
               alt={`An image uploadFile${name ? `: ${name}` : ''}`}
-              className="rounded-md size-full"
+              className={clsx(
+                'rounded-md size-full',
+                isDeleteProcess && 'opacity-50'
+              )}
             />
           ) : (
             <div className=""></div>
@@ -42,7 +48,7 @@ export const PreviewUploaded = ({
 
         {isUploading && <LoadingAnimated />}
 
-        {onRemove !== undefined && (
+        {onRemove !== undefined && !isDeleteProcess && (
           <>
             <CopyClipboardBtn
               value={url}
