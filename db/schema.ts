@@ -12,21 +12,28 @@ import {
   pgEnum,
   index,
   pgMaterializedView,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 
-const langSuffix = {
+export const langSuffix = {
   uk: '_ua',
   en: '_en',
 };
 
-const TBL_USER = 'ezo_user';
-const TBL_CHAT = 'ezo_chat';
-const TBL_RESERVATION = 'ezo_reservation';
-const TBL_ARTICLE = 'ezo_article';
-const TBL_ARTICLE_VIEWS = 'ezo_article_views';
-const TBL_ARTICLE_VIEWS_COUNTS = 'ezo_article_view_counts';
+export const TBL_USER = 'ezo_user';
+export const TBL_CHAT = 'ezo_chat';
+export const TBL_RESERVATION = 'ezo_reservation';
+export const TBL_ARTICLE = 'ezo_article';
+export const TBL_ARTICLE_VIEWS = 'ezo_article_views';
+export const TBL_TAGS = 'ezo_tags';
+export const TBL_ARTICLE_TAGS = 'ezo_article_tags';
+export const TBL_ARTICLE_VIEWS_COUNTS = 'ezo_article_view_counts';
 
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin', 'editor']);
+
+// =================================================================
+// TBL_CHAT
+// =================================================================
 
 export const user = pgTable(TBL_USER, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
@@ -37,6 +44,10 @@ export const user = pgTable(TBL_USER, {
 });
 
 export type TUser = InferSelectModel<typeof user>;
+
+// =================================================================
+// TBL_CHAT
+// =================================================================
 
 export const chat = pgTable(TBL_CHAT, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
@@ -51,6 +62,10 @@ export type TChat = Omit<InferSelectModel<typeof chat>, 'messages'> & {
   messages: Array<Message>;
 };
 
+// =================================================================
+// TBL_RESERVATION
+// =================================================================
+
 export const reservation = pgTable(TBL_RESERVATION, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   createdAt: timestamp('createdAt').notNull(),
@@ -62,6 +77,10 @@ export const reservation = pgTable(TBL_RESERVATION, {
 });
 
 export type TReservation = InferSelectModel<typeof reservation>;
+
+// =================================================================
+// TBL_ARTICLE
+// =================================================================
 
 export const tblArticle = pgTable(TBL_ARTICLE, {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -101,7 +120,52 @@ export type TArticleLocalized = Pick<
   viewCount: number | null;
   published?: boolean;
   spotifyId?: string | null;
+  tags?: TTagLocalized[];
 };
+
+// =================================================================
+// TBL_TAGS
+// =================================================================
+
+export const tblTag = pgTable(TBL_TAGS, {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  nameUa: varchar(`name${langSuffix.uk}`, { length: 255 }).notNull().unique(),
+  nameEn: varchar(`name${langSuffix.en}`, { length: 255 }).notNull().unique(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+});
+
+export type TTag = InferSelectModel<typeof tblTag>;
+
+export type TTagLocalized = Pick<
+  InferSelectModel<typeof tblTag>,
+  'id' | 'slug'
+> & { name: string };
+
+// =================================================================
+// TBL_ARTICLE_TAGS
+// =================================================================
+
+export const tblArticleTag = pgTable(
+  TBL_ARTICLE_TAGS,
+  {
+    // Junction table
+    articleId: integer('article_id')
+      .notNull()
+      .references(() => tblArticle.id),
+    tagId: integer('tag_id')
+      .notNull()
+      .references(() => tblTag.id),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.articleId, table.tagId] }), // Composite primary key
+    };
+  }
+);
+
+// =================================================================
+// TBL_ARTICLE_VIEWS
+// =================================================================
 
 export const tblArticleViews = pgTable(
   TBL_ARTICLE_VIEWS,
@@ -116,6 +180,10 @@ export const tblArticleViews = pgTable(
     articleIdIdx: index('article_id_idx').on(table.articleId),
   })
 );
+
+// =================================================================
+// TBL_ARTICLE_VIEWS_COUNTS
+// =================================================================
 
 export const articleViewCounts = pgMaterializedView(TBL_ARTICLE_VIEWS_COUNTS, {
   articleId: integer('article_id'),

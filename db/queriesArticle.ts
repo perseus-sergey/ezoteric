@@ -6,9 +6,13 @@ import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 import {
   articleViewCounts,
+  langSuffix,
   TArticleLocalized,
+  TBL_ARTICLE_TAGS,
+  TBL_TAGS,
   tblArticle,
   tblArticleViews,
+  TTagLocalized,
 } from './schema';
 import { getDB } from './root';
 import { ELanguage } from '@/models/language.model';
@@ -116,6 +120,12 @@ export const getArticleBySlug = cache(
           published: tblArticle.published,
           spotifyId: tblArticle.spotifyId,
           viewCount: articleViewCounts.viewCount,
+          tags: sql<TTagLocalized[]>`
+        SELECT tags.id, tags.name${langSuffix[lang]} as name, tags.slug
+        FROM ${TBL_TAGS} AS T
+        INNER JOIN ${TBL_ARTICLE_TAGS} AS AT ON T.id = AT.tag_id
+        WHERE AT.article_id = ${tblArticle.id}
+      `,
         })
         .from(tblArticle)
         .leftJoin(
@@ -136,6 +146,51 @@ export const getArticleBySlug = cache(
     }
   }
 );
+
+// export const getArticleBySlug = cache(
+//   async ({
+//     slug,
+//     lang,
+//   }: {
+//     slug: string;
+//     lang: ELanguage;
+//   }): Promise<TArticleLocalized | null> => {
+//     try {
+//       const res = await db
+//         .select({
+//           id: tblArticle.id,
+//           title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
+//           description:
+//             tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
+//           text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
+//           keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
+//           slug: tblArticle.slug,
+//           createdAt: tblArticle.createdAt,
+//           updatedAt: tblArticle.updatedAt,
+//           imageSrc: tblArticle.imageSrc,
+//           published: tblArticle.published,
+//           spotifyId: tblArticle.spotifyId,
+//           viewCount: articleViewCounts.viewCount,
+//         })
+//         .from(tblArticle)
+//         .leftJoin(
+//           articleViewCounts,
+//           eq(tblArticle.id, articleViewCounts.articleId)
+//         )
+//         .where(eq(tblArticle.slug, slug))
+//         .limit(1);
+
+//       return res[0];
+//     } catch (error) {
+//       console.error(
+//         'Failed to get 1 article from database',
+//         'Error Name: ',
+//         (error as Error).name
+//       );
+//       return null;
+//     }
+//   }
+// );
 
 export const getArticleByImage = async (imageSrc: string) => {
   const filters = [];
