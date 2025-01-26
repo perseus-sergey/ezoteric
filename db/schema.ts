@@ -84,6 +84,7 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
   textUa: text(`text${langSuffix.uk}`).notNull(),
   textEn: text(`text${langSuffix.en}`).notNull(),
   imageSrc: varchar('image_src', { length: 255 }),
+  spotifyId: varchar('spotify_id', { length: 255 }),
   published: boolean('published').notNull().default(true),
 });
 
@@ -99,6 +100,7 @@ export type TArticleLocalized = Pick<
   keywords: string;
   viewCount: number | null;
   published?: boolean;
+  spotifyId?: string | null;
 };
 
 export const tblArticleViews = pgTable(

@@ -283,6 +283,25 @@ export const FormAddEditArticle = ({
           )}
         />
 
+        {/* Spotify */}
+        <FormField
+          control={form.control}
+          name="spotifyId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Spotify track ID</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="6pnwfWyaWjQiHCKTiZLItr"
+                  {...field}
+                  value={field.value || ''} // Перетворюємо null на порожній рядок
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Published */}
         <FormField
           control={form.control}

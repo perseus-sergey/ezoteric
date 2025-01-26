@@ -1,3 +1,4 @@
+# .husky/pre-commit
 # Перевірка TypeScript
 pnpm exec tsc --noEmit
 
@@ -5,16 +6,6 @@ pnpm exec tsc --noEmit
 pnpm exec lint-staged
 
 # Перевірка змін у схемі або міграціях
-echo "Check changes in drizzle schemas..."
 if git diff --cached --name-only | grep -E 'schema\.(ts|sql)|migrations/'; then
-  echo "Schema or migrations changed."
-  read -p "Do you want to run 'pnpm d:generate' and 'pnpm d:migrate'? (y/n) " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    pnpm d:generate
-    pnpm d:migrate
-  else
-    echo "Please run the migration commands manually."
-    exit 1
-  fi
+  echo "❌ Schema or migrations changed. You must run 'pnpm d:generate' and 'pnpm d:migrate' first"
 fi

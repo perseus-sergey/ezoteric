@@ -34,7 +34,9 @@ export const articleFormSchema = z.object({
     .trim(),
   textUa: z.string().min(20, { message: 'Текст занадто короткий' }).trim(),
   textEn: z.string().min(20, { message: 'Text is too short' }).trim(),
+
   published: z.boolean().default(true),
+
   imageSrc: z
     .string()
     .transform((val) => val.trim())
@@ -45,6 +47,20 @@ export const articleFormSchema = z.object({
       },
       {
         message: 'Image Source must start with "https://" if provided',
+      }
+    ),
+
+  spotifyId: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => {
+        // Якщо значення не порожнє або null, перевіряємо його формат
+        return !val || /^[a-zA-Z0-9]{22}$/.test(val); // ID має бути 22 символи
+      },
+      {
+        message: 'Spotify ID must be a valid 22-character string',
       }
     ),
 });

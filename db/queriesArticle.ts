@@ -114,6 +114,7 @@ export const getArticleBySlug = cache(
           updatedAt: tblArticle.updatedAt,
           imageSrc: tblArticle.imageSrc,
           published: tblArticle.published,
+          spotifyId: tblArticle.spotifyId,
           viewCount: articleViewCounts.viewCount,
         })
         .from(tblArticle)

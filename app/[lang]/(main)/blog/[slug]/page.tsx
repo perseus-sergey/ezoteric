@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as motion from 'motion/react-client';
 
 import BottomInfoPanel from '@/components/custom/BottomInfoPanel';
 import DangerHtml from '@/components/custom/DangerHtml';
@@ -83,6 +84,7 @@ export default async function Page({ params }: { params: TParams }) {
     viewCount,
     id,
     published,
+    spotifyId,
   } = article;
 
   const currDate = getFormattedDateStrYearFirst(updatedAt);
@@ -131,17 +133,36 @@ export default async function Page({ params }: { params: TParams }) {
       {description && <TextUnderH1>{description}</TextUnderH1>}
 
       {!!imgSrc && (
-        <ValidImage
-          defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
-          className="my-4 mx-auto sm:border-2 border-white sm:shadow-md rounded"
-          src={imgSrc}
-          alt={ARTICLE_IMG.getAlt(title)[lang]}
-          placeholder="blur"
-          blurDataURL={IMG_PROPERTIES.defaultImgBlur}
-          priority
-          sizes={`${ARTICLE_IMG.size.width * 0.5}px`}
-          {...ARTICLE_IMG.size}
-        />
+        <div className="size-fit relative my-4 mx-auto sm:border-2 border-white sm:shadow-md">
+          <ValidImage
+            defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
+            className="rounded-lg"
+            src={imgSrc}
+            alt={ARTICLE_IMG.getAlt(title)[lang]}
+            placeholder="blur"
+            blurDataURL={IMG_PROPERTIES.defaultImgBlur}
+            priority
+            sizes={`${ARTICLE_IMG.size.width * 0.5}px`}
+            {...ARTICLE_IMG.size}
+          />
+
+          {spotifyId && (
+            <motion.div
+              initial={{ opacity: 0, x: -200 }}
+              whileInView={{ opacity: 0.6, x: 0 }}
+              exit={{ opacity: 0, x: -200 }}
+              transition={{ duration: 0.5 }}
+              whileHover={{
+                opacity: 0.9,
+                width: '50%',
+                transition: { duration: 0.2 },
+              }}
+              className="absolute bottom-0 left-0 p-1"
+            >
+              <SpotifyPlayer trackId={spotifyId} />
+            </motion.div>
+          )}
+        </div>
       )}
 
       <div className="article-text py-8 px-16 bg-tertiary rounded-2xl">
@@ -170,8 +191,6 @@ export default async function Page({ params }: { params: TParams }) {
           }}
         />
       </div>
-
-      <SpotifyPlayer trackId="6pnwfWyaWjQiHCKTiZLItr" />
     </article>
   );
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "ezo_article" ADD COLUMN "spotify_id" varchar(255);
