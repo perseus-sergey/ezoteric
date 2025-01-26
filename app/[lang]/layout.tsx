@@ -16,9 +16,8 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// blob deleting - disable buttons
+// article editor: add slug refresh button
 // article categories (tegs)
-// ai generate list of articles with popular keywords
 
 // - fetch no store route
 // - add site to google search

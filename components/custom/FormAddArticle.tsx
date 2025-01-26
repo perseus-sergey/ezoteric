@@ -10,6 +10,7 @@ import {
   articleFormSchema,
   TArticleFormValues,
 } from '@/models/editArticle.model';
+import { makeSlug } from '@/controllers/articleEdit.controller';
 
 export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -36,10 +37,8 @@ export const FormAddArticle = ({ editorApiKey }: { editorApiKey: string }) => {
 
   // Оновлюємо slug при зміні titleEn
   useEffect(() => {
-    const slug = titleEnValue
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    const slug = makeSlug(titleEnValue);
+
     form.setValue('slug', slug, { shouldValidate: true });
   }, [titleEnValue, form]);
 

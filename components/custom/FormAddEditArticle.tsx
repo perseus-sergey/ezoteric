@@ -16,7 +16,7 @@ import { TinyEditor } from './TinyEditor';
 import { CodeBlock } from './CodeBlock';
 import { Checkbox } from '../ui/checkbox';
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Lock, LockOpen, RefreshCcw } from 'lucide-react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import {
   IEditArticleTranslate,
@@ -25,6 +25,8 @@ import {
 import { aiTranslateArticle } from '@/controllers/aiTranslateArticle.controller';
 import { toast } from 'sonner';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
+import clsx from 'clsx';
+import { makeSlug } from '@/controllers/articleEdit.controller';
 
 export const FormAddEditArticle = ({
   editorApiKey,
@@ -41,6 +43,9 @@ export const FormAddEditArticle = ({
   const [isTranslating, setIsTranslating] = useState(false);
 
   const slugDisableToggle = () => setSlugDisabled((prevState) => !prevState);
+
+  const slugRefreshHandler = () =>
+    form.setValue('slug', makeSlug(form.getValues().titleEn));
 
   const handleTranslate = async () => {
     const { titleUa, descriptionUa, keywordsUa, textUa } = form.getValues();
@@ -239,29 +244,41 @@ export const FormAddEditArticle = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Slug</FormLabel>
-              <div className="relative text-muted-foreground">
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="pr-8"
-                    placeholder="article-slug"
-                    disabled={slugDisabled}
-                  />
-                </FormControl>
-                <button
+              <div className="w-full flex items-center gap-4">
+                <div className="relative text-muted-foreground flex-1">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="pr-8"
+                      placeholder="article-slug"
+                      disabled={slugDisabled}
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    onClick={slugDisableToggle}
+                    className="absolute right-2 bottom-1/2 translate-y-1/2"
+                  >
+                    {!slugDisabled ? (
+                      <LockOpen className="size-5" />
+                    ) : (
+                      <Lock className="size-5" />
+                    )}
+                  </button>
+                </div>
+                <Button
+                  title="Update Slug"
                   type="button"
-                  onClick={slugDisableToggle}
-                  className="absolute right-2 bottom-1/2 translate-y-1/2"
+                  onClick={slugRefreshHandler}
+                  className=""
+                  disabled={slugDisabled}
+                  variant="outline"
                 >
-                  {!slugDisabled ? (
-                    <Eye className="size-5" />
-                  ) : (
-                    <EyeOff className="size-5" />
-                  )}
-                </button>
+                  <RefreshCcw className="size-5" />
+                </Button>
               </div>
               <FormDescription>
-                Унікальний ідентифікатор статті.
+                {`Унікальний ідентифікатор статті. Складається автоматично із поля "Title (EN)" на етапі додавання статті. ⚠ Не бажано змінювати вручну.`}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -325,7 +342,11 @@ export const FormAddEditArticle = ({
           )}
         />
 
-        <Button type="submit">
+        <Button
+          type="submit"
+          disabled={isSaving}
+          className={clsx(isSaving && 'cursor-progress')}
+        >
           {isSaving && <LoadingAnimated />} {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </form>

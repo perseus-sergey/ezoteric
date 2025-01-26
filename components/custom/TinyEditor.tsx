@@ -58,6 +58,7 @@ export const TinyEditor = ({
           'bold italic forecolor | alignleft aligncenter ' +
           'alignright alignjustify | bullist numlist outdent indent | ' +
           'removeformat | help',
+
         content_style: `
           .section-image__wrapper {
             display: flex;
