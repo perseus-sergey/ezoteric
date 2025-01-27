@@ -165,9 +165,11 @@ export default async function Page({ params }: { params: TParams }) {
         </div>
       )}
 
-      <div className="article-text py-8 px-16 bg-tertiary rounded-2xl">
-        <DangerHtml text={text} />
-      </div>
+      {text && (
+        <div className="article-text py-8 px-16 bg-tertiary rounded-2xl">
+          <DangerHtml text={text} />
+        </div>
+      )}
 
       <div className="py-1 px-4 sm:w-fit rounded-sm bg-tertiary-gradient">
         <BottomInfoPanel
@@ -175,7 +177,7 @@ export default async function Page({ params }: { params: TParams }) {
           items={[
             {
               caption: INFO_PANEL_CAPTION.views,
-              value: viewCount || 0,
+              value: viewCount?.viewCount || 0,
             },
             {
               caption: INFO_PANEL_CAPTION.date,

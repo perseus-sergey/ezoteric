@@ -1,5 +1,5 @@
 import { Message } from 'ai';
-import { InferSelectModel, sql } from 'drizzle-orm';
+import { InferSelectModel, relations } from 'drizzle-orm';
 import {
   pgTable,
   varchar,
@@ -11,7 +11,6 @@ import {
   integer,
   pgEnum,
   index,
-  pgMaterializedView,
   primaryKey,
 } from 'drizzle-orm/pg-core';
 
@@ -109,19 +108,19 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
 
 export type TArticle = InferSelectModel<typeof tblArticle>;
 
-export type TArticleLocalized = Pick<
-  InferSelectModel<typeof tblArticle>,
-  'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageSrc'
-> & {
-  title: string;
-  description: string;
-  text: string;
-  keywords: string;
-  viewCount: number | null;
-  published?: boolean;
-  spotifyId?: string | null;
-  tags?: TTagLocalized[];
-};
+// export type TArticleLocalized = Pick<
+//   InferSelectModel<typeof tblArticle>,
+//   'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageSrc'
+// > & {
+//   title: string;
+//   description: string;
+//   text: string;
+//   keywords: string;
+//   viewCount: number | null;
+//   published?: boolean;
+//   spotifyId?: string | null;
+//   tags?: TTagLocalized[];
+// };
 
 // =================================================================
 // TBL_TAGS
@@ -185,11 +184,34 @@ export const tblArticleViews = pgTable(
 // TBL_ARTICLE_VIEWS_COUNTS
 // =================================================================
 
-export const articleViewCounts = pgMaterializedView(TBL_ARTICLE_VIEWS_COUNTS, {
-  articleId: integer('article_id'),
-  viewCount: integer('view_count'),
-}).as(
-  sql`SELECT article_id, COUNT(*) AS view_count 
-      FROM ${TBL_ARTICLE_VIEWS} 
-      GROUP BY article_id`
-);
+export const articleViewCounts = pgTable(TBL_ARTICLE_VIEWS_COUNTS, {
+  articleId: integer('article_id')
+    .primaryKey()
+    .references(() => tblArticle.id),
+  viewCount: integer('view_count').notNull().default(0),
+});
+
+// ------------------- Relations ---------------------------
+
+export const tblArticleRelations = relations(tblArticle, ({ many, one }) => ({
+  articleTags: many(tblArticleTag),
+  viewCount: one(articleViewCounts, {
+    fields: [tblArticle.id],
+    references: [articleViewCounts.articleId],
+  }),
+}));
+
+export const tblTagRelations = relations(tblTag, ({ many }) => ({
+  articleTags: many(tblArticleTag),
+}));
+
+export const tblArticleTagRelations = relations(tblArticleTag, ({ one }) => ({
+  article: one(tblArticle, {
+    fields: [tblArticleTag.articleId],
+    references: [tblArticle.id],
+  }),
+  tag: one(tblTag, {
+    fields: [tblArticleTag.tagId],
+    references: [tblTag.id],
+  }),
+}));

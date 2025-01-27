@@ -1,11 +1,21 @@
 import { getDB } from '@/db/root';
-import { articleViewCounts } from '@/db/schema';
+import { TBL_ARTICLE_VIEWS_COUNTS, tblArticleViews } from '@/db/schema';
+import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    await getDB().refreshMaterializedView(articleViewCounts);
+    await getDB().transaction(async (tx) => {
+      await tx.execute(
+        sql`UPDATE ${TBL_ARTICLE_VIEWS_COUNTS} AS VC
+            SET view_count = (
+              SELECT COUNT(*) 
+              FROM ${tblArticleViews} 
+              WHERE article_id = VC.article_id
+            )`
+      );
+    });
 
     return new Response('SUCCESS!', {
       status: 200,

@@ -3,9 +3,8 @@ import BottomInfoPanel from './BottomInfoPanel';
 import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
 import SeoLink from './SeoLink';
 import { IMG_PROPERTIES } from '@/models/image.model';
-import { ARTICLE_IMG } from '@/models/article.model';
+import { ARTICLE_IMG, TArticleLocalized } from '@/models/article.model';
 import { BLOG_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/blog.model';
-import { TArticleLocalized } from '@/db/schema';
 import { ESegment } from '@/models/url.model';
 import { cutText } from '@/lib/utils/cutText';
 import { getImageSrc } from '@/controllers/articles.controller';
@@ -41,7 +40,10 @@ const ArticleCard = ({ lang, article }: IArticleCardProps) => {
           <CardFooter>
             <BottomInfoPanel
               items={[
-                { caption: INFO_PANEL_CAPTION.views, value: article.viewCount },
+                {
+                  caption: INFO_PANEL_CAPTION.views,
+                  value: article.viewCount?.viewCount,
+                },
                 {
                   caption: INFO_PANEL_CAPTION.date,
                   value: <time dateTime={currDate}>{currDate}</time>,

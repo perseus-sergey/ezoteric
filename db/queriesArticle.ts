@@ -2,22 +2,14 @@
 
 import 'server-only';
 
-import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, eq, ilike, or, sql } from 'drizzle-orm';
 
-import {
-  articleViewCounts,
-  langSuffix,
-  TArticleLocalized,
-  TBL_ARTICLE_TAGS,
-  TBL_TAGS,
-  tblArticle,
-  tblArticleViews,
-  TTagLocalized,
-} from './schema';
+import { tblArticle, tblArticleViews, tblTag } from './schema';
 import { getDB } from './root';
 import { ELanguage } from '@/models/language.model';
 import { cache } from 'react';
 import { TArticleFormValues } from '@/models/editArticle.model';
+import { TArticleLocalized } from '@/models/article.model';
 
 const { UA } = ELanguage;
 
@@ -36,15 +28,14 @@ export const getArticlesChunk = async ({
   lang: ELanguage;
   isAdmin: boolean;
 }): Promise<{
-  totalCount: number | null;
   articles: TArticleLocalized[] | null;
+  totalCount: number | null;
 }> => {
   // Search condition
   const searchCondition = searchQuery
     ? ilike(tblArticle.titleEn, `%${searchQuery}%`)
     : undefined;
 
-  // Published condition
   const publishedCondition = eq(tblArticle.published, true);
 
   try {
@@ -59,30 +50,52 @@ export const getArticlesChunk = async ({
     const totalCount = totalCountQuery[0]?.total_count || 0;
 
     // Fetch articles with pagination
-    const articles = await db
-      .select({
-        id: tblArticle.id,
-        title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
+    const articles = await db.query.tblArticle.findMany({
+      limit: perPage,
+      offset,
+      where: (article, { and }) =>
+        and(searchCondition, isAdmin ? undefined : publishedCondition),
+      columns: {
+        id: true,
+        updatedAt: true,
+        createdAt: true,
+        slug: true,
+        imageSrc: true,
+        published: true,
+      },
+      extras: {
+        title:
+          sql<string>`${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}`.as(
+            'title'
+          ),
         description:
-          tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
-        text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
-        keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
-        slug: tblArticle.slug,
-        createdAt: tblArticle.createdAt,
-        updatedAt: tblArticle.updatedAt,
-        imageSrc: tblArticle.imageSrc,
-        published: tblArticle.published,
-        viewCount: articleViewCounts.viewCount,
-      })
-      .from(tblArticle)
-      .leftJoin(
-        articleViewCounts,
-        eq(tblArticle.id, articleViewCounts.articleId)
-      )
-      .where(and(searchCondition, isAdmin ? undefined : publishedCondition))
-      .orderBy(desc(tblArticle.updatedAt))
-      .limit(perPage)
-      .offset(offset);
+          sql<string>`${tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn']}`.as(
+            'description'
+          ),
+      },
+      with: {
+        articleTags: {
+          with: {
+            tag: {
+              columns: {
+                id: true,
+                slug: true,
+              },
+              extras: {
+                name: sql<string>`${tblTag[lang === UA ? 'nameUa' : 'nameEn']}`.as(
+                  'name'
+                ),
+              },
+            },
+          },
+        },
+        viewCount: {
+          columns: {
+            viewCount: true,
+          },
+        },
+      },
+    });
 
     return { totalCount, articles };
   } catch (error) {
@@ -96,6 +109,81 @@ export const getArticlesChunk = async ({
   }
 };
 
+// export type TArticles = Awaited<ReturnType<typeof getArticlesChunk>>['articles'];
+
+// export const getArticlesChunk = async ({
+//   offset,
+//   perPage,
+//   searchQuery = '',
+//   lang,
+//   isAdmin,
+// }: {
+//   offset: number;
+//   perPage: number;
+//   searchQuery?: string;
+//   lang: ELanguage;
+//   isAdmin: boolean;
+// }): Promise<{
+//   totalCount: number | null;
+//   articles: TArticleLocalized[] | null;
+// }> => {
+//   // Search condition
+//   const searchCondition = searchQuery
+//     ? ilike(tblArticle.titleEn, `%${searchQuery}%`)
+//     : undefined;
+
+//   // Published condition
+//   const publishedCondition = eq(tblArticle.published, true);
+
+//   try {
+//     // Calculate total count of PUBLISHED articles
+//     const totalCountQuery = await db
+//       .select({
+//         total_count: sql<number>`COUNT(${tblArticle.id})`.mapWith(Number),
+//       })
+//       .from(tblArticle)
+//       .where(and(searchCondition, publishedCondition));
+
+//     const totalCount = totalCountQuery[0]?.total_count || 0;
+
+//     // Fetch articles with pagination
+//     const articles = await db
+//       .select({
+//         id: tblArticle.id,
+//         title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
+//         description:
+//           tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
+//         text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
+//         keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
+//         slug: tblArticle.slug,
+//         createdAt: tblArticle.createdAt,
+//         updatedAt: tblArticle.updatedAt,
+//         imageSrc: tblArticle.imageSrc,
+//         published: tblArticle.published,
+//         viewCount: articleViewCounts.viewCount,
+//       })
+//       .from(tblArticle)
+//       .leftJoin(
+//         articleViewCounts,
+//         eq(tblArticle.id, articleViewCounts.articleId)
+//       )
+//       .where(and(searchCondition, isAdmin ? undefined : publishedCondition))
+//       .orderBy(desc(tblArticle.updatedAt))
+//       .limit(perPage)
+//       .offset(offset);
+
+//     return { totalCount, articles };
+//   } catch (error) {
+//     console.error(
+//       'Failed to get articles from database.',
+//       'Error: ',
+//       error,
+//       (error as Error).message
+//     );
+//     return { totalCount: null, articles: null };
+//   }
+// };
+
 export const getArticleBySlug = cache(
   async ({
     slug,
@@ -105,40 +193,62 @@ export const getArticleBySlug = cache(
     lang: ELanguage;
   }): Promise<TArticleLocalized | null> => {
     try {
-      const res = await db
-        .select({
-          id: tblArticle.id,
-          title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
+      const article = await db.query.tblArticle.findFirst({
+        where: (article, { eq }) => eq(article.slug, slug),
+        columns: {
+          id: true,
+          updatedAt: true,
+          createdAt: true,
+          slug: true,
+          imageSrc: true,
+          published: true,
+          spotifyId: true,
+        },
+        extras: {
+          title:
+            sql<string>`${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}`.as(
+              'title'
+            ),
           description:
-            tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
-          text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
-          keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
-          slug: tblArticle.slug,
-          createdAt: tblArticle.createdAt,
-          updatedAt: tblArticle.updatedAt,
-          imageSrc: tblArticle.imageSrc,
-          published: tblArticle.published,
-          spotifyId: tblArticle.spotifyId,
-          viewCount: articleViewCounts.viewCount,
-          tags: sql<TTagLocalized[]>`
-        SELECT tags.id, tags.name${langSuffix[lang]} as name, tags.slug
-        FROM ${TBL_TAGS} AS T
-        INNER JOIN ${TBL_ARTICLE_TAGS} AS AT ON T.id = AT.tag_id
-        WHERE AT.article_id = ${tblArticle.id}
-      `,
-        })
-        .from(tblArticle)
-        .leftJoin(
-          articleViewCounts,
-          eq(tblArticle.id, articleViewCounts.articleId)
-        )
-        .where(eq(tblArticle.slug, slug))
-        .limit(1);
+            sql<string>`${tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn']}`.as(
+              'description'
+            ),
+          keywords:
+            sql<string>`${tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn']}`.as(
+              'keywords'
+            ),
+          text: sql<string>`${tblArticle[lang === UA ? 'textUa' : 'textEn']}`.as(
+            'text'
+          ),
+        },
+        with: {
+          articleTags: {
+            with: {
+              tag: {
+                columns: {
+                  id: true,
+                  slug: true,
+                },
+                extras: {
+                  name: sql<string>`${tblTag[lang === UA ? 'nameUa' : 'nameEn']}`.as(
+                    'name'
+                  ),
+                },
+              },
+            },
+          },
+          viewCount: {
+            columns: {
+              viewCount: true,
+            },
+          },
+        },
+      });
 
-      return res[0];
+      return article || null;
     } catch (error) {
       console.error(
-        'Failed to get 1 article from database',
+        'Failed to get article from database',
         'Error Name: ',
         (error as Error).name
       );
@@ -146,6 +256,69 @@ export const getArticleBySlug = cache(
     }
   }
 );
+
+// export const getArticleBySlug = cache(
+//   async ({
+//     slug,
+//     lang,
+//   }: {
+//     slug: string;
+//     lang: ELanguage;
+//   }): Promise<TArticleLocalized | null> => {
+//     try {
+//       // Перший запит - отримуємо статтю
+//       const article = await db
+//         .select({
+//           id: tblArticle.id,
+//           title: tblArticle[lang === UA ? 'titleUa' : 'titleEn'],
+//           description:
+//             tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn'],
+//           text: tblArticle[lang === UA ? 'textUa' : 'textEn'],
+//           keywords: tblArticle[lang === UA ? 'keywordsUa' : 'keywordsEn'],
+//           slug: tblArticle.slug,
+//           createdAt: tblArticle.createdAt,
+//           updatedAt: tblArticle.updatedAt,
+//           imageSrc: tblArticle.imageSrc,
+//           published: tblArticle.published,
+//           spotifyId: tblArticle.spotifyId,
+//           viewCount: articleViewCounts.viewCount,
+//         })
+//         .from(tblArticle)
+//         .leftJoin(
+//           articleViewCounts,
+//           eq(tblArticle.id, articleViewCounts.articleId)
+//         )
+//         .where(eq(tblArticle.slug, slug))
+//         .limit(1);
+
+//       if (!article[0]) return null;
+
+//       // Другий запит - отримуємо теги для статті
+//       const tags = await db
+//         .select({
+//           id: tblTag.id,
+//           name: tblTag[lang === UA ? 'nameUa' : 'nameEn'],
+//           slug: tblTag.slug,
+//         })
+//         .from(tblTag)
+//         .innerJoin(tblArticleTag, eq(tblTag.id, tblArticleTag.tagId))
+//         .where(eq(tblArticleTag.articleId, article[0].id));
+
+//       // Повертаємо об'єднаний результат
+//       return {
+//         ...article[0],
+//         tags,
+//       };
+//     } catch (error) {
+//       console.error(
+//         'Failed to get article from database',
+//         'Error Name: ',
+//         (error as Error).name
+//       );
+//       return null;
+//     }
+//   }
+// );
 
 // export const getArticleBySlug = cache(
 //   async ({
@@ -221,13 +394,11 @@ export const getArticleByImage = async (imageSrc: string) => {
 
 export async function getArticleByIdForUpdate(id: number) {
   try {
-    const [res] = await db
-      .select()
-      .from(tblArticle)
-      .where(eq(tblArticle.id, id))
-      .limit(1);
+    const res = await db.query.tblArticle.findFirst({
+      where: (articles, { eq }) => eq(articles.id, id),
+    });
 
-    return res;
+    return res || new Error(`Could not find article with id: ${id}`);
   } catch (error) {
     return error as Error;
   }

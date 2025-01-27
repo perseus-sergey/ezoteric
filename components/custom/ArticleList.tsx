@@ -1,11 +1,11 @@
 import { ELanguage } from '@/models/language.model';
 import ArticleCard from './ArticleCard';
 import { ESegment } from '@/models/url.model';
-import { TArticleLocalized } from '@/db/schema';
 import EmptyData from './EmptyData';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { TArticleLocalized } from '@/models/article.model';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 

@@ -19,3 +19,29 @@ export const NOT_PUBLISHED = {
   [UA]: 'Ви переглядаєте неопубліковану версію статті. Будь ласка, зверніть увагу, що інформація може бути застарілою або неточною. Слідкуйте за оновленнями.',
   [EN]: 'You are viewing an unpublished version of the article. Please note that the information may be out of date or inaccurate. Stay tuned for updates.',
 };
+
+export type TArticleLocalized = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  slug: string;
+  imageSrc: string | null;
+  published?: boolean;
+  description: string;
+  title: string;
+  keywords?: string;
+  text?: string;
+  spotifyId?: string | null;
+  viewCount: {
+    viewCount: number;
+  } | null;
+  articleTags?:
+    | {
+        tag: {
+          id: number;
+          slug: string;
+          name: string;
+        };
+      }[]
+    | null;
+};
