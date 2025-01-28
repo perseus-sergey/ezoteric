@@ -17,7 +17,6 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
 // tag editor: add slug generate button
-// tag sort by en name
 // article categories (tegs)
 
 // - fetch no store route

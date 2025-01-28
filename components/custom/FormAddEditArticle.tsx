@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { clsx } from 'clsx';
 import { makeSlug } from '@/controllers/articleEdit.controller';
+import { GenerateAI } from '@/svg/GenerateAI';
 
 export const FormAddEditArticle = ({
   editorApiKey,
@@ -167,7 +168,11 @@ export const FormAddEditArticle = ({
           onClick={handleTranslate}
           disabled={isTranslating}
         >
-          {isTranslating && <LoadingAnimated />}{' '}
+          {isTranslating ? (
+            <LoadingAnimated />
+          ) : (
+            <GenerateAI className="size-5" />
+          )}{' '}
           {isTranslating ? 'Перекладається...' : 'Перекласти'}
         </Button>
 
@@ -270,7 +275,6 @@ export const FormAddEditArticle = ({
                   title="Update Slug"
                   type="button"
                   onClick={slugRefreshHandler}
-                  className=""
                   disabled={slugDisabled}
                   variant="outline"
                 >

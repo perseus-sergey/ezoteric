@@ -5,17 +5,10 @@ import { deleteTagFromDb, insertTagToDb, updateTagToDb } from '@/db/queriesTag';
 import { NewTag, TTag } from '@/db/schema';
 import { DEFAULT_LANG } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
-import {
-  AlertCircle,
-  LucideLink,
-  PencilLine,
-  PlusCircle,
-  Trash2,
-} from 'lucide-react';
+import { AlertCircle, LucideLink, PencilLine, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { ConfirmDialog } from './ConfirmDialog';
 import ModalTagUpdate from './ModalUpdateTag';
 import { clsx } from 'clsx';
 
@@ -23,49 +16,59 @@ const TagUpdatePage = ({ tags: dbTags }: { tags: TTag[] }) => {
   const [tags, setTags] = useState<Array<TTag>>(dbTags); // Initialize with dbTags
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedTag, setSelectedTag] = useState<TTag | null>(null);
   const [isDeleteProcess, setIsDeleteProcess] = useState(false);
+  const [wrap, setWrap] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (listRef.current) {
+        const listHeight = listRef.current.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+
+        setWrap(listHeight > windowHeight && windowWidth > 640);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [tags]);
 
   const addTag = useCallback(
     async (insertedTag: NewTag) => {
-      try {
-        const res = await insertTagToDb(insertedTag);
+      const res = await insertTagToDb(insertedTag);
 
-        if (!res) {
-          toast.error(`Error while adding new tag to DB`);
-          return;
-        }
-        if (res instanceof Error) throw res;
-
-        setTags([...tags, res]); // Update the tags state after successful addition
-        toast.success(`Tag ${res.slug} added successfully`);
-        setOpenAddModal(false); // Close the modal
-      } catch (error) {
-        toast.error(`Failed to add Tag! Error: ${(error as Error).message}`);
+      if (!res) {
+        toast.error(`Error while adding new tag to DB`);
+        return;
       }
+      if (res instanceof Error) throw res;
+
+      setTags([...tags, res]); // Update the tags state after successful addition
+      toast.success(`Tag ${res.slug} added successfully`);
+      setOpenAddModal(false); // Close the modal
     },
     [tags]
   );
 
   const updateTag = useCallback(
     async (tagId: number, updatedTag: NewTag) => {
-      try {
-        const res = await updateTagToDb(tagId, updatedTag);
+      const res = await updateTagToDb(tagId, updatedTag);
 
-        if (!res) {
-          toast.error(`Error while updating tag to DB`);
-          return;
-        }
-        if (res instanceof Error) throw res;
-
-        // Update the tags state after a successful update
-        setTags(tags.map((tag) => (tag.id === tagId ? res : tag)));
-        toast.success(`Tag ${res.slug} updated successfully`);
-        setOpenEditModal(false); // Close the modal
-      } catch (error) {
-        toast.error(`Failed to Update Tag! Error: ${(error as Error).message}`);
+      if (!res) {
+        toast.error(`Error while updating tag to DB`);
+        return;
       }
+      if (res instanceof Error) throw res;
+
+      // Update the tags state after a successful update
+      setTags(tags.map((tag) => (tag.id === tagId ? res : tag)));
+      toast.success(`Tag ${res.slug} updated successfully`);
+      setOpenEditModal(false); // Close the modal
     },
     [tags]
   );
@@ -108,7 +111,6 @@ const TagUpdatePage = ({ tags: dbTags }: { tags: TTag[] }) => {
         toast.error(`Error deleting tag! ${error}`);
       } finally {
         setIsDeleteProcess(false);
-        setOpenDeleteModal(false); // Close the delete modal
       }
     },
     [tags]
@@ -117,17 +119,17 @@ const TagUpdatePage = ({ tags: dbTags }: { tags: TTag[] }) => {
   return (
     <>
       {/* Tag List  */}
-      <div
+      <ul
+        ref={listRef}
         className={clsx(
-          'flex flex-wrap justify-start gap-8 p-4',
+          'flex flex-col flex-wrap gap-4 p-4',
+          wrap && 'flex-wrap max-h-[80dvh]',
           isDeleteProcess && 'cursor-wait'
         )}
       >
-        {' '}
-        {/* Added some padding */}
         {tags.length > 0 ? (
           tags.map((tag) => (
-            <div key={tag.id} className="flex items-center gap-4 group">
+            <li key={tag.id} className="flex items-center gap-4 w-fit group">
               <div className="flex items-center gap-4">
                 <button
                   className="flex items-center gap-2"
@@ -138,28 +140,15 @@ const TagUpdatePage = ({ tags: dbTags }: { tags: TTag[] }) => {
                   }}
                 >
                   <span>{tag.nameEn}</span>
-                  <PencilLine className="size-4 opacity-50" />
+                  <PencilLine className="size-3 opacity-50" />
                 </button>
-
-                {!isDeleteProcess && (
-                  <button
-                    title="Delete Tag"
-                    className="size-fit p-2 bg-destructive/70 text-white rounded-full group-hover:visible invisible"
-                    onClick={() => {
-                      setSelectedTag(tag);
-                      setOpenDeleteModal(true);
-                    }}
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                )}
               </div>
-            </div>
+            </li>
           ))
         ) : (
-          <p className="text-gray-500">No Tags found</p>
+          <li className="text-gray-500">No Tags found</li>
         )}
-      </div>
+      </ul>
 
       <Button
         type="button"
@@ -176,7 +165,6 @@ const TagUpdatePage = ({ tags: dbTags }: { tags: TTag[] }) => {
         open={openAddModal}
         setOpen={setOpenAddModal}
         onSubmit={addTag}
-        tag={null} // For adding a new tag
       />
 
       {selectedTag && ( // Conditionally render edit modal
@@ -185,24 +173,9 @@ const TagUpdatePage = ({ tags: dbTags }: { tags: TTag[] }) => {
           setOpen={setOpenEditModal}
           onSubmit={(updatedTag) => updateTag(selectedTag.id, updatedTag)}
           tag={selectedTag} // Pass the selected tag for editing
+          removeTag={removeTag}
         />
       )}
-
-      <ConfirmDialog
-        open={openDeleteModal}
-        onOpenChange={setOpenDeleteModal}
-        title="Delete Tag"
-        description={
-          <>
-            Are you sure you want to delete this tag?
-            <br />
-            <b>{selectedTag?.nameEn}</b>
-          </>
-        }
-        confirmBtnCaption="Delete"
-        cancelBtnCaption="Cancel"
-        onConfirm={() => selectedTag && removeTag(selectedTag.id)}
-      />
     </>
   );
 };

@@ -12,6 +12,17 @@ import { getDB } from './root';
 
 const db = getDB();
 
+export const getTagsFromDb = async () => {
+  try {
+    const res = await getDB().query.tblTag.findMany({
+      orderBy: (tags, { asc }) => [asc(tags.nameEn)],
+    });
+    return res;
+  } catch (error) {
+    return error as Error;
+  }
+};
+
 export const insertTagToDb = async (newTag: NewTag) => {
   try {
     const [tag] = await db.insert(tblTag).values(newTag).returning();
