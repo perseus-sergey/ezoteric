@@ -4,7 +4,7 @@ import 'server-only';
 
 import { eq } from 'drizzle-orm';
 
-import { NewTag, tblTag, TTag } from './schema';
+import { TNewTag, tblTag } from './schema';
 import { getDB } from './root';
 // import { ELanguage } from '@/models/language.model';
 
@@ -19,29 +19,32 @@ export const getTagsFromDb = async () => {
     });
     return res;
   } catch (error) {
-    return error as Error;
+    throw error;
   }
 };
 
-export const insertTagToDb = async (newTag: NewTag) => {
+export const insertTagToDb = async (newTag: TNewTag) => {
   try {
     const [tag] = await db.insert(tblTag).values(newTag).returning();
+
+    // revalidateTag('master');
     return tag;
   } catch (error) {
     return error as Error;
   }
 };
 
-export const updateTagToDb = async (
-  tagId: number,
-  updatedTag: Partial<TTag>
-) => {
+export const updateTagToDb = async (tagId: number, updatedTag: TNewTag) => {
+  console.log('🚀 ~ updateTagToDb ~ updatedTag:', updatedTag);
   try {
     const [tag] = await db
       .update(tblTag)
       .set(updatedTag)
       .where(eq(tblTag.id, tagId))
       .returning();
+
+    // revalidateTag('master');
+
     return tag;
   } catch (error) {
     return error as Error;
@@ -76,6 +79,8 @@ export const deleteTagFromDb = async (tagId: number) => {
       .delete(tblTag)
       .where(eq(tblTag.id, tagId))
       .returning();
+
+    // revalidateTag('master');
 
     return deletedTag;
   } catch (error) {

@@ -74,14 +74,12 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
       setHasResult(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
-      toast.error(() => {
-        return (
-          <>
-            <h2 className="font-semibold">{modalResponseErrors[lang][0]}</h2>
-            <p>{modalResponseErrors[lang][1]}</p>
-          </>
-        );
-      });
+      toast.error(() => (
+        <>
+          <h2 className="font-semibold">{modalResponseErrors[lang][0]}</h2>
+          <p>{modalResponseErrors[lang][1]}</p>
+        </>
+      ));
     } finally {
       setIsLoading(false);
     }

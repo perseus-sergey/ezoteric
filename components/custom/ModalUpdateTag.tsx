@@ -1,6 +1,6 @@
 'use client';
 
-import { NewTag, TTag } from '@/db/schema';
+import { TNewTag, TTag } from '@/db/schema';
 import { z } from 'zod';
 import {
   AlertDialog,
@@ -37,12 +37,12 @@ const formSchema = z.object({
   slug: z.string().min(2).max(50).toLowerCase().trim(),
 });
 
-const ModalTagUpdate: React.FC<{
+const ModalUpdateTag: React.FC<{
   open: boolean;
   setOpen: (open: boolean) => void;
-  onSubmit: (tag: NewTag) => Promise<void>;
-  tag?: TTag;
+  onSubmit: (tag: TNewTag) => Promise<void>;
   removeTag?: (tagId: number) => Promise<void>;
+  tag?: TTag;
 }> = ({ open, setOpen, onSubmit, tag, removeTag }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
@@ -55,12 +55,17 @@ const ModalTagUpdate: React.FC<{
     form.setValue('slug', makeSlug(form.getValues().nameEn));
 
   const isLoading = form.formState.isSubmitting;
+  const cleanForm = () => {
+    form.setValue('nameEn', '');
+    form.setValue('nameUa', '');
+    form.setValue('slug', '');
+  };
 
   const onSubmitHandler = async (values: z.infer<typeof formSchema>) => {
     try {
       await onSubmit(values);
 
-      form.reset();
+      cleanForm();
     } catch (error) {
       toast.error(
         `Failed to ${tag ? 'Update' : 'Add'} Tag! Error: ${(error as Error).message}`
@@ -135,9 +140,11 @@ const ModalTagUpdate: React.FC<{
                   </FormItem>
                 )}
               />
+
               <AlertDialogFooter>
                 {removeTag && (
                   <Button
+                    disabled={isLoading}
                     type="button"
                     variant="destructive"
                     title="Delete Tag"
@@ -150,7 +157,7 @@ const ModalTagUpdate: React.FC<{
                 <Button
                   title="Clean All Fields"
                   type="button"
-                  onClick={() => form.reset()}
+                  onClick={cleanForm}
                   variant="outline"
                 >
                   <Cleaner className="size-6" />
@@ -158,7 +165,11 @@ const ModalTagUpdate: React.FC<{
 
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
 
-                <Button type="submit" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="duration-500"
+                >
                   {isLoading ? 'Saving...' : tag ? 'Save Changes' : 'Add Tag'}
                 </Button>
               </AlertDialogFooter>
@@ -167,7 +178,7 @@ const ModalTagUpdate: React.FC<{
         </AlertDialogContent>
       </AlertDialog>
 
-      {removeTag && (
+      {removeTag && openDeleteModal && tag && (
         <ConfirmDialog
           open={openDeleteModal}
           onOpenChange={setOpenDeleteModal}
@@ -182,7 +193,7 @@ const ModalTagUpdate: React.FC<{
           confirmBtnCaption="Delete"
           cancelBtnCaption="Cancel"
           onConfirm={() => {
-            if (tag) removeTag(tag.id);
+            removeTag(tag.id);
             setOpen(false);
           }}
         />
@@ -191,4 +202,4 @@ const ModalTagUpdate: React.FC<{
   );
 };
 
-export default ModalTagUpdate;
+export default ModalUpdateTag;

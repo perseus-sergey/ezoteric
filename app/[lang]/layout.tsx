@@ -16,8 +16,8 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// tag editor: add slug generate button
 // article categories (tegs)
+// add swr to blob editing
 
 // - fetch no store route
 // - add site to google search

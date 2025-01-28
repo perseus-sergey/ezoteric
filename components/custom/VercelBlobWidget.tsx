@@ -12,12 +12,7 @@ import {
 } from '@/models/uploadFile.model';
 import { ESegment, EUrlSearchParam } from '@/models/url.model';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
-import {
-  AlertCircle,
-  DownloadCloud,
-  LucideLink,
-  UploadCloud,
-} from 'lucide-react';
+import { DownloadCloud, ExternalLink, UploadCloud } from 'lucide-react';
 import Link from 'next/link';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -167,20 +162,24 @@ const VercelBlobWidget = () => {
     }
     if (findDbRes) {
       toast.error(
-        <div className="flex flex-col gap-2 items-center w-full">
-          <p className="flex items-center gap-2">
-            <AlertCircle className="size-5" />
-            File is already used in published article
-          </p>
-          <Link
-            href={`/${DEFAULT_LANG}/${ESegment.BLOG}/${findDbRes.slug}`}
-            className="flex gap-2 items-center justify-center"
-          >
-            -={findDbRes.title}=-{' '}
-            <LucideLink className="size-3 text-stone-600" />
-          </Link>
-          <p className="text-right">First remove the article from published</p>
-        </div>,
+        () => (
+          <div className="flex flex-col gap-2 items-center w-full">
+            <p className="flex items-center gap-2">
+              File is already used in published article
+            </p>
+            <Link
+              href={`/${DEFAULT_LANG}/${ESegment.BLOG}/${findDbRes.slug}`}
+              className="flex gap-1 items-center justify-center"
+            >
+              <span className="font-bold underline">{findDbRes.title}</span>
+
+              <ExternalLink className="size-3 text-stone-600" />
+            </Link>
+            <p className="text-right">
+              First remove the article from published
+            </p>
+          </div>
+        ),
         { duration: 8000 }
       );
       return;

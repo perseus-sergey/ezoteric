@@ -120,7 +120,7 @@ export const tblTag = pgTable(TBL_TAGS, {
 });
 
 export type TTag = InferSelectModel<typeof tblTag>;
-export type NewTag = typeof tblTag.$inferInsert;
+export type TNewTag = typeof tblTag.$inferInsert;
 
 export type TTagLocalized = Pick<
   InferSelectModel<typeof tblTag>,
