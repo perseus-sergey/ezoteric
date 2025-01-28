@@ -13,7 +13,6 @@ import { Textarea } from '../ui/textarea';
 import { chatSuggestedActions, CLEAR_CHAT } from '@/models/chat.model';
 import { ELanguage } from '@/models/language.model';
 import { Eraser } from 'lucide-react';
-import { AlertDialog } from '../ui/alert-dialog';
 import { ConfirmDialog } from './ConfirmDialog';
 
 export function MultimodalInput({
@@ -168,15 +167,15 @@ export function MultimodalInput({
         )}
       </div>
 
-      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-        <ConfirmDialog
-          title={CLEAR_CHAT.title[lang]}
-          description={CLEAR_CHAT.description[lang]}
-          confirmBtnCaption={CLEAR_CHAT.confirmBtn[lang]}
-          cancelBtnCaption={CLEAR_CHAT.cancelBtn[lang]}
-          action={clearChat}
-        />
-      </AlertDialog>
+      <ConfirmDialog
+        open={isDialogOpen}
+        onOpenChange={setDialogOpen}
+        title={CLEAR_CHAT.title[lang]}
+        description={CLEAR_CHAT.description[lang]}
+        confirmBtnCaption={CLEAR_CHAT.confirmBtn[lang]}
+        cancelBtnCaption={CLEAR_CHAT.cancelBtn[lang]}
+        onConfirm={clearChat}
+      />
     </>
   );
 }

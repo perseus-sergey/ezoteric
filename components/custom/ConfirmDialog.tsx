@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -16,30 +17,36 @@ export const ConfirmDialog = ({
   description,
   cancelBtnCaption,
   confirmBtnCaption,
-  action,
+  onConfirm,
+  open,
+  onOpenChange,
 }: {
   title: string;
-  description: string;
+  description: ReactNode;
   confirmBtnCaption: ReactNode;
   cancelBtnCaption: ReactNode;
-  action: () => void;
+  onConfirm: () => void;
+  open?: boolean;
+  onOpenChange?(open: boolean): void;
 }) => {
   return (
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>{title}</AlertDialogTitle>
-        <AlertDialogDescription>{description}</AlertDialogDescription>
-      </AlertDialogHeader>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
 
-      <AlertDialogFooter>
-        <AlertDialogCancel>{cancelBtnCaption}</AlertDialogCancel>
-        <AlertDialogAction
-          className="bg-destructive text-destructive-foreground"
-          onClick={action}
-        >
-          {confirmBtnCaption}
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{cancelBtnCaption}</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive text-destructive-foreground"
+            onClick={onConfirm}
+          >
+            {confirmBtnCaption}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };

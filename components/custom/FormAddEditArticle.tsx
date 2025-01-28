@@ -25,7 +25,7 @@ import {
 import { aiTranslateArticle } from '@/controllers/aiTranslateArticle.controller';
 import { toast } from 'sonner';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 import { makeSlug } from '@/controllers/articleEdit.controller';
 
 export const FormAddEditArticle = ({

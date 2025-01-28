@@ -16,7 +16,8 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// article editor: add slug refresh button
+// tag editor: add slug generate button
+// tag sort by en name
 // article categories (tegs)
 
 // - fetch no store route

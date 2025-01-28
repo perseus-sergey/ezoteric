@@ -21,6 +21,7 @@ export enum ESegment {
   ARTICLE_ADD = 'add',
   UPLOAD_IMAGE = 'blob-storage',
   CHAT_VIEWER = 'chat-viewer',
+  TAGS_EDIT = 'tags',
 }
 
 export type TParams = Promise<{ [key in ESegment]: string }>;

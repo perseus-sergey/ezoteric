@@ -108,20 +108,6 @@ export const tblArticle = pgTable(TBL_ARTICLE, {
 
 export type TArticle = InferSelectModel<typeof tblArticle>;
 
-// export type TArticleLocalized = Pick<
-//   InferSelectModel<typeof tblArticle>,
-//   'id' | 'slug' | 'createdAt' | 'updatedAt' | 'imageSrc'
-// > & {
-//   title: string;
-//   description: string;
-//   text: string;
-//   keywords: string;
-//   viewCount: number | null;
-//   published?: boolean;
-//   spotifyId?: string | null;
-//   tags?: TTagLocalized[];
-// };
-
 // =================================================================
 // TBL_TAGS
 // =================================================================
@@ -134,6 +120,7 @@ export const tblTag = pgTable(TBL_TAGS, {
 });
 
 export type TTag = InferSelectModel<typeof tblTag>;
+export type NewTag = typeof tblTag.$inferInsert;
 
 export type TTagLocalized = Pick<
   InferSelectModel<typeof tblTag>,
@@ -191,7 +178,9 @@ export const articleViewCounts = pgTable(TBL_ARTICLE_VIEWS_COUNTS, {
   viewCount: integer('view_count').notNull().default(0),
 });
 
+// =================================================================
 // ------------------- Relations ---------------------------
+// =================================================================
 
 export const tblArticleRelations = relations(tblArticle, ({ many, one }) => ({
   articleTags: many(tblArticleTag),

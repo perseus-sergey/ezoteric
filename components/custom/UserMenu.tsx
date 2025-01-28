@@ -8,11 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { AlertDialog } from '@/components/ui/alert-dialog';
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
-import { Eye, FilePlus, ImagesIcon, LogOut } from 'lucide-react';
+import { BadgeCheck, Eye, FilePlus, ImagesIcon, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '@/app/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
@@ -20,7 +19,8 @@ import { LOGOUT_MODAL } from '@/models/modal.model';
 import Image from 'next/image';
 import { ConfirmDialog } from './ConfirmDialog';
 
-const { BLOG, MASTER, ARTICLE_ADD, UPLOAD_IMAGE, CHAT_VIEWER } = ESegment;
+const { BLOG, MASTER, ARTICLE_ADD, UPLOAD_IMAGE, CHAT_VIEWER, TAGS_EDIT } =
+  ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
 
 export default function UserMenu({
@@ -96,6 +96,15 @@ export default function UserMenu({
 
               <DropdownMenuItem>
                 <Link
+                  href={`/${lang}/${MASTER}/${TAGS_EDIT}`}
+                  className="flex items-center gap-2"
+                >
+                  <BadgeCheck className="size-4 opacity-40" /> Tags Edit
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <Link
                   href={`/${lang}/${MASTER}/${CHAT_VIEWER}`}
                   className="flex items-center gap-2"
                 >
@@ -121,15 +130,15 @@ export default function UserMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-        <ConfirmDialog
-          title={title[lang]}
-          description={description[lang]}
-          confirmBtnCaption={confirmBtn[lang]}
-          cancelBtnCaption={cancelBtn[lang]}
-          action={() => logout(`/${lang}`)}
-        />
-      </AlertDialog>
+      <ConfirmDialog
+        open={isDialogOpen}
+        onOpenChange={setDialogOpen}
+        title={title[lang]}
+        description={description[lang]}
+        confirmBtnCaption={confirmBtn[lang]}
+        cancelBtnCaption={cancelBtn[lang]}
+        onConfirm={() => logout(`/${lang}`)}
+      />
     </>
   );
 }

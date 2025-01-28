@@ -43,6 +43,13 @@
       "when": 1737906484410,
       "tag": "0005_fine_wallop",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1737977722108,
+      "tag": "0006_swift_infant_terrible",
+      "breakpoints": true
     }
   ]
 }
