@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 export const revalidate = 0;
 
-const PAGINATION_LIMIT = 3;
+const PAGINATION_LIMIT = 50;
 
 const FileSchema = z.object({
   file: z
