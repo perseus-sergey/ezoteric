@@ -2,122 +2,104 @@
 
 import { PreviewUploaded } from '@/components/custom/PreviewUploaded';
 import { Button } from '@/components/ui/button';
-import { getArticleByImage } from '@/db/queriesArticle';
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
+import { fetcher } from '@/lib/utils/utils';
 import { DEFAULT_LANG } from '@/models/language.model';
 import {
-  IUploadFile,
-  IUploadBlobResponse,
   IBlobListResponse,
+  IUploadBlobResponse,
 } from '@/models/uploadFile.model';
 import { ESegment, EUrlSearchParam } from '@/models/url.model';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { DownloadCloud, ExternalLink, UploadCloud } from 'lucide-react';
 import Link from 'next/link';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import useSWRInfinite from 'swr/infinite';
 
-const VercelBlobWidget = () => {
+export default function VercelBlobWidget() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
-  const [files, setFiles] = useState<Array<IUploadFile>>([]);
-
-  const [cursor, setCursor] = useState<string | undefined>(undefined);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [uploadQueue, setUploadQueue] = useState<string[]>([]);
   const [isDeleteProcess, setIsDeleteProcess] = useState(false);
 
-  const fetchBlobs = useCallback(async () => {
-    if (!hasMore || isLoading) return;
+  // SWR Infinite Loading for Files
+  const { data, size, setSize, isLoading, mutate } =
+    useSWRInfinite<IBlobListResponse>(
+      (pageIndex, previousPageData) => {
+        // If no previous page data or no more pages, return null
+        if (previousPageData && !previousPageData.hasMore) return null;
 
-    setIsLoading(true);
-    try {
-      // If resetList is true, we're fetching the first page
-      const queryParams = new URLSearchParams();
-      if (cursor) {
-        queryParams.append('cursor', cursor);
-      }
-
-      const response = await fetch(
-        `/api/files/upload?${queryParams.toString()}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        // Construct URL with cursor for pagination
+        const params = new URLSearchParams();
+        if (pageIndex > 0 && previousPageData?.cursor) {
+          params.append('cursor', previousPageData.cursor);
         }
-      );
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch blobs');
+        return `/api/files/upload?${params.toString()}`;
+      },
+      fetcher,
+      {
+        revalidateFirstPage: true,
+        revalidateAll: false,
       }
+    );
 
-      const result = (await response.json()) as IBlobListResponse;
+  // Flatten files from all pages
+  const files = useMemo(() => {
+    return data
+      ? data.flatMap((page) =>
+          page.blobs.map((blob) => ({
+            url: blob.url,
+            name: blob.pathname,
+            contentType: 'image',
+          }))
+        )
+      : [];
+  }, [data]);
 
-      // filter files already uploaded
-      const newFiles = result.blobs.filter(
-        (file) => !files.some((existingFile) => existingFile.url === file.url)
-      );
+  // Determine if there are more files to load
+  const hasMore = data ? data[data.length - 1]?.hasMore : true;
 
-      // If resetting list, replace blobs. Otherwise, append.
-      setFiles((prevBlobs) => [
-        ...prevBlobs,
-        ...newFiles.map(({ url, pathname }) => ({
-          name: pathname,
-          url,
-          contentType: 'image',
-        })),
-      ]);
+  // File Upload Handler
+  const uploadFile = useCallback(
+    async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('uploadDir', 'post');
 
-      // Update cursor and hasMore status
-      setCursor(result.cursor);
-      setHasMore(result.hasMore);
-    } catch (error) {
-      console.error('Failed to fetch blobs:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [hasMore, isLoading, cursor, files]);
+      try {
+        const response = await fetch(`/api/files/upload`, {
+          method: 'POST',
+          body: formData,
+        });
 
-  useEffect(() => {
-    fetchBlobs();
-  }, []);
-
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('uploadDir', 'post');
-
-    try {
-      const response = await fetch(`/api/files/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = (await response.json()) as IUploadBlobResponse;
-        const { url, pathname, contentType } = data;
-
-        return {
-          url,
-          name: pathname,
-          contentType,
-        };
-      } else {
-        const { error } = await response.json();
-        toast.error(error);
+        if (response.ok) {
+          const { url, pathname, contentType } =
+            (await response.json()) as IUploadBlobResponse;
+          mutate(); // Revalidate the files list
+          return {
+            url,
+            name: pathname,
+            contentType,
+          };
+        } else {
+          const { error } = await response.json();
+          toast.error(error);
+        }
+      } catch (error) {
+        toast.error(`Failed to upload file! ${(error as Error).message}`);
       }
-    } catch (error) {
-      toast.error(`Failed to upload file! Error: ${(error as Error).message}`);
-    }
-  };
+    },
+    [mutate]
+  );
 
+  // File Change Handler
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       const selectedFiles = Array.from(event.target.files || []);
       if (selectedFiles.length === 0) return;
 
-      // Фільтруємо файли, які вже існують
+      // Filter out files already in the list
       const newFiles = selectedFiles.filter(
         (file) =>
           !files.some(
@@ -130,85 +112,97 @@ const VercelBlobWidget = () => {
         return;
       }
 
+      // Set upload queue for UI feedback
       setUploadQueue(newFiles.map((file) => file.name));
 
       try {
         const uploadPromises = newFiles.map((file) => uploadFile(file));
-        const uploadedFiles = await Promise.all(uploadPromises);
-        const successfullyUploadedFiles = uploadedFiles.filter(
-          (file) => file !== undefined
-        );
-
-        setFiles((currentFiles) => [
-          ...successfullyUploadedFiles,
-          ...currentFiles,
-        ]);
+        await Promise.all(uploadPromises);
       } catch (error) {
         console.error('Error uploading files!', error);
       } finally {
         setUploadQueue([]);
       }
     },
-    [setFiles, files]
+    [files, uploadFile]
   );
 
-  const handleRemove = useCallback(async (fileUrl: string) => {
-    setIsDeleteProcess(true);
-    const findDbRes = await getArticleByImage(fileUrl);
+  const handleRemove = useCallback(
+    async (fileUrl: string) => {
+      setIsDeleteProcess(true);
 
-    if (findDbRes instanceof Error) {
-      toast.error('Error occurred while searching for this image in database');
-      return;
-    }
-    if (findDbRes) {
-      toast.error(
-        () => (
-          <div className="flex flex-col gap-2 items-center w-full">
-            <p className="flex items-center gap-2">
-              File is already used in published article
-            </p>
-            <Link
-              href={`/${DEFAULT_LANG}/${ESegment.BLOG}/${findDbRes.slug}`}
-              className="flex gap-1 items-center justify-center"
-            >
-              <span className="font-bold underline">{findDbRes.title}</span>
+      try {
+        // Send delete request
+        const searchParams = makeUrlSearchParams({
+          [EUrlSearchParam.URL]: fileUrl,
+        }).toString();
 
-              <ExternalLink className="size-3 text-stone-600" />
-            </Link>
-            <p className="text-right">
-              First remove the article from published
-            </p>
-          </div>
-        ),
-        { duration: 8000 }
-      );
-      return;
-    }
+        const response = await fetch(`/api/files/upload?${searchParams}`, {
+          method: 'DELETE',
+        });
 
-    const searchParams = makeUrlSearchParams({
-      [EUrlSearchParam.URL]: fileUrl,
-    }).toString();
+        // Parse the response
+        const result = await response.json();
 
-    try {
-      const response = await fetch(`/api/files/upload?${searchParams}`, {
-        method: 'DELETE',
-      });
+        if (response.ok) {
+          // Successful deletion
+          // Optimistically remove the file from the list
+          mutate(
+            (currentData) => {
+              if (!currentData) return currentData;
 
-      if (response.ok) {
-        setFiles((prevFiles) =>
-          prevFiles.filter((file) => file.url !== fileUrl)
-        );
-        toast.success('SUCCESS: File deleted!');
-      } else {
-        const { error } = await response.json();
-        toast.error(error);
+              return currentData.map((page) => ({
+                ...page,
+                blobs: page.blobs.filter((blob) => blob.url !== fileUrl),
+              }));
+            },
+            { revalidate: false }
+          );
+
+          toast.success('File successfully deleted');
+        } else {
+          // Handle different error scenarios
+          if (response.status === 409) {
+            // File is used in an article
+            toast.error(
+              () => (
+                <div className="flex flex-col gap-2 items-center w-full">
+                  <p className="flex items-center gap-2">
+                    File is already used in a published article
+                  </p>
+                  {result.articleDetails && (
+                    <Link
+                      href={`/${DEFAULT_LANG}/${ESegment.BLOG}/${result.articleDetails.slug}`}
+                      className="flex gap-1 items-center justify-center"
+                    >
+                      <span className="font-bold underline">
+                        {result.articleDetails.title}
+                      </span>
+                      <ExternalLink className="size-3 text-stone-600" />
+                    </Link>
+                  )}
+                  <p className="text-right">
+                    First remove the article from published
+                  </p>
+                </div>
+              ),
+              { duration: 8000 }
+            );
+          } else {
+            // Other error scenarios
+            toast.error(result.error || 'Failed to delete file');
+          }
+        }
+      } catch (error) {
+        // Network or parsing error
+        console.error('Error deleting file:', error);
+        toast.error(`Error deleting file: ${(error as Error).message}`);
+      } finally {
+        setIsDeleteProcess(false);
       }
-    } catch (error) {
-      toast.error(`Error deleting file! ${error}`);
-    } finally {
-      setIsDeleteProcess(false);
-    }
-  }, []);
+    },
+    [mutate]
+  );
 
   return (
     <>
@@ -221,9 +215,10 @@ const VercelBlobWidget = () => {
         tabIndex={-1}
       />
 
-      {files?.length > 0 || uploadQueue?.length > 0 || isLoading ? (
+      {files.length > 0 || uploadQueue.length > 0 || isLoading ? (
         <>
           <div className="flex flex-wrap justify-center gap-2">
+            {/* Upload Queue Preview */}
             {uploadQueue.map((filename) => (
               <PreviewUploaded
                 key={filename}
@@ -236,6 +231,7 @@ const VercelBlobWidget = () => {
               />
             ))}
 
+            {/* Existing Files Preview */}
             {files.map((file) => (
               <PreviewUploaded
                 onRemove={() => handleRemove(file.url)}
@@ -249,7 +245,7 @@ const VercelBlobWidget = () => {
           <div>
             {hasMore && (
               <Button
-                onClick={fetchBlobs}
+                onClick={() => setSize(size + 1)}
                 disabled={isLoading}
                 className="w-fit duration-300 my-4"
               >
@@ -279,6 +275,4 @@ const VercelBlobWidget = () => {
       </Button>
     </>
   );
-};
-
-export default VercelBlobWidget;
+}

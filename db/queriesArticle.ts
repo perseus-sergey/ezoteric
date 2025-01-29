@@ -207,7 +207,7 @@ export const getArticleByImage = async (imageSrc: string) => {
 
     return res[0];
   } catch (error) {
-    return error as Error;
+    throw error;
   }
 };
 

@@ -1,3 +1,4 @@
+import { getArticleByImage } from '@/db/queriesArticle';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import { EUrlSearchParam } from '@/models/url.model';
 import { del, list, put } from '@vercel/blob';
@@ -6,7 +7,7 @@ import { z } from 'zod';
 
 export const revalidate = 0;
 
-const PAGINATION_LIMIT = 300;
+const PAGINATION_LIMIT = 3;
 
 const FileSchema = z.object({
   file: z
@@ -125,27 +126,71 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const isAdmin = await isAdminAuth();
+  try {
+    // Check admin authentication
+    const isAdmin = await isAdminAuth();
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Please log in as Admin first.' },
+        { status: 401 }
+      );
+    }
 
-  if (!isAdmin) {
+    // Extract URL from search params
+    const { searchParams } = new URL(request.url);
+    const urlToDelete = searchParams.get(EUrlSearchParam.URL);
+
+    // Validate URL
+    if (!urlToDelete) {
+      return NextResponse.json(
+        { error: 'Request URL is empty' },
+        { status: 400 }
+      );
+    }
+
+    // Check if the file is used in any published articles
+    const articleUsingImage = await getArticleByImage(urlToDelete);
+
+    if (articleUsingImage) {
+      return NextResponse.json(
+        {
+          error: 'File is already used in a published article',
+          articleDetails: {
+            title: articleUsingImage.title,
+            slug: articleUsingImage.slug,
+          },
+        },
+        { status: 409 } // Conflict status
+      );
+    }
+
+    try {
+      // Delete the file
+      await del(urlToDelete);
+    } catch (deleteError) {
+      console.error('File deletion error:', deleteError);
+      return NextResponse.json(
+        {
+          error: 'Failed to delete file',
+          details:
+            deleteError instanceof Error
+              ? deleteError.message
+              : 'Unknown error',
+        },
+        { status: 500 }
+      );
+    }
+
+    // Successful deletion
     return NextResponse.json(
-      { error: 'Please log in as Admin first.' },
-      { status: 401 }
+      { message: 'File successfully deleted' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Unexpected error in file deletion:', error);
+    return NextResponse.json(
+      { error: 'An unexpected error occurred' },
+      { status: 500 }
     );
   }
-
-  const { searchParams } = new URL(request.url);
-
-  const urlToDelete = searchParams.get(EUrlSearchParam.URL) as string;
-
-  if (!urlToDelete) {
-    return NextResponse.json(
-      { error: 'Request url is empty' },
-      { status: 400 }
-    );
-  }
-
-  await del(urlToDelete);
-
-  return NextResponse.json({});
 }
