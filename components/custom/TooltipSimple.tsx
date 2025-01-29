@@ -9,14 +9,16 @@ import { ReactNode } from 'react';
 export const TooltipSimple = ({
   children,
   content,
+  asChild = true,
 }: {
   children: ReactNode;
   content: ReactNode;
+  asChild?: boolean;
 }) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
         <TooltipContent>{content}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
