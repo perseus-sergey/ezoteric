@@ -116,6 +116,8 @@ export const FormAddEditArticle = ({
       form.setValue('descriptionEn', translatedData.descriptionEn);
       form.setValue('keywordsEn', translatedData.keywordsEn);
       form.setValue('textEn', translatedData.contentEn);
+
+      toast.success('Статтю успішно перекладено.');
     } catch (error) {
       toast.error(`Помилка перекладу: ${error}`);
     } finally {
