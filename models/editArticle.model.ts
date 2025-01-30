@@ -90,3 +90,7 @@ export interface IEditArticleTranslate {
   keywordsEn: string;
   contentEn: string;
 }
+
+export interface IAiTags {
+  aiTags: number[];
+}

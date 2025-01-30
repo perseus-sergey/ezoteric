@@ -24,7 +24,10 @@ import {
   newArticleDefaultValues,
   TArticleFormValues,
 } from '@/models/editArticle.model';
-import { aiTranslateArticle } from '@/controllers/aiTranslateArticle.controller';
+import {
+  aiAddTags,
+  aiTranslateArticle,
+} from '@/controllers/aiTranslateArticle.controller';
 import { toast } from 'sonner';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { clsx } from 'clsx';
@@ -71,8 +74,6 @@ export const FormAddEditArticle = ({
       : newArticleDefaultValues,
   });
 
-  const selectedTags = form.watch('tags'); // Стежимо за вибраними тегами
-
   const titleEnValue = form.watch('titleEn'); // Відстежуємо значення titleEn
 
   const slugRefreshHandler = useCallback(
@@ -87,17 +88,6 @@ export const FormAddEditArticle = ({
 
     slugRefreshHandler();
   }, [titleEnValue, form, article, slugRefreshHandler]);
-
-  const addTag = (tagId: number) => {
-    form.setValue('tags', [...selectedTags, tagId]); // Додаємо тег
-  };
-
-  const removeTag = (tagId: number) => {
-    form.setValue(
-      'tags',
-      selectedTags.filter((id) => id !== tagId)
-    ); // Видаляємо тег
-  };
 
   const slugDisableToggle = () => setSlugDisabled((prevState) => !prevState);
 
@@ -133,6 +123,38 @@ export const FormAddEditArticle = ({
     }
   };
 
+  const handleAiTags = async () => {
+    const formTextEn = form.getValues('textEn');
+
+    if (formTextEn.length < 100) {
+      console.log('🚀 ~ handleAiTags ~ formTextEn.length:', formTextEn.length);
+      toast.error('Англійський ТЕКСТ занадто короткий.', {
+        description:
+          'Будь ласка, Спершу відредагуйте поле "Text (EN)" перед підбором тегів.',
+      });
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      const { aiTags } = await aiAddTags(availableTags, formTextEn);
+
+      if (aiTags.length === 0) {
+        toast('AI не вдалося підібрати жодного тегу до цієі статті.');
+      } else {
+        toast.success(`AI вдало підібрав ${aiTags.length} тегів до статті.`);
+        form.setValue('tags', aiTags);
+      }
+    } catch (error) {
+      toast.error('Error selecting AI tags:', {
+        description: `${error}`,
+      });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   const onSubmit = async (values: TArticleFormValues) => {
     setIsSaving(true);
 
@@ -146,12 +168,12 @@ export const FormAddEditArticle = ({
         description: `at ${createRes.updatedAt.toLocaleString()}`,
       });
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(`${error}`);
     } finally {
       setIsSaving(false);
     }
 
-    router.push(`${DEFAULT_LANG}/${ESegment.BLOG}`);
+    if (!article) router.push(`/${DEFAULT_LANG}/${ESegment.BLOG}`);
   };
 
   return (
@@ -247,7 +269,7 @@ export const FormAddEditArticle = ({
           ) : (
             <GenerateAI className="size-5" />
           )}{' '}
-          {isTranslating ? 'Перекладається...' : 'Перекласти'}
+          Перекласти
         </Button>
 
         {/* Title EN */}
@@ -317,50 +339,73 @@ export const FormAddEditArticle = ({
         />
 
         {/* Tags */}
-        <Fieldset legendText="Tags" className="p-2 space-y-4">
-          {selectedTags.length > 0 && (
-            <FormItem>
-              <FormLabel>Attached Tags</FormLabel>
-              <div className="flex flex-wrap gap-2">
-                {selectedTags.map((tagId) => {
-                  const tag = availableTags.find((t) => t.id === tagId);
-                  return (
-                    <Badge key={tagId} variant="outline">
-                      {tag?.nameEn}
-                      <button
-                        onClick={() => removeTag(tagId)}
-                        className="ml-2 opacity-50 hover:opacity-30"
+        <Controller
+          name="tags"
+          control={form.control}
+          render={({ field }) => (
+            <Fieldset legendText="Tags" className="p-2 space-y-4">
+              {field.value?.length > 0 && (
+                <FormItem>
+                  <FormLabel>Attached Tags</FormLabel>
+                  <div className="flex flex-wrap gap-2">
+                    {field.value.map((tagId) => {
+                      const tag = availableTags.find((t) => t.id === tagId);
+                      return (
+                        <Badge key={tagId} variant="outline">
+                          {tag?.nameEn}
+                          <button
+                            onClick={() => {
+                              // Видаляємо тег з масиву
+                              field.onChange(
+                                field.value.filter((id) => id !== tagId)
+                              );
+                            }}
+                            className="ml-2 opacity-50 hover:opacity-30"
+                          >
+                            <CloseCancelSmall />
+                          </button>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </FormItem>
+              )}
+
+              <Separator />
+
+              {/* Available Tags */}
+              <FormItem>
+                <FormLabel>Available Tags</FormLabel>
+                <div className="flex flex-wrap gap-2">
+                  {availableTags
+                    .filter((tag) => !field.value.includes(tag.id))
+                    .map((tag) => (
+                      <Button
+                        key={tag.id}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Додаємо тег до масиву
+                          field.onChange([...field.value, tag.id]);
+                        }}
                       >
-                        <CloseCancelSmall />
-                      </button>
-                    </Badge>
-                  );
-                })}
-              </div>
-            </FormItem>
+                        {tag.nameEn}
+                      </Button>
+                    ))}
+                </div>
+              </FormItem>
+
+              <Button
+                type="button"
+                onClick={handleAiTags}
+                disabled={isTranslating}
+              >
+                {isTranslating ? <LoadingAnimated /> : <GenerateAI />} Підібрати
+                Автоматично
+              </Button>
+            </Fieldset>
           )}
-
-          <Separator />
-
-          {/* Available Tags */}
-          <FormItem>
-            <FormLabel>Available Tags</FormLabel>
-            <div className="flex flex-wrap gap-2">
-              {availableTags
-                .filter((tag) => !selectedTags.includes(tag.id))
-                .map((tag) => (
-                  <Button
-                    key={tag.id}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addTag(tag.id)}
-                  >
-                    {tag.nameEn}
-                  </Button>
-                ))}
-            </div>
-          </FormItem>
-        </Fieldset>
+        />
 
         {/* Slug */}
         <FormField
@@ -468,10 +513,10 @@ export const FormAddEditArticle = ({
 
         <Button
           type="submit"
-          disabled={isSaving}
+          disabled={isSaving || !form.formState.isDirty}
           className={clsx(isSaving && 'cursor-progress')}
         >
-          {isSaving && <LoadingAnimated />} {isSaving ? 'Saving...' : 'Save'}
+          {isSaving && <LoadingAnimated />} Зберегти
         </Button>
       </form>
     </Form>

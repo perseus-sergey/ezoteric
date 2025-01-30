@@ -16,10 +16,9 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// ai tags
-// article categories (tegs)
 // add ai to choose tags for articles
 // popover instead of alertDialog for tag editing
+// blog: check views
 
 // - redirect to blog after add nuw post
 // змінити промпт чату на віртуального помічника
