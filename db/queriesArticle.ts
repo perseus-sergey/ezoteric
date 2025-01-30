@@ -4,12 +4,22 @@ import 'server-only';
 
 import { and, eq, ilike, or, sql } from 'drizzle-orm';
 
-import { tblArticle, tblArticleViews, tblTag } from './schema';
+import {
+  TArticle,
+  tblArticle,
+  tblArticleTag,
+  tblArticleViews,
+  tblTag,
+  TTag,
+} from './schema';
 import { getDB } from './root';
 import { ELanguage } from '@/models/language.model';
 import { cache } from 'react';
 import { TArticleFormValues } from '@/models/editArticle.model';
 import { TArticleLocalized } from '@/models/article.model';
+import { getTagsFromDb } from './queriesTag';
+import { revalidateTag } from 'next/cache';
+import { ESegment } from '@/models/url.model';
 
 const { UA } = ELanguage;
 
@@ -207,34 +217,67 @@ export const getArticleByImage = async (imageSrc: string) => {
 
     return res[0];
   } catch (error) {
-    throw error;
+    throw new Error(
+      `Get Article By Image Source failed: ${(error as Error).message}`
+    );
   }
 };
 
-export async function getArticleByIdForUpdate(id: number) {
+export type TArticleWithTagsUpdated = TArticle & {
+  articleTags: { tag: TTag }[];
+};
+
+export async function getArticleByIdForUpdate(
+  id: number
+): Promise<{ article: TArticleWithTagsUpdated; tags: TTag[] }> {
   try {
-    const res = await db.query.tblArticle.findFirst({
+    const tags = await getTagsFromDb();
+
+    const article = await db.query.tblArticle.findFirst({
       where: (articles, { eq }) => eq(articles.id, id),
+      with: {
+        articleTags: {
+          with: { tag: true },
+        },
+      },
     });
 
-    return res || new Error(`Could not find article with id: ${id}`);
+    if (!article) {
+      throw new Error(`Article with id: ${id} not found.`);
+    }
+
+    return { article, tags };
   } catch (error) {
-    return error as Error;
+    throw new Error(`Get Article By ID failed: ${(error as Error).message}`);
   }
 }
 
-export const insertNewArticle = async (createdArticle: TArticleFormValues) => {
+export const insertNewArticle = async (newArticle: TArticleFormValues) => {
+  const { tags, ...article } = newArticle;
   try {
-    const [res] = await db
-      .insert(tblArticle)
-      .values({
-        ...createdArticle,
-        createdAt: new Date(),
-      })
-      .returning({ updatedAt: tblArticle.updatedAt });
+    const res = await db.transaction(async (tx) => {
+      const [insertedArticle] = await tx
+        .insert(tblArticle)
+        .values(article)
+        .returning({ id: tblArticle.id, updatedAt: tblArticle.updatedAt });
+
+      if (tags?.length) {
+        await tx.insert(tblArticleTag).values(
+          tags.map((tagId) => ({
+            articleId: insertedArticle.id,
+            tagId,
+          }))
+        );
+      }
+
+      return insertedArticle;
+    });
+
+    revalidateTag(ESegment.BLOG);
+
     return res;
   } catch (error) {
-    return error as Error;
+    throw new Error(`Insert New Article failed: ${(error as Error).message}`);
   }
 };
 
@@ -242,15 +285,36 @@ export const updateArticle = async (
   updatedArticle: TArticleFormValues,
   articleId: number
 ) => {
+  const { tags, ...article } = updatedArticle;
   try {
-    const [res] = await db
-      .update(tblArticle)
-      .set(updatedArticle)
-      .where(eq(tblArticle.id, articleId))
-      .returning({ updatedAt: tblArticle.updatedAt });
+    const res = await db.transaction(async (tx) => {
+      // Update article
+      const [resTx] = await tx
+        .update(tblArticle)
+        .set(article)
+        .where(eq(tblArticle.id, articleId))
+        .returning({ updatedAt: tblArticle.updatedAt });
+
+      // Delete existing tags
+      await tx
+        .delete(tblArticleTag)
+        .where(eq(tblArticleTag.articleId, articleId));
+
+      // Insert new tags
+      if (tags?.length) {
+        await tx.insert(tblArticleTag).values(
+          tags.map((tagId) => ({
+            articleId,
+            tagId,
+          }))
+        );
+      }
+
+      return resTx;
+    });
     return res;
   } catch (error) {
-    return error as Error;
+    throw new Error(`Update Article failed: ${(error as Error).message}`);
   }
 };
 

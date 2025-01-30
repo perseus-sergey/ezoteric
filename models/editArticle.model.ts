@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 export const articleFormSchema = z.object({
+  tags: z.array(z.number()).default([]),
+
   slug: z.string().min(1, { message: 'Slug is required.' }),
   titleUa: z
     .string()
@@ -64,6 +66,21 @@ export const articleFormSchema = z.object({
       }
     ),
 });
+
+export const newArticleDefaultValues = {
+  slug: '',
+  titleUa: '',
+  titleEn: '',
+  descriptionUa: '',
+  descriptionEn: '',
+  keywordsUa: '',
+  keywordsEn: '',
+  textUa: '',
+  textEn: '',
+  imageSrc: '',
+  published: false,
+  tags: [],
+};
 
 export type TArticleFormValues = z.infer<typeof articleFormSchema>;
 

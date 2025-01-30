@@ -1,3 +1,4 @@
+import { TTagLocalized } from '@/db/schema';
 import { ELanguage } from './language.model';
 
 const { UA, EN } = ELanguage;
@@ -37,11 +38,7 @@ export type TArticleLocalized = {
   } | null;
   articleTags?:
     | {
-        tag: {
-          id: number;
-          slug: string;
-          name: string;
-        };
+        tag: TTagLocalized;
       }[]
     | null;
 };

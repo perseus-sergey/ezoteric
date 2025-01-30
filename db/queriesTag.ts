@@ -19,7 +19,7 @@ export const getTagsFromDb = async () => {
     });
     return res;
   } catch (error) {
-    throw error;
+    throw new Error(`fetching Tags failed: ${(error as Error).message}`);
   }
 };
 
@@ -30,6 +30,9 @@ export const insertTagToDb = async (newTag: TNewTag) => {
     // revalidateTag('master');
     return tag;
   } catch (error) {
+    // ===============
+    // TODO: change to throw error
+    // ===============
     return error as Error;
   }
 };
@@ -47,6 +50,9 @@ export const updateTagToDb = async (tagId: number, updatedTag: TNewTag) => {
 
     return tag;
   } catch (error) {
+    // ===============
+    // TODO: change to throw error
+    // ===============
     return error as Error;
   }
 };
@@ -84,6 +90,6 @@ export const deleteTagFromDb = async (tagId: number) => {
 
     return deletedTag;
   } catch (error) {
-    throw error;
+    throw new Error(`Delete Tags failed: ${(error as Error).message}`);
   }
 };
