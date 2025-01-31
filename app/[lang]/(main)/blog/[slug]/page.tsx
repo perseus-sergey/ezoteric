@@ -13,8 +13,6 @@ import { notFound } from 'next/navigation';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import BrCrumb from '@/components/custom/BrCrumb';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
-import Link from 'next/link';
-import { PencilLine } from 'lucide-react';
 import { ARTICLE_IMG, NOT_PUBLISHED } from '@/models/article.model';
 import { BLOG_CARD_IMAGE, BLOG_H1 } from '@/models/blog.model';
 import { Metadata } from 'next';
@@ -25,8 +23,9 @@ import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getImageSrc } from '@/controllers/articles.controller';
 import ValidImage from '@/components/custom/ValidImage';
 import SpotifyPlayer from '@/components/custom/SpotifyPlayer';
+import EditPostLink from '@/components/custom/EditPostLink';
 
-const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
+const { BLOG } = ESegment;
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -101,7 +100,7 @@ export default async function Page({ params }: { params: TParams }) {
         items={[
           {
             title: BLOG_H1[lang],
-            href: ESegment.BLOG,
+            href: BLOG,
           },
           { title },
         ]}
@@ -111,13 +110,7 @@ export default async function Page({ params }: { params: TParams }) {
       <Title>{title}</Title>
 
       {isAdmin && (
-        <Link
-          href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}
-          className="flex items-center gap-4 bg-muted w-fit p-1 rounded-sm text-muted-foreground"
-        >
-          <PencilLine className="size-5" />
-          {!published && <span>Not Published</span>}
-        </Link>
+        <EditPostLink lang={lang} isPublished={published} articleId={id} />
       )}
 
       {!published && (

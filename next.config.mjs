@@ -10,6 +10,11 @@ const nextConfig = {
         destination: BASE,
         permanent: true,
       },
+      {
+        source: '/:lang/blog/page/1',
+        destination: '/:lang/blog',
+        permanent: true,
+      },
     ];
   },
 

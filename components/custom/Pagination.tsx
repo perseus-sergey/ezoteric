@@ -1,7 +1,11 @@
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
 import { BLOG_PAGINATION_PARAMS } from '@/models/blog.model';
 import { ELanguage } from '@/models/language.model';
-import { EUrlSearchParam, TUrlSearchParams } from '@/models/url.model';
+import {
+  ESegment,
+  EUrlSearchParam,
+  TUrlSearchParams,
+} from '@/models/url.model';
 import { TooltipSimple } from './TooltipSimple';
 import SeoLink from './SeoLink';
 
@@ -18,6 +22,7 @@ interface IPaginationProps {
   offsetNumber: number;
   totalPages: number;
   searchParams?: TUrlSearchParams;
+  startUrl?: string;
   lang: ELanguage;
 }
 
@@ -56,14 +61,26 @@ const Pagination = ({
   offsetNumber,
   totalPages,
   searchParams,
+  startUrl,
   lang,
 }: IPaginationProps) => {
-  if (!searchParams) return null;
+  if (!searchParams && startUrl === undefined) return null;
 
-  const urlSearchParams = makeUrlSearchParams(searchParams);
+  const setPageUrl = (value: number): string => {
+    const urlSearchParams = makeUrlSearchParams(searchParams || {});
 
-  const setUrlPage = (value: string | number): string => {
-    urlSearchParams.set(EUrlSearchParam.PAGE, `${value}`);
+    if (startUrl !== undefined) {
+      if (value === 1) return `${startUrl}?${urlSearchParams.toString()}`;
+
+      return `${startUrl}/${ESegment.PAGE}/${value}?${urlSearchParams.toString()}`;
+    }
+
+    if (value === 1) {
+      //eslint-disable-next-line drizzle/enforce-delete-with-where
+      urlSearchParams.delete(EUrlSearchParam.PAGE);
+    } else {
+      urlSearchParams.set(EUrlSearchParam.PAGE, `${value}`);
+    }
 
     return `?${urlSearchParams.toString()}`;
   };
@@ -82,19 +99,19 @@ const Pagination = ({
         aria-label="pagination"
       >
         <ul
-          className={`shadow-[0px_3px_5px_rgba(0,0,0,0.25)] w-fit p-0 sm:p-2 bg-white/60 flex justify-center items-center border`}
+          className={`shadow-[0px_3px_5px_rgba(0,0,0,0.25)] w-fit p-0 sm:p-2 bg-white/60 flex justify-center items-center border rounded`}
         >
           <Controls
             isDisabled={page === 1}
             controls={[
               {
                 ariaLabel: linkTitle.firstPage[lang],
-                href: setUrlPage('1'),
+                href: setPageUrl(1),
                 innerText: firstPageTitle,
               },
               {
                 ariaLabel: linkTitle.previousPage[lang],
-                href: setUrlPage(`${page - 1 || 1}`),
+                href: setPageUrl(page - 1 || 1),
                 innerText: previousPageTitle,
               },
             ]}
@@ -108,7 +125,7 @@ const Pagination = ({
                   ? `${linkTitle.currentPage[lang]}${pageNumber}`
                   : `${linkTitle.pageStartStr[lang]}${pageNumber}`
               }
-              href={setUrlPage(pageNumber)}
+              href={setPageUrl(pageNumber)}
               innerText={pageNumber}
               className={
                 page === pageNumber ? currentPageNStyle : listItemStyle
@@ -121,12 +138,12 @@ const Pagination = ({
             controls={[
               {
                 ariaLabel: linkTitle.nextPage[lang],
-                href: setUrlPage(`${page + 1}`),
+                href: setPageUrl(page + 1),
                 innerText: nextPageTitle,
               },
               {
                 ariaLabel: linkTitle.lastPage[lang],
-                href: setUrlPage(`${totalPages}`),
+                href: setPageUrl(totalPages),
                 innerText: lastPageTitle,
               },
             ]}

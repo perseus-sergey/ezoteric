@@ -8,12 +8,13 @@ export async function GET() {
   try {
     await getDB().transaction(async (tx) => {
       await tx.execute(
-        sql`UPDATE ${sql.raw(TBL_ARTICLE_VIEWS_COUNTS)} AS VC
-            SET view_count = (
-              SELECT COUNT(*) 
+        sql`INSERT INTO ${sql.raw(TBL_ARTICLE_VIEWS_COUNTS)} (article_id, view_count)
+              SELECT article_id, COUNT(*) 
               FROM ${sql.raw(TBL_ARTICLE_VIEWS)}
-              WHERE article_id = VC.article_id
-            )`
+              GROUP BY article_id
+              ON CONFLICT (article_id) 
+              DO UPDATE SET view_count = EXCLUDED.view_count
+            `
       );
     });
 

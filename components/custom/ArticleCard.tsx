@@ -11,50 +11,84 @@ import { getImageSrc } from '@/controllers/articles.controller';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import ValidImage from './ValidImage';
+import Link from 'next/link';
+import { Badge } from '../ui/badge';
+import * as motion from 'motion/react-client';
 
 interface IArticleCardProps {
   lang: ELanguage;
   article: TArticleLocalized;
 }
 
+const { BLOG, TAG } = ESegment;
+
 const ArticleCard = ({ lang, article }: IArticleCardProps) => {
   const imgSrc = getImageSrc(article.slug, article.imageSrc);
   const currDate = getFormattedDateStrYearFirst(article.updatedAt);
 
   return (
-    <Card className="min-h-[410px]">
+    <Card className="min-h-[410px] flex flex-col md:flex-row items-center justify-between gap-4 p-4">
+      <div className="h-full flex flex-col flex-1 justify-between">
+        <CardTitle className="p-6">
+          <SeoLink
+            href={`/${lang}/${BLOG}/${article.slug}`}
+            title={getSeoCardLinkTitle(article.title)[lang]}
+          >
+            {article.title}
+          </SeoLink>
+        </CardTitle>
+
+        <CardContent>
+          <p className="text-muted-foreground">
+            {cutText(article.description, 250)}
+          </p>
+        </CardContent>
+
+        <CardFooter className="flex-col items-start gap-4">
+          {article.articleTags && article.articleTags.length > 0 && (
+            <ul className="flex gap-2 flex-wrap">
+              {article.articleTags?.map(({ tag }, i) => (
+                <motion.li
+                  key={tag.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ delay: 0.05 * i, type: 'spring' }}
+                >
+                  <Badge variant="outline">
+                    <Link
+                      className="text-nowrap"
+                      href={`/${lang}/${BLOG}/${TAG}/${tag.slug}`}
+                    >
+                      {tag.name}
+                    </Link>
+                  </Badge>
+                </motion.li>
+              ))}
+            </ul>
+          )}
+
+          <BottomInfoPanel
+            items={[
+              {
+                caption: INFO_PANEL_CAPTION.views,
+                value: article.viewCount?.viewCount,
+              },
+              {
+                caption: INFO_PANEL_CAPTION.date,
+                value: <time dateTime={currDate}>{currDate}</time>,
+              },
+              // { name: commentsTitle[lang], value: comment_count },
+            ]}
+            lang={lang}
+          />
+        </CardFooter>
+      </div>
+
       <SeoLink
-        href={`/${lang}/${ESegment.BLOG}/${article.slug}`}
+        href={`/${lang}/${BLOG}/${article.slug}`}
         title={getSeoCardLinkTitle(article.title)[lang]}
-        className="min-h-full flex flex-col md:flex-row items-center justify-between gap-4 p-4"
       >
-        <div className="h-full flex flex-col flex-1 justify-between">
-          <CardTitle className="p-6">{article.title}</CardTitle>
-
-          <CardContent>
-            <p className="text-muted-foreground">
-              {cutText(article.description, 250)}
-            </p>
-          </CardContent>
-
-          <CardFooter>
-            <BottomInfoPanel
-              items={[
-                {
-                  caption: INFO_PANEL_CAPTION.views,
-                  value: article.viewCount?.viewCount,
-                },
-                {
-                  caption: INFO_PANEL_CAPTION.date,
-                  value: <time dateTime={currDate}>{currDate}</time>,
-                },
-                // { name: commentsTitle[lang], value: comment_count },
-              ]}
-              lang={lang}
-            />
-          </CardFooter>
-        </div>
-
         <ValidImage
           defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
           className="rounded-sm"

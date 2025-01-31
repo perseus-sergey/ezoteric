@@ -93,7 +93,6 @@ const TagUpdatePage = () => {
         {tags.length > 0 ? (
           tags.map((tag) => (
             <Suspense key={tag.id} fallback={<div>Loading tag...</div>}>
-              {/* Add Suspense for each tag */}
               <UpdatedTag tag={tag} />
             </Suspense>
           ))

@@ -10,16 +10,7 @@ import { ELanguage } from '@/models/language.model';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import { HomeIcon } from './icons';
-
-const homeAriaLabel = {
-  [ELanguage.UA]: 'На головну сторінку',
-  [ELanguage.EN]: 'Go to the Homepage',
-};
-
-interface EBreadcrumb {
-  title: string;
-  href?: string;
-}
+import { EBreadcrumb, homeAriaLabel } from '@/models/breadcrumb.model';
 
 const BrCrumb = ({
   items,

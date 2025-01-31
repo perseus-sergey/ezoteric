@@ -16,11 +16,12 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// add ai to choose tags for articles
+// translations for search input & props
 // popover instead of alertDialog for tag editing
-// blog: check views
+// meta and ld for blog/page/:id and blog/tag/:slug
+// pages blog/tag/:slug/page/:id and meta
+// 1 common component for blog and blog/tag/ & blog/page...
 
-// - redirect to blog after add nuw post
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
@@ -29,6 +30,7 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 // blog: priority for first img?
 // message: review all tools components/custom/message.tsx
 // JsonLd: add site logo
+
 // shadcn - combobox, popover, dialog,
 // =================================================================
 

@@ -15,6 +15,7 @@ import {
   BLOG_COUNT_CAPTION,
   META_BLOG,
 } from '@/models/blog.model';
+import { PAGE_CAPTION } from '@/models/breadcrumb.model';
 import { ELanguage } from '@/models/language.model';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import {
@@ -25,10 +26,12 @@ import {
   TSearchParams,
 } from '@/models/url.model';
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
 const { perPage, offsetNumber } = BLOG_PAGINATION_PARAMS;
-const { BLOG } = ESegment;
+const { BLOG, ID } = ESegment;
+const { UA, EN } = ELanguage;
 
 const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -53,8 +56,8 @@ export const generateMetadata = async ({
     alternates: {
       canonical: `/${lang}/${BLOG}`,
       languages: {
-        en: `/${ELanguage.EN}/${BLOG}`,
-        uk: `/${ELanguage.UA}/${BLOG}`,
+        en: `/${EN}/${BLOG}`,
+        uk: `/${UA}/${BLOG}`,
       },
     },
   };
@@ -70,6 +73,9 @@ export default async function Page({
   const p = await params;
   const sParams = await searchParams;
   const lang = getELangKey(p.lang);
+  const pageId = parseInt(p[ID], 10);
+
+  if (isNaN(pageId)) notFound();
 
   const searchQuery = validSearchParam(EUrlSearchParam.QUERY, sParams);
 
@@ -77,7 +83,7 @@ export default async function Page({
 
   const { articles, totalCount } = await getArticlesChunk({
     perPage,
-    offset: 0,
+    offset: (pageId - 1) * perPage,
     searchQuery,
     lang,
     isAdmin,
@@ -96,7 +102,16 @@ export default async function Page({
 
   return (
     <article className="relative mx-auto">
-      <BrCrumb items={[{ title: BLOG_H1[lang] }]} lang={lang} />
+      <BrCrumb
+        items={[
+          {
+            title: BLOG_H1[lang],
+            href: BLOG,
+          },
+          { title: `${PAGE_CAPTION[lang]}: ${pageId}` },
+        ]}
+        lang={lang}
+      />
 
       <Title>{BLOG_H1[lang]}</Title>
 
@@ -110,7 +125,7 @@ export default async function Page({
 
       <Pagination
         lang={lang}
-        page={1}
+        page={pageId || 1}
         offsetNumber={offsetNumber}
         totalPages={totalPages}
         searchParams={sParams}
@@ -121,7 +136,7 @@ export default async function Page({
 
       <Pagination
         lang={lang}
-        page={1}
+        page={pageId || 1}
         offsetNumber={offsetNumber}
         totalPages={totalPages}
         searchParams={sParams}
