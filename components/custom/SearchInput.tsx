@@ -1,49 +1,188 @@
 'use client';
 
-import useSearch from '@/lib/hooks/useSearch';
-// import { ELanguage } from '@/models/language.model';
 import { EUrlSearchParam } from '@/models/url.model';
 import { Button } from '../ui/button';
-import { X } from 'lucide-react';
+import { Loader2, SearchCheckIcon, X } from 'lucide-react';
 import { Input } from '../ui/input';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  Form,
+  FormField,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { ELanguage } from '@/models/language.model';
+import { Separator } from '../ui/separator';
 
-// interface IFilterProps {
-//   startUrl: string;
-//   lang: ELanguage;
-//   idName: string;
-//   placeholder: string;
-//   labelTitle: string;
-//   searchQueryTitle: EUrlSearchParam;
-//   resetButton?: { ariaLabel: string; content: string };
-// }
+const errorMessages = {
+  searchQuery: {
+    [ELanguage.UA]: 'Щонайменш 3 символи, або залиште порожнім',
+    [ELanguage.EN]: 'Minimum 3 characters, or leave blank',
+  },
+};
 
-export default function SearchInput({ startUrl }: { startUrl: string }) {
-  const { searchValue, inputRef, handleSearchDebounced, cancelClickHandler } =
-    useSearch(startUrl, EUrlSearchParam.QUERY, 700);
+export const getSearchFormSchema = (lang: ELanguage) =>
+  z.object({
+    searchQuery: z
+      .string()
+      .trim()
+      .refine(
+        (val) => {
+          return val === '' || val.length > 2;
+        },
+        {
+          message: errorMessages.searchQuery[lang],
+        }
+      ),
+  });
+
+interface IFilterProps {
+  startUrl: string;
+  placeholder: string;
+  inputAriaLabel: string;
+  submitAriaLabel: string;
+  searchQueryTitle: EUrlSearchParam;
+  cancelAriaLabel: string;
+  lang: ELanguage;
+}
+
+export default function SearchInput({
+  startUrl,
+  placeholder,
+  inputAriaLabel,
+  cancelAriaLabel,
+  submitAriaLabel,
+  searchQueryTitle,
+  lang,
+}: IFilterProps) {
+  const searchParams = useSearchParams();
+  const { replace } = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [prevUrl, setPrevUrl] = useState(searchParams.toString());
+
+  const initialQuery = searchParams.get(searchQueryTitle) || '';
+
+  const form = useForm({
+    resolver: zodResolver(getSearchFormSchema(lang)),
+    defaultValues: {
+      searchQuery: searchParams.get(searchQueryTitle)?.toString() || '',
+    },
+  });
+
+  const { handleSubmit, control, setValue, watch } = form;
+
+  const searchValue = watch('searchQuery'); // Відстежуємо зміни поля вводу
+  const isDirty = searchValue.trim() !== initialQuery;
+
+  useEffect(() => {
+    if (!searchParams.get(searchQueryTitle)) {
+      setValue('searchQuery', '');
+    } else {
+      setValue('searchQuery', searchParams.get(searchQueryTitle)!);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const currentUrl = searchParams.toString();
+    if (prevUrl !== currentUrl) {
+      setIsLoading(false); // Якщо URL змінився, вимикаємо завантаження
+      setPrevUrl(currentUrl);
+    }
+
+    form.setFocus('searchQuery');
+  }, [searchParams]);
+
+  const handleSearch = () => {
+    setIsLoading(true);
+
+    const term = searchValue.trim();
+    const params = new URLSearchParams(searchParams.toString());
+
+    const page = params.get(EUrlSearchParam.PAGE);
+
+    // Якщо сторінка не перша, скидаємо її на першу
+    if (page && page !== '1') params.set(EUrlSearchParam.PAGE, '1');
+
+    if (term) {
+      params.set(searchQueryTitle, term);
+    } else {
+      // eslint-disable-next-line drizzle/enforce-delete-with-where
+      params.delete(searchQueryTitle);
+    }
+
+    replace(`${startUrl}?${params.toString()}`);
+  };
+
+  const cancelClickHandler = () => {
+    setValue('searchQuery', '');
+    form.setFocus('searchQuery');
+  };
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      <Input
-        ref={inputRef}
-        type="text"
-        defaultValue={searchValue}
-        onChange={(e) => handleSearchDebounced(e.target.value)}
-        placeholder="🔍 Введіть пошуковий запит..."
-        className="pr-10"
-        aria-label="Пошук статей у блозі"
-      />
+    <Form {...form}>
+      <form onSubmit={handleSubmit(handleSearch)} className="w-fit relative">
+        <FormField
+          control={control}
+          name="searchQuery"
+          render={({ field }) => (
+            <div className="relative w-full max-w-md mx-auto">
+              <FormItem className="space-y-0">
+                <FormLabel htmlFor="search-input" className="sr-only">
+                  {inputAriaLabel}
+                </FormLabel>
 
-      {searchValue && (
+                <FormControl>
+                  <Input
+                    id="search-input"
+                    {...field}
+                    placeholder={placeholder}
+                    aria-label={inputAriaLabel}
+                    className="pr-12 pl-9"
+                  />
+                </FormControl>
+
+                <FormMessage className="absolute bottom-0 translate-y-[110%] bg-opacity-70 p-1" />
+              </FormItem>
+
+              {field.value && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="absolute left-1 top-1/2 -translate-y-1/2 hover:bg-primary/20 size-7 p-0 rounded-full"
+                  onClick={cancelClickHandler}
+                  aria-label={cancelAriaLabel}
+                >
+                  <X className="size-4 text-muted-foreground" />
+                </Button>
+              )}
+            </div>
+          )}
+        />
+
         <Button
-          variant="ghost"
+          type="submit"
+          disabled={isLoading || !isDirty}
+          aria-label={submitAriaLabel}
           size="icon"
-          className="absolute right-2 top-1/2 -translate-y-1/2 hover:bg-primary/20"
-          onClick={cancelClickHandler}
-          aria-label="Очистити пошук"
+          variant="ghost"
+          className="absolute right-1 top-1/2 -translate-y-1/2 hover:bg-transparent rounded-full"
         >
-          <X className="size-5 text-gray-500" />
+          <Separator orientation="vertical" />
+
+          {isLoading ? (
+            <Loader2 className="animate-spin text-muted-foreground" />
+          ) : (
+            <SearchCheckIcon className="text-muted-foreground" />
+          )}
         </Button>
-      )}
-    </div>
+      </form>
+    </Form>
   );
 }

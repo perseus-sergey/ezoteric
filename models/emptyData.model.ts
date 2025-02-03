@@ -3,9 +3,11 @@ import { ELanguage } from './language.model';
 const { UA, EN } = ELanguage;
 
 export const EMPTY_DATA_MODEL = {
-  text: {
-    [UA]: 'На жаль, запит повернув порожній результат',
-    [EN]: 'Unfortunately, the query returned an empty result',
+  text(query?: string) {
+    return {
+      [UA]: `На жаль, запит${query ? ` "${query}"` : ''} повернув порожній результат`,
+      [EN]: `Unfortunately, the query${query ? ` "${query}"` : ''} returned an empty result`,
+    };
   },
 
   imgAlt: {

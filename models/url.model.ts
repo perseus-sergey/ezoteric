@@ -13,8 +13,10 @@ export enum EUrlSearchParam {
 
 export enum ESegment {
   ID = 'id',
+  PAGE_ID = 'page-id',
   LANG = 'lang',
   SLUG = 'slug',
+  TAG_SLUG = 'tag-slug',
   PAGE = 'page',
   MASTER = 'master',
   BLOG = 'blog',

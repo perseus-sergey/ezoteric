@@ -8,9 +8,15 @@ interface IArticleListProps {
   lang: ELanguage;
   articleList: TArticleLocalized[] | null;
   isAdmin: boolean;
+  searchQuery?: string;
 }
 
-const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
+const ArticleList = ({
+  articleList,
+  lang,
+  isAdmin,
+  searchQuery,
+}: IArticleListProps) =>
   articleList && articleList.length > 0 ? (
     <ul className="space-y-4">
       {articleList.map((article) => {
@@ -30,7 +36,7 @@ const ArticleList = ({ articleList, lang, isAdmin }: IArticleListProps) =>
       })}
     </ul>
   ) : (
-    <EmptyData lang={lang} />
+    <EmptyData lang={lang} queryString={searchQuery} />
   );
 
 export default ArticleList;

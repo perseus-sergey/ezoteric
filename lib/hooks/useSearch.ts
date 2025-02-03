@@ -1,6 +1,6 @@
 import { EUrlSearchParam } from '@/models/url.model';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 const useSearch = (
@@ -18,6 +18,13 @@ const useSearch = (
     [searchParams, searchQueryTitle]
   );
 
+  useEffect(() => {
+    if (!inputRef.current) return;
+
+    if (!searchValue) inputRef.current.value = '';
+    inputRef.current.focus();
+  }, [searchValue]);
+
   const handleSearch = (term: string) => {
     const params = new URLSearchParams(searchParams.toString()); // Явне копіювання
 
@@ -33,7 +40,7 @@ const useSearch = (
     }
 
     replace(`${startUrl}?${params.toString()}`);
-    refresh(); // Завжди оновлюємо сторінку для актуального стану
+    refresh();
   };
 
   const handleSearchDebounced = useDebouncedCallback(
@@ -45,6 +52,7 @@ const useSearch = (
     if (!inputRef.current) return;
     handleSearch('');
     inputRef.current.value = '';
+    inputRef.current.focus();
   };
 
   return {

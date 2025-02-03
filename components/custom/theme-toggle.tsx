@@ -38,6 +38,7 @@ export default function ThemeToggle({
           setTheme(theme === 'dark' ? 'light' : 'dark');
         }}
         variant="ghost"
+        className="opacity-60"
       >
         {theme === 'dark' ? <Sun /> : <Moon />}
         {withCaption

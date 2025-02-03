@@ -2,7 +2,7 @@
 
 import 'server-only';
 
-import { and, eq, exists, ilike, or, sql } from 'drizzle-orm';
+import { and, eq, exists, or, sql } from 'drizzle-orm';
 
 import {
   TArticle,
@@ -25,163 +25,155 @@ const { UA } = ELanguage;
 
 const db = getDB();
 
-export const getArticlesChunk = async ({
-  offset,
-  perPage,
-  searchQuery = '',
-  tagSlug,
-  lang,
-  isAdmin,
-}: {
-  offset: number;
-  perPage: number;
-  searchQuery?: string;
-  tagSlug?: string;
-  lang: ELanguage;
-  isAdmin: boolean;
-}): Promise<{
-  articles: TArticleLocalized[] | null;
-  totalCount: number | null;
-  tagName: string | null;
-}> => {
-  // Search condition
-  const searchCondition = searchQuery
-    ? ilike(tblArticle.titleEn, `%${searchQuery}%`)
-    : undefined;
+export const getArticlesChunk = cache(
+  async (
+    offset: number,
+    perPage: number,
+    lang: ELanguage,
+    isAdmin: boolean,
+    searchQuery?: string,
+    tagSlug?: string
+  ): Promise<{
+    articles: TArticleLocalized[] | null;
+    totalCount: number | null;
+    tagName: string | null;
+  }> => {
+    // Search condition
+    const searchCondition = searchQuery
+      ? sql`(
+      setweight(to_tsvector(${lang === UA ? 'simple' : 'english'}, ${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}), 'A') ||
+      setweight(to_tsvector(${lang === UA ? 'simple' : 'english'}, ${tblArticle[lang === UA ? 'textUa' : 'textEn']}), 'B')
+    ) @@ plainto_tsquery('english', ${searchQuery})`
+      : undefined;
 
-  const publishedCondition = eq(tblArticle.published, true);
+    const publishedCondition = eq(tblArticle.published, true);
 
-  try {
-    const [totalCountQuery, articles, tagName] = await Promise.all([
-      // Calculate total count of PUBLISHED articles
-      db
-        .select({
-          total_count: sql<number>`COUNT(${tblArticle.id})`.mapWith(Number),
-        })
-        .from(tblArticle)
-        .where(
-          and(
-            searchCondition,
-            publishedCondition,
-            tagSlug
-              ? exists(
-                  db
-                    .select()
-                    .from(tblArticleTag)
-                    .innerJoin(tblTag, eq(tblArticleTag.tagId, tblTag.id))
-                    .where(
-                      and(
-                        eq(tblArticleTag.articleId, tblArticle.id),
-                        eq(tblTag.slug, tagSlug)
+    try {
+      const [totalCountQuery, articles, tagName] = await Promise.all([
+        // Calculate total count of PUBLISHED articles
+        db
+          .select({
+            total_count: sql<number>`COUNT(${tblArticle.id})`.mapWith(Number),
+          })
+          .from(tblArticle)
+          .where(
+            and(
+              searchCondition,
+              publishedCondition,
+              tagSlug
+                ? exists(
+                    db
+                      .select()
+                      .from(tblArticleTag)
+                      .innerJoin(tblTag, eq(tblArticleTag.tagId, tblTag.id))
+                      .where(
+                        and(
+                          eq(tblArticleTag.articleId, tblArticle.id),
+                          eq(tblTag.slug, tagSlug)
+                        )
                       )
-                    )
-                )
-              : undefined
-          )
-        ),
-
-      // Fetch articles with pagination
-      db.query.tblArticle.findMany({
-        limit: perPage,
-        offset,
-        where: (article, { and }) =>
-          and(
-            searchCondition,
-            isAdmin ? undefined : publishedCondition,
-            tagSlug
-              ? exists(
-                  db
-                    .select()
-                    .from(tblArticleTag)
-                    .innerJoin(tblTag, eq(tblArticleTag.tagId, tblTag.id))
-                    .where(
-                      and(
-                        eq(tblArticleTag.articleId, article.id),
-                        eq(tblTag.slug, tagSlug)
-                      )
-                    )
-                )
-              : undefined
+                  )
+                : undefined
+            )
           ),
-        orderBy: (articles, { desc }) => [desc(articles.updatedAt)],
 
-        columns: {
-          id: true,
-          updatedAt: true,
-          createdAt: true,
-          slug: true,
-          imageSrc: true,
-          published: true,
-        },
-        extras: {
-          title:
-            sql<string>`${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}`.as(
-              'title'
+        // Fetch articles with pagination
+        db.query.tblArticle.findMany({
+          limit: perPage,
+          offset,
+          where: (article, { and }) =>
+            and(
+              searchCondition,
+              isAdmin ? undefined : publishedCondition,
+              tagSlug
+                ? exists(
+                    db
+                      .select()
+                      .from(tblArticleTag)
+                      .innerJoin(tblTag, eq(tblArticleTag.tagId, tblTag.id))
+                      .where(
+                        and(
+                          eq(tblArticleTag.articleId, article.id),
+                          eq(tblTag.slug, tagSlug)
+                        )
+                      )
+                  )
+                : undefined
             ),
-          description:
-            sql<string>`${tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn']}`.as(
-              'description'
-            ),
-        },
-        with: {
-          articleTags: {
-            with: {
-              tag: {
-                columns: {
-                  id: true,
-                  slug: true,
-                },
-                extras: {
-                  name: sql<string>`${tblTag[lang === UA ? 'nameUa' : 'nameEn']}`.as(
-                    'name'
-                  ),
+          orderBy: (articles, { desc }) => [desc(articles.updatedAt)],
+
+          columns: {
+            id: true,
+            updatedAt: true,
+            createdAt: true,
+            slug: true,
+            imageSrc: true,
+            published: true,
+          },
+          extras: {
+            title:
+              sql<string>`${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}`.as(
+                'title'
+              ),
+            description:
+              sql<string>`${tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn']}`.as(
+                'description'
+              ),
+          },
+          with: {
+            articleTags: {
+              with: {
+                tag: {
+                  columns: {
+                    id: true,
+                    slug: true,
+                  },
+                  extras: {
+                    name: sql<string>`${tblTag[lang === UA ? 'nameUa' : 'nameEn']}`.as(
+                      'name'
+                    ),
+                  },
                 },
               },
             },
-          },
-          viewCount: {
-            columns: {
-              viewCount: true,
+            viewCount: {
+              columns: {
+                viewCount: true,
+              },
             },
           },
-        },
-      }),
+        }),
 
-      // Запит на отримання тегу
-      tagSlug
-        ? db
-            .select({
-              name: tblTag[lang === UA ? 'nameUa' : 'nameEn'],
-            })
-            .from(tblTag)
-            .where(eq(tblTag.slug, tagSlug))
-            .limit(1)
-        : Promise.resolve(null),
-    ]);
+        // Запит на отримання тегу
+        tagSlug
+          ? db
+              .select({
+                name: tblTag[lang === UA ? 'nameUa' : 'nameEn'],
+              })
+              .from(tblTag)
+              .where(eq(tblTag.slug, tagSlug))
+              .limit(1)
+          : Promise.resolve(null),
+      ]);
 
-    return {
-      totalCount: totalCountQuery[0]?.total_count || 0,
-      articles,
-      tagName: tagName?.[0]?.name || null,
-    };
-  } catch (error) {
-    console.error(
-      'Failed to get articles from database.',
-      'Error: ',
-      (error as Error).message
-    );
-    return { totalCount: null, articles: null, tagName: null };
+      return {
+        totalCount: totalCountQuery[0]?.total_count || 0,
+        articles,
+        tagName: tagName?.[0]?.name || null,
+      };
+    } catch (error) {
+      console.error(
+        'Failed to get articles from database.',
+        'Error: ',
+        (error as Error).message
+      );
+      return { totalCount: null, articles: null, tagName: null };
+    }
   }
-};
+);
 
 export const getArticleBySlug = cache(
-  async ({
-    slug,
-    lang,
-  }: {
-    slug: string;
-    lang: ELanguage;
-  }): Promise<TArticleLocalized | null> => {
+  async (slug: string, lang: ELanguage): Promise<TArticleLocalized | null> => {
     try {
       const article = await db.query.tblArticle.findFirst({
         where: (article, { eq }) => eq(article.slug, slug),

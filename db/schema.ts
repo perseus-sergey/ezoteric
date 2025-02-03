@@ -1,5 +1,5 @@
 import { Message } from 'ai';
-import { InferSelectModel, relations } from 'drizzle-orm';
+import { InferSelectModel, relations, sql } from 'drizzle-orm';
 import {
   pgTable,
   varchar,
@@ -81,30 +81,53 @@ export type TReservation = InferSelectModel<typeof reservation>;
 // TBL_ARTICLE
 // =================================================================
 
-export const tblArticle = pgTable(TBL_ARTICLE, {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
-    .defaultNow()
-    .$onUpdateFn(() => new Date())
-    .notNull(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  titleUa: varchar(`title${langSuffix.uk}`, { length: 255 }).notNull().unique(),
-  titleEn: varchar(`title${langSuffix.en}`, { length: 255 }).notNull().unique(),
-  descriptionUa: varchar(`description${langSuffix.uk}`, {
-    length: 640,
-  }).notNull(),
-  descriptionEn: varchar(`description${langSuffix.en}`, {
-    length: 640,
-  }).notNull(),
-  keywordsUa: varchar(`keywords${langSuffix.uk}`, { length: 255 }).notNull(),
-  keywordsEn: varchar(`keywords${langSuffix.en}`, { length: 255 }).notNull(),
-  textUa: text(`text${langSuffix.uk}`).notNull(),
-  textEn: text(`text${langSuffix.en}`).notNull(),
-  imageSrc: varchar('image_src', { length: 255 }),
-  spotifyId: varchar('spotify_id', { length: 255 }),
-  published: boolean('published').notNull().default(true),
-});
+export const tblArticle = pgTable(
+  TBL_ARTICLE,
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    createdAt: timestamp('createdAt').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdateFn(() => new Date())
+      .notNull(),
+    slug: varchar('slug', { length: 255 }).notNull().unique(),
+    titleUa: varchar(`title${langSuffix.uk}`, { length: 255 })
+      .notNull()
+      .unique(),
+    titleEn: varchar(`title${langSuffix.en}`, { length: 255 })
+      .notNull()
+      .unique(),
+    descriptionUa: varchar(`description${langSuffix.uk}`, {
+      length: 640,
+    }).notNull(),
+    descriptionEn: varchar(`description${langSuffix.en}`, {
+      length: 640,
+    }).notNull(),
+    keywordsUa: varchar(`keywords${langSuffix.uk}`, { length: 255 }).notNull(),
+    keywordsEn: varchar(`keywords${langSuffix.en}`, { length: 255 }).notNull(),
+    textUa: text(`text${langSuffix.uk}`).notNull(),
+    textEn: text(`text${langSuffix.en}`).notNull(),
+    imageSrc: varchar('image_src', { length: 255 }),
+    spotifyId: varchar('spotify_id', { length: 255 }),
+    published: boolean('published').notNull().default(true),
+  },
+  (table) => ({
+    searchIndexEn: index('articles_search_en_idx').using(
+      'gin',
+      sql`(
+        setweight(to_tsvector('english', ${table.titleEn}), 'A') ||
+        setweight(to_tsvector('english', ${table.textEn}), 'B')
+      )`
+    ),
+    searchIndexUa: index('articles_search_ua_idx').using(
+      'gin',
+      sql`(
+        setweight(to_tsvector('simple', ${table.titleUa}), 'A') ||
+        setweight(to_tsvector('simple', ${table.textUa}), 'B')
+      )`
+    ),
+  })
+);
 
 export type TArticle = InferSelectModel<typeof tblArticle>;
 

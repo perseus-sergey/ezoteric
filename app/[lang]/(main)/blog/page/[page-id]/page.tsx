@@ -1,13 +1,11 @@
-import BlogPage from '@/components/custom/BlogPage';
-import { getArticlesChunk } from '@/db/queriesArticle';
 import { getELangKey } from '@/lib/utils/getLanguage';
-import { isAdminAuth } from '@/lib/utils/loggedUser';
-import { validSearchParam } from '@/lib/utils/validSearchParam';
+import BlogPage from '@/components/custom/BlogPage';
 import {
   BLOG_H1,
   BLOG_PAGINATION_PARAMS,
-  META_BLOG,
+  META_BLOG_PAGINATED,
 } from '@/models/blog.model';
+import { PAGE_CAPTION } from '@/models/breadcrumb.model';
 import { ELanguage } from '@/models/language.model';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import {
@@ -18,7 +16,12 @@ import {
   TSearchParams,
 } from '@/models/url.model';
 import { Metadata } from 'next';
-const { BLOG } = ESegment;
+import { notFound } from 'next/navigation';
+import { validSearchParam } from '@/lib/utils/validSearchParam';
+import { isAdminAuth } from '@/lib/utils/loggedUser';
+import { getArticlesChunk } from '@/db/queriesArticle';
+const { BLOG, PAGE_ID, PAGE } = ESegment;
+const { UA, EN } = ELanguage;
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -33,20 +36,23 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const p = await params;
   const lang = getELangKey(p.lang);
+  const pageId = parseInt(p[PAGE_ID], 10);
+
+  if (isNaN(pageId)) notFound();
 
   return {
     metadataBase: new URL(baseUrl),
-    ...META_BLOG[lang](),
+    ...META_BLOG_PAGINATED[lang](pageId),
     openGraph: {
       ...DEFAULT_META_OG,
-      ...META_BLOG[lang](),
-      url: `/${lang}/${BLOG}`,
+      ...META_BLOG_PAGINATED[lang](pageId),
+      url: `/${lang}/${BLOG}/${PAGE}/${pageId}`,
     },
     alternates: {
-      canonical: `/${lang}/${BLOG}`,
+      canonical: `/${lang}/${BLOG}/${PAGE}/${pageId}`,
       languages: {
-        en: `/${ELanguage.EN}/${BLOG}`,
-        uk: `/${ELanguage.UA}/${BLOG}`,
+        en: `/${EN}/${BLOG}/${PAGE}/${pageId}`,
+        uk: `/${UA}/${BLOG}/${PAGE}/${pageId}`,
       },
     },
   };
@@ -62,13 +68,16 @@ export default async function Page({
   const p = await params;
   const sParams = await searchParams;
   const lang = getELangKey(p.lang);
+  const pageId = parseInt(p[PAGE_ID], 10);
+
+  if (isNaN(pageId)) notFound();
 
   const searchQuery = validSearchParam(EUrlSearchParam.QUERY, sParams);
 
   const isAdmin = await isAdminAuth();
 
   const { articles, totalCount } = await getArticlesChunk(
-    0,
+    (pageId - 1) * perPage,
     perPage,
     lang,
     isAdmin,
@@ -83,11 +92,16 @@ export default async function Page({
       totalCount={totalCount}
       searchParams={sParams}
       h1Title={BLOG_H1[lang]}
-      pageNumber={1}
-      metaData={META_BLOG[lang](searchQuery)}
-      breadcrumbsItems={[{ title: BLOG_H1[lang] }]}
+      pageNumber={pageId}
+      metaData={META_BLOG_PAGINATED[lang](pageId, searchQuery)}
       startUrl={`/${lang}/${BLOG}`}
-      searchQuery={searchQuery}
+      breadcrumbsItems={[
+        {
+          title: BLOG_H1[lang],
+          href: BLOG,
+        },
+        { title: `${PAGE_CAPTION[lang]}: ${pageId}` },
+      ]}
     />
   );
 }

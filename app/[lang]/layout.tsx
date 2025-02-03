@@ -16,17 +16,16 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// translations for search input & props
 // popover instead of alertDialog for tag editing
-// meta and ld for blog/page/:id and blog/tag/:slug
-// pages blog/tag/:slug/page/:id and meta
-// 1 common component for blog and blog/tag/ & blog/page...
+// installsat: remove from sitemap pages with schedules
+// installsat: remove redundant pages with pagination from sitemap
+// improve components/custom/NotFoundPage.tsx & components/custom/EmptyData.tsx
+// remove lib/hooks/useSearch.ts
 
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // chat: add message time
-// blog: search input
 // blog: priority for first img?
 // message: review all tools components/custom/message.tsx
 // JsonLd: add site logo
@@ -34,7 +33,7 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 // shadcn - combobox, popover, dialog,
 // =================================================================
 
-const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 type TProps = Readonly<{
   children: React.ReactNode;
@@ -50,7 +49,7 @@ export const generateMetadata = async ({
   const lang = getELangKey(p.lang);
 
   return {
-    metadataBase: new URL(basesUrl),
+    metadataBase: new URL(baseUrl),
     ...DEFAULT_META_DATA[lang],
     openGraph: {
       ...DEFAULT_META_OG,

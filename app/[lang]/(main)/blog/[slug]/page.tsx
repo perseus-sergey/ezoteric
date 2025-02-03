@@ -27,7 +27,7 @@ import EditPostLink from '@/components/custom/EditPostLink';
 
 const { BLOG } = ESegment;
 
-const basesUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 export const revalidate = 172800; // 3600 * 48 invalidate cache every 2 days
 
@@ -39,12 +39,12 @@ export const generateMetadata = async ({
   const p = await params;
   const lang = getELangKey(p.lang);
   const { slug } = p;
-  const article = await getArticleBySlug({ lang, slug });
+  const article = await getArticleBySlug(slug, lang);
   if (!article) notFound();
   const { title, keywords, description, updatedAt } = article;
 
   return {
-    metadataBase: new URL(basesUrl),
+    metadataBase: new URL(baseUrl),
     title,
     description,
     keywords,
@@ -70,7 +70,7 @@ export default async function Page({ params }: { params: TParams }) {
   const lang = getELangKey(p.lang);
   const { slug } = p;
 
-  const article = await getArticleBySlug({ lang, slug });
+  const article = await getArticleBySlug(slug, lang);
 
   if (!article) notFound();
 
@@ -108,10 +108,6 @@ export default async function Page({ params }: { params: TParams }) {
       />
 
       <Title>{title}</Title>
-
-      {isAdmin && (
-        <EditPostLink lang={lang} isPublished={published} articleId={id} />
-      )}
 
       {!published && (
         <section
@@ -159,7 +155,16 @@ export default async function Page({ params }: { params: TParams }) {
       )}
 
       {text && (
-        <div className="article-text py-8 px-16 bg-tertiary rounded-2xl">
+        <div className="article-text relative py-8 px-16 bg-tertiary rounded-2xl">
+          {isAdmin && (
+            <EditPostLink
+              lang={lang}
+              isPublished={published}
+              articleId={id}
+              isVisible
+            />
+          )}
+
           <DangerHtml text={text} />
         </div>
       )}

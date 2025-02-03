@@ -1,21 +1,20 @@
 import { ELanguage } from '@/models/language.model';
 // import emptyPageImg from 'public/Images/empty_page.png';
 import { EMPTY_DATA_MODEL } from '@/models/emptyData.model';
+import { EmptyDataSVG } from '@/svg/EmptyDataSVG';
 
 const { text } = EMPTY_DATA_MODEL;
 
 interface IEmptyDataProps {
   lang: ELanguage;
+  queryString?: string;
   description?: string;
 }
 
-const EmptyData = ({ description, lang }: IEmptyDataProps) => (
-  <section
-    className="p-5 font-bold text-center text-purple-600 flex flex-col items-center gap-12"
-    data-testid="EmptyData"
-  >
-    {/* <Image src={emptyPageImg} alt={EMPTY_IMG_ALT[lang]} /> */}
-    <p>{description || text[lang]}</p>
+const EmptyData = ({ description, lang, queryString }: IEmptyDataProps) => (
+  <section className="flex-1 bg-tertiary border-2 rounded-lg border-stone-300 flex flex-col gap-4 justify-center items-center min-h-[40vh] p-3">
+    <EmptyDataSVG className="size-28 animate-pulse" />
+    <p>{description || text(queryString)[lang]}</p>
   </section>
 );
 

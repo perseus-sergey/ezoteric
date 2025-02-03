@@ -11,8 +11,13 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/:lang/blog/page/1',
+        source: '/:lang/blog/page/(1|0)',
         destination: '/:lang/blog',
+        permanent: true,
+      },
+      {
+        source: '/:lang/blog/tag/:slug/page/(1|0)',
+        destination: '/:lang/blog/tag/:slug',
         permanent: true,
       },
     ];
