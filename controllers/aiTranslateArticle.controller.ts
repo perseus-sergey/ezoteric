@@ -2,15 +2,14 @@
 
 import { geminiFlashModel } from '@/ai';
 import { TTag } from '@/db/schema';
-import { IAiTags, IEditArticleTranslate } from '@/models/editArticle.model';
+import {
+  IAiTags,
+  IAiTranslatedHtml,
+  IGenerateArticleMeta,
+} from '@/models/editArticle.model';
 import { generateText } from 'ai';
 
-export const aiTranslateArticle = async (
-  titleUa: string,
-  descriptionUa: string,
-  keywordsUa: string,
-  contentUa: string
-) => {
+export const aiTranslateArticle = async (contentUa: string) => {
   try {
     const { text } = await generateText({
       model: geminiFlashModel,
@@ -19,42 +18,75 @@ export const aiTranslateArticle = async (
       Ensure that only the text content inside the tags and the relevant attribute values (e.g., alt, aria-label) are translated, leaving the tags and structure unchanged.
       Return the result in the specified JSON format.
   
-      Input data:
-      {
-        "title-ua": "<Ukrainian title>",
-        "description-ua": "<Ukrainian meta description>",
-        "keywords-ua": "<Ukrainian meta keywords>",
-        "content-ua": "<Ukrainian HTML content with tags>"
-      }
+      Input data: "<Ukrainian HTML content with tags>
   
-      Translate the fields as follows:
-  
-      "title-ua" → "title-en": Provide an English translation of the title.
-      "description-ua" → "description-en": Provide an English translation of the meta description.
-      "keywords-ua" → "keywords-en": Translate the keywords to English, preserving their comma-separated structure.
-      "content-ua" → "content-en": Translate the text content while keeping all HTML tags and formatting as is. Translate any text inside alt attributes of images.
-  
-      Return the result in this format:
-      {
-        "titleEn": "<English title>",
-        "descriptionEn": "<English meta description>",
-        "keywordsEn": "<English meta keywords>",
-        "contentEn": "<English HTML content with preserved tags>"
-      }
-  `,
+      Translate the text content while keeping all HTML tags and formatting as is. Translate any text inside alt attributes of images.
+
+      🔹 **Output data format (JSON, no explanations)**:
+        {
+          "translatedHtml": "<English HTML content with preserved tags>"
+        }
+
+        Respond **only in JSON format**, without explanations or comments.
+      `,
+      prompt: contentUa,
+    });
+
+    const cleanResult = text.replace(/```json|```/g, '');
+
+    return (await JSON.parse(cleanResult)) as IAiTranslatedHtml;
+  } catch (error) {
+    throw new Error(`AI Translation Error: ${error}`);
+  }
+};
+
+export const aiGenerateMeta = async (titleUa: string, contentUa: string) => {
+  try {
+    const { text } = await generateText({
+      model: geminiFlashModel,
+      system: `
+        You are an SEO expert and content marketing specialist.
+        Your task is to generate high-quality SEO-optimized meta data for search engines (Google, Bing, etc.).
+
+        🔹 **What to do?**
+        - Generate an **SEO title** in English (titleEn) based on "title-ua".  
+          🔸 It should be **relevant**, **optimized for search queries**  
+          🔸 It can be **slightly modified for better SEO**  
+        - Create a **short and attractive meta description** in Ukrainian (descriptionUa)  
+          🔸 It should **clearly convey the essence of the article** and **motivate clicks**  
+        - Generate **relevant keywords** in Ukrainian (keywordsUa)  
+          🔸 Use **popular search queries** that match the article's topic  
+        - Do the same for English (descriptionEn, keywordsEn)  
+          🔸 English meta data should match SEO trends and be attractive for clicks  
+
+        🔹 **Input data format (JSON)**:
+        {
+          "title-ua": "<Ukrainian title>",
+          "content-ua": "<Ukrainian HTML content with tags>"
+        }
+
+        🔹 **Output data format (JSON, no explanations)**:
+        {
+          "titleEn": "<English SEO title>",
+          "descriptionUa": "<SEO description in Ukrainian>",
+          "keywordsUa": "<SEO keywords in Ukrainian>",
+          "descriptionEn": "<SEO description in English>",
+          "keywordsEn": "<SEO keywords in English>"
+        }
+
+        Respond **only in JSON format**, without explanations or comments.
+      `,
       prompt: JSON.stringify({
         'title-ua': titleUa,
-        'description-ua': descriptionUa,
-        'keywords-ua': keywordsUa,
         'content-ua': contentUa,
       }),
     });
 
     const cleanResult = text.replace(/```json|```/g, '');
 
-    return (await JSON.parse(cleanResult)) as IEditArticleTranslate;
+    return (await JSON.parse(cleanResult)) as IGenerateArticleMeta;
   } catch (error) {
-    throw new Error(`AI Translation Error: ${error}`);
+    throw new Error(`AI Meta Generation Error: ${error}`);
   }
 };
 

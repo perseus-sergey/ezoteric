@@ -239,14 +239,14 @@ export const getArticleBySlug = cache(
   }
 );
 
-export const getArticleByImage = async (imageSrc: string) => {
+export const getArticleByImage = async (imageName: string) => {
   const filters = [];
 
   filters.push(eq(tblArticle.published, true));
   filters.push(
     or(
-      eq(tblArticle.imageSrc, imageSrc),
-      sql`${tblArticle.textEn} LIKE ${`%${imageSrc}%`}`
+      sql`${tblArticle.imageSrc} LIKE ${`%${imageName}%`}`,
+      sql`${tblArticle.textEn} LIKE ${`%${imageName}%`}`
     )
   );
 

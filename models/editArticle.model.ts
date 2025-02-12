@@ -84,11 +84,16 @@ export const newArticleDefaultValues = {
 
 export type TArticleFormValues = z.infer<typeof articleFormSchema>;
 
-export interface IEditArticleTranslate {
+export interface IGenerateArticleMeta {
   titleEn: string;
   descriptionEn: string;
   keywordsEn: string;
-  contentEn: string;
+  descriptionUa: string;
+  keywordsUa: string;
+}
+
+export interface IAiTranslatedHtml {
+  translatedHtml: string;
 }
 
 export interface IAiTags {

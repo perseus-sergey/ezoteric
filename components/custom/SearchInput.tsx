@@ -2,7 +2,7 @@
 
 import { EUrlSearchParam } from '@/models/url.model';
 import { Button } from '../ui/button';
-import { Loader2, SearchCheckIcon, X } from 'lucide-react';
+import { Loader2, Search, SearchCheckIcon, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -74,12 +74,15 @@ export default function SearchInput({
     defaultValues: {
       searchQuery: searchParams.get(searchQueryTitle)?.toString() || '',
     },
+    mode: 'onChange', // 🔹 Миттєва валідація на кожному символі
   });
 
-  const { handleSubmit, control, setValue, watch } = form;
+  const { handleSubmit, control, setValue, watch, formState } = form;
 
-  const searchValue = watch('searchQuery'); // Відстежуємо зміни поля вводу
-  const isDirty = searchValue.trim() !== initialQuery;
+  const { errors } = formState;
+  const searchValue = watch('searchQuery'); // Відстежуємо зміни в полі
+  const isDirty = searchValue.trim() !== initialQuery; // Чи змінився запит?
+  const isInvalid = !!errors.searchQuery; // Чи є помилки валідації?
 
   useEffect(() => {
     if (!searchParams.get(searchQueryTitle)) {
@@ -148,7 +151,7 @@ export default function SearchInput({
                   />
                 </FormControl>
 
-                <FormMessage className="absolute bottom-0 translate-y-[110%] bg-opacity-70 p-1" />
+                <FormMessage className="absolute bottom-0 translate-y-[110%] /70 p-1" />
               </FormItem>
 
               {field.value && (
@@ -168,7 +171,7 @@ export default function SearchInput({
 
         <Button
           type="submit"
-          disabled={isLoading || !isDirty}
+          disabled={isLoading || !isDirty || isInvalid}
           aria-label={submitAriaLabel}
           size="icon"
           variant="ghost"
@@ -178,8 +181,10 @@ export default function SearchInput({
 
           {isLoading ? (
             <Loader2 className="animate-spin text-muted-foreground" />
-          ) : (
+          ) : isDirty && !isInvalid ? (
             <SearchCheckIcon className="text-muted-foreground" />
+          ) : (
+            <Search className="opacity-70" />
           )}
         </Button>
       </form>

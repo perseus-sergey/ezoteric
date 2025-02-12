@@ -1,0 +1,1 @@
+ALTER TABLE "ezo_images" DROP COLUMN IF EXISTS "url";

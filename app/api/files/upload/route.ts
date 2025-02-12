@@ -1,5 +1,11 @@
 import { getArticleByImage } from '@/db/queriesArticle';
+import {
+  deleteImageInfoFromDB,
+  getImageInfoFromDB,
+  insertImageInfoToDB,
+} from '@/db/queriesImages';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
+import { BLOB_STORAGE_PATH } from '@/models/image.model';
 import { EUrlSearchParam } from '@/models/url.model';
 import { del, list, put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
@@ -7,7 +13,7 @@ import { z } from 'zod';
 
 export const revalidate = 0;
 
-const PAGINATION_LIMIT = 50;
+// const PAGINATION_LIMIT = 50;
 
 const FileSchema = z.object({
   file: z
@@ -29,30 +35,18 @@ const FileSchema = z.object({
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const cursor = searchParams.get('cursor');
+    const page = parseInt(searchParams.get('page') || '1', 10);
 
-    const {
-      blobs,
-      cursor: nextCursor,
-      hasMore,
-    } = await list({
-      limit: PAGINATION_LIMIT,
-      cursor: cursor || undefined,
-      // Optionally add prefix if you want to filter blobs
-      // prefix: 'your-specific-folder/'
-    });
+    const { images, hasMore } = await getImageInfoFromDB(page);
 
     return NextResponse.json({
-      blobs,
-      cursor: nextCursor,
+      images,
       hasMore,
     });
   } catch (error) {
-    console.error('Blob listing error:', error);
+    console.error('Database query error:', error);
     return NextResponse.json(
-      {
-        error: 'Failed to list blobs',
-      },
+      { error: 'Failed to fetch images from database' },
       { status: 500 }
     );
   }
@@ -60,7 +54,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const isAdmin = await isAdminAuth();
-
   if (!isAdmin) {
     return NextResponse.json(
       { error: 'Please log in as Admin first.' },
@@ -94,19 +87,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const filename = file.name;
+    const filename = `${uploadDir ? `${uploadDir}/` : ''}${file.name}`;
+
+    // 🆕 Перевірка існування файлу
+    const { blobs } = await list({
+      prefix: filename,
+      limit: 1,
+    });
+
+    if (blobs.length > 0) {
+      return NextResponse.json(
+        { error: `File with name ${file.name} already exists in storage` },
+        { status: 409 } // Conflict status code
+      );
+    }
 
     const fileBuffer = await file.arrayBuffer();
 
     try {
-      const data = await put(
-        `${uploadDir ? `${uploadDir}/` : ''}${filename}`,
-        fileBuffer,
-        {
-          access: 'public',
-          addRandomSuffix: false,
-        }
-      );
+      const data = await put(filename, fileBuffer, {
+        access: 'public',
+        addRandomSuffix: false,
+      });
+
+      await insertImageInfoToDB(file.name);
 
       return NextResponse.json(data);
     } catch (error) {
@@ -138,18 +142,20 @@ export async function DELETE(request: Request) {
 
     // Extract URL from search params
     const { searchParams } = new URL(request.url);
-    const urlToDelete = searchParams.get(EUrlSearchParam.URL);
+    const fileNameToDelete = searchParams.get(EUrlSearchParam.URL);
 
-    // Validate URL
-    if (!urlToDelete) {
+    // Validate File Name
+    if (!fileNameToDelete) {
       return NextResponse.json(
-        { error: 'Request URL is empty' },
+        { error: 'Request Name is empty' },
         { status: 400 }
       );
     }
 
+    const fileUrl = `${BLOB_STORAGE_PATH}${fileNameToDelete}`;
+
     // Check if the file is used in any published articles
-    const articleUsingImage = await getArticleByImage(urlToDelete);
+    const articleUsingImage = await getArticleByImage(fileUrl);
 
     if (articleUsingImage) {
       return NextResponse.json(
@@ -166,7 +172,9 @@ export async function DELETE(request: Request) {
 
     try {
       // Delete the file
-      await del(urlToDelete);
+      await del(fileUrl);
+
+      await deleteImageInfoFromDB(fileNameToDelete);
     } catch (deleteError) {
       console.error('File deletion error:', deleteError);
       return NextResponse.json(

@@ -1,3 +1,7 @@
+export const BLOB_STORAGE_PATH =
+  'https://blfrxltqylipwrwp.public.blob.vercel-storage.com/post/';
+
+export const BLOB_UPLOAD_PAGE_SIZE = 50;
 export interface IImgParams {
   src: string;
   width: number;

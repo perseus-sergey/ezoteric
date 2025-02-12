@@ -16,6 +16,10 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
+// main image rounded
+// image names relative to article
+
+// add tags to app/[lang]/(main)/blog/[slug]/page.tsx
 // popover instead of alertDialog for tag editing
 // installsat: remove from sitemap pages with schedules
 // installsat: remove redundant pages with pagination from sitemap

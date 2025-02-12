@@ -4,11 +4,9 @@ import { PreviewUploaded } from '@/components/custom/PreviewUploaded';
 import { Button } from '@/components/ui/button';
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
 import { fetcher } from '@/lib/utils/utils';
+import { BLOB_STORAGE_PATH } from '@/models/image.model';
 import { DEFAULT_LANG } from '@/models/language.model';
-import {
-  IBlobListResponse,
-  IUploadBlobResponse,
-} from '@/models/uploadFile.model';
+import { IUploadBlobResponse } from '@/models/uploadFile.model';
 import { ESegment, EUrlSearchParam } from '@/models/url.model';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { DownloadCloud, ExternalLink, UploadCloud } from 'lucide-react';
@@ -21,36 +19,38 @@ export default function VercelBlobWidget() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<string[]>([]);
   const [isDeleteProcess, setIsDeleteProcess] = useState(false);
+  const [isUploadingProcess, setIsUploadingProcess] = useState(false);
 
-  // SWR Infinite Loading for Files
-  const { data, size, setSize, isLoading, mutate } =
-    useSWRInfinite<IBlobListResponse>(
-      (pageIndex, previousPageData) => {
-        // If no previous page data or no more pages, return null
-        if (previousPageData && !previousPageData.hasMore) return null;
+  const { data, size, setSize, isLoading, mutate } = useSWRInfinite<{
+    images: {
+      filename: string;
+    }[];
+    hasMore: boolean;
+  }>(
+    (pageIndex, previousPageData) => {
+      // Якщо попередня сторінка даних існує і hasMore = false, то більше не запитуємо
+      if (previousPageData && !previousPageData.hasMore) return null;
 
-        // Construct URL with cursor for pagination
-        const params = new URLSearchParams();
-        if (pageIndex > 0 && previousPageData?.cursor) {
-          params.append('cursor', previousPageData.cursor);
-        }
+      // Формуємо URL із параметром пагінації
+      const params = new URLSearchParams();
+      params.append('page', (pageIndex + 1).toString());
 
-        return `/api/files/upload?${params.toString()}`;
-      },
-      fetcher,
-      {
-        revalidateFirstPage: true,
-        revalidateAll: false,
-      }
-    );
+      return `/api/files/upload?${params.toString()}`;
+    },
+    fetcher,
+    {
+      revalidateFirstPage: true,
+      revalidateAll: false,
+    }
+  );
 
   // Flatten files from all pages
   const files = useMemo(() => {
     return data
       ? data.flatMap((page) =>
-          page.blobs.map((blob) => ({
-            url: blob.url,
-            name: blob.pathname,
+          page.images.map((img) => ({
+            url: BLOB_STORAGE_PATH,
+            name: img.filename,
             contentType: 'image',
           }))
         )
@@ -58,7 +58,7 @@ export default function VercelBlobWidget() {
   }, [data]);
 
   // Determine if there are more files to load
-  const hasMore = data ? data[data.length - 1]?.hasMore : true;
+  const hasMore = data ? data.at(-1)?.hasMore : true;
 
   // File Upload Handler
   const uploadFile = useCallback(
@@ -74,14 +74,25 @@ export default function VercelBlobWidget() {
         });
 
         if (response.ok) {
-          const { url, pathname, contentType } =
-            (await response.json()) as IUploadBlobResponse;
-          mutate(); // Revalidate the files list
-          return {
-            url,
-            name: pathname,
-            contentType,
-          };
+          const { pathname } = (await response.json()) as IUploadBlobResponse;
+
+          // Оновлюємо локальний стан, додаючи новий файл на початок
+          mutate(
+            (currentData) => {
+              if (!currentData) return currentData;
+
+              return [
+                {
+                  ...currentData[0],
+                  images: [{ filename: pathname }, ...currentData[0].images],
+                },
+                ...currentData.slice(1),
+              ];
+            },
+            { revalidate: false } // Не викликати повторне запитування одразу
+          );
+
+          return { name: pathname };
         } else {
           const { error } = await response.json();
           toast.error(error);
@@ -101,10 +112,7 @@ export default function VercelBlobWidget() {
 
       // Filter out files already in the list
       const newFiles = selectedFiles.filter(
-        (file) =>
-          !files.some(
-            (existingFile) => existingFile.name === `post/${file.name}`
-          )
+        (file) => !files.some((existingFile) => existingFile.name === file.name)
       );
 
       if (newFiles.length === 0) {
@@ -115,26 +123,32 @@ export default function VercelBlobWidget() {
       // Set upload queue for UI feedback
       setUploadQueue(newFiles.map((file) => file.name));
 
+      setIsUploadingProcess(true);
+
       try {
-        const uploadPromises = newFiles.map((file) => uploadFile(file));
-        await Promise.all(uploadPromises);
+        // Завантажуємо всі файли
+        await Promise.all(newFiles.map((file) => uploadFile(file)));
+
+        // Після завершення всіх завантажень запитуємо сервер для оновлення списку
+        mutate();
       } catch (error) {
         console.error('Error uploading files!', error);
       } finally {
         setUploadQueue([]);
+        setIsUploadingProcess(false);
       }
     },
-    [files, uploadFile]
+    [files, uploadFile, mutate]
   );
 
   const handleRemove = useCallback(
-    async (fileUrl: string) => {
+    async (fileName: string) => {
       setIsDeleteProcess(true);
 
       try {
         // Send delete request
         const searchParams = makeUrlSearchParams({
-          [EUrlSearchParam.URL]: fileUrl,
+          [EUrlSearchParam.URL]: fileName,
         }).toString();
 
         const response = await fetch(`/api/files/upload?${searchParams}`, {
@@ -153,7 +167,7 @@ export default function VercelBlobWidget() {
 
               return currentData.map((page) => ({
                 ...page,
-                blobs: page.blobs.filter((blob) => blob.url !== fileUrl),
+                images: page.images.filter((img) => img.filename !== fileName),
               }));
             },
             { revalidate: false }
@@ -178,7 +192,7 @@ export default function VercelBlobWidget() {
                       <span className="font-bold underline">
                         {result.articleDetails.title}
                       </span>
-                      <ExternalLink className="size-3 text-stone-600" />
+                      <ExternalLink className="size-10 text-stone-600" />
                     </Link>
                   )}
                   <p className="text-right">
@@ -234,9 +248,9 @@ export default function VercelBlobWidget() {
             {/* Existing Files Preview */}
             {files.map((file) => (
               <PreviewUploaded
-                onRemove={() => handleRemove(file.url)}
-                isDeleteProcess={isDeleteProcess}
-                key={file.url}
+                onRemove={() => handleRemove(file.name)}
+                isDeleteProcess={isDeleteProcess || isUploadingProcess}
+                key={file.name}
                 uploadFile={file}
               />
             ))}
@@ -246,7 +260,7 @@ export default function VercelBlobWidget() {
             {hasMore && (
               <Button
                 onClick={() => setSize(size + 1)}
-                disabled={isLoading}
+                disabled={isUploadingProcess || isDeleteProcess}
                 className="w-fit duration-300 my-4"
               >
                 {isLoading ? <LoadingAnimated /> : <DownloadCloud />} Load More
@@ -264,6 +278,7 @@ export default function VercelBlobWidget() {
 
       <Button
         title="Add Images"
+        disabled={isUploadingProcess || isDeleteProcess}
         className="group fixed z-50 md:bottom-8 bottom-4 right-1/4 bg-primary size-14 rounded-full"
         onClick={(event) => {
           event.preventDefault();

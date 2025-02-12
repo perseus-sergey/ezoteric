@@ -122,7 +122,7 @@ export default async function Page({ params }: { params: TParams }) {
       {description && <TextUnderH1>{description}</TextUnderH1>}
 
       {!!imgSrc && (
-        <div className="size-fit relative my-4 mx-auto sm:border-2 border-white sm:shadow-md">
+        <div className="size-fit relative my-4 mx-auto sm:border-2 border-white sm:shadow-md sm:rounded-lg">
           <ValidImage
             defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
             className="rounded-lg"
@@ -155,7 +155,7 @@ export default async function Page({ params }: { params: TParams }) {
       )}
 
       {text && (
-        <div className="article-text relative py-8 px-16 bg-tertiary rounded-2xl">
+        <div className="article-text relative py-8 sm:px-16 px-2 bg-tertiary rounded-2xl">
           {isAdmin && (
             <EditPostLink
               lang={lang}

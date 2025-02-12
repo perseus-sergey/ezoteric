@@ -164,7 +164,7 @@
   h4,
   h5,
   h6 {
-    @apply text-balance text-xl font-semibold py-2 text-center;
+    @apply text-balance text-xl font-semibold py-4 text-center;
   }
 
   ul {

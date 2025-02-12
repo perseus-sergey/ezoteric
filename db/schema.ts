@@ -22,6 +22,7 @@ export const langSuffix = {
 export const TBL_USER = 'ezo_user';
 export const TBL_CHAT = 'ezo_chat';
 export const TBL_RESERVATION = 'ezo_reservation';
+export const TBL_IMAGES = 'ezo_images';
 export const TBL_ARTICLE = 'ezo_article';
 export const TBL_ARTICLE_VIEWS = 'ezo_article_views';
 export const TBL_TAGS = 'ezo_tags';
@@ -76,6 +77,18 @@ export const reservation = pgTable(TBL_RESERVATION, {
 });
 
 export type TReservation = InferSelectModel<typeof reservation>;
+
+// =================================================================
+// TBL_IMAGES
+// =================================================================
+
+export const tblImages = pgTable(TBL_IMAGES, {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  filename: text('filename').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export type TTblImages = InferSelectModel<typeof tblImages>;
 
 // =================================================================
 // TBL_ARTICLE

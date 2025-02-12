@@ -6,6 +6,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { useState } from 'react';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { clsx } from 'clsx';
+import { BLOB_STORAGE_PATH } from '@/models/image.model';
 
 export const PreviewUploaded = ({
   uploadFile,
@@ -20,7 +21,9 @@ export const PreviewUploaded = ({
 }) => {
   const [delModalOpen, setDelModalOpen] = useState(false);
 
-  const { name, url, contentType } = uploadFile;
+  const { name, contentType } = uploadFile;
+
+  const url = `${BLOB_STORAGE_PATH}${name}`;
 
   return (
     <div className="flex flex-col gap-2 group">
