@@ -16,8 +16,13 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// main image rounded
-// image names relative to article
+// Test edit elements don't moving on the sensor screen
+// update test view
+// make h1 for articles in db
+// insert field viewCount to tblArticle instead of separate table
+// test pages change metadata
+// test pages change breadcrumbs
+// check tests pagination & search
 
 // add tags to app/[lang]/(main)/blog/[slug]/page.tsx
 // popover instead of alertDialog for tag editing

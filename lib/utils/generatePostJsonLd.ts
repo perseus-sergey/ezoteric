@@ -5,7 +5,7 @@ import { TArticleLocalized } from '@/models/article.model';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
-const { BLOG } = ESegment;
+const { BLOG, TESTS } = ESegment;
 
 export const generatePostJsonLd = ({
   lang,
@@ -13,12 +13,14 @@ export const generatePostJsonLd = ({
   imgHeight,
   imgWidth,
   isMainPage = false,
+  isTestPage = false,
 }: {
   lang: ELanguage;
   article: TArticleLocalized;
   imgWidth?: number;
   imgHeight?: number;
   isMainPage?: boolean;
+  isTestPage?: boolean;
 }) => {
   const imageSrc = getImageSrc(article.slug, article.imageSrc, true, '');
   const imgPath = imageSrc || undefined;
@@ -54,7 +56,7 @@ export const generatePostJsonLd = ({
 
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${BASE_URL}/${lang}${isMainPage ? '' : `/${BLOG}/${article.slug}`}`,
+      '@id': `${BASE_URL}/${lang}${isMainPage ? '' : `/${isTestPage ? TESTS : BLOG}/${article.slug}`}`,
     },
 
     publisher: {

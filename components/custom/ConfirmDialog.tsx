@@ -15,16 +15,16 @@ import { ReactNode } from 'react';
 export const ConfirmDialog = ({
   title,
   description,
-  cancelBtnCaption,
-  confirmBtnCaption,
+  cancelBtnCaption = 'Cancel',
+  confirmBtnCaption = 'Confirm',
   onConfirm,
   open,
   onOpenChange,
 }: {
   title: string;
   description: ReactNode;
-  confirmBtnCaption: ReactNode;
-  cancelBtnCaption: ReactNode;
+  confirmBtnCaption?: ReactNode;
+  cancelBtnCaption?: ReactNode;
   onConfirm: () => void;
   open?: boolean;
   onOpenChange?(open: boolean): void;

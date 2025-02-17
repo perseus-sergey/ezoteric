@@ -9,6 +9,7 @@ import {
   META_BLOG,
   META_BLOG_TAG_PAGINATED,
 } from '@/models/blog.model';
+import { PAGE_CAPTION } from '@/models/breadcrumb.model';
 import { ELanguage } from '@/models/language.model';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import {
@@ -120,14 +121,18 @@ export default async function Page({
           ? META_BLOG_TAG_PAGINATED[lang](tagName, pageId)
           : META_BLOG[lang]()
       }
-      startUrl={`/${lang}/${BLOG}/${TAG}/${tagSlug}/${PAGE}/${pageId}`}
+      startUrl={`/${lang}/${BLOG}/${TAG}/${tagSlug}`}
       searchQuery={searchQuery}
       breadcrumbsItems={[
         {
           title: BLOG_H1[lang],
           href: BLOG,
         },
-        { title: `Tag: «${tagName}»` },
+        {
+          title: `«${tagName}»`,
+          href: `${BLOG}/${TAG}/${tagSlug}`,
+        },
+        { title: `${PAGE_CAPTION[lang]} №${pageId}` },
       ]}
     />
   );

@@ -45,37 +45,49 @@ export const aiGenerateMeta = async (titleUa: string, contentUa: string) => {
     const { text } = await generateText({
       model: geminiFlashModel,
       system: `
-        You are an SEO expert and content marketing specialist.
-        Your task is to generate high-quality SEO-optimized meta data for search engines (Google, Bing, etc.).
+    You are an SEO expert and content marketing specialist.
+    Your task is to generate high-quality SEO-optimized meta data and H1 headings for search engines (Google, Bing, etc.).
 
-        🔹 **What to do?**
-        - Generate an **SEO title** in English (titleEn) based on "title-ua".  
-          🔸 It should be **relevant**, **optimized for search queries**  
-          🔸 It can be **slightly modified for better SEO**  
-        - Create a **short and attractive meta description** in Ukrainian (descriptionUa)  
-          🔸 It should **clearly convey the essence of the article** and **motivate clicks**  
-        - Generate **relevant keywords** in Ukrainian (keywordsUa)  
-          🔸 Use **popular search queries** that match the article's topic  
-        - Do the same for English (descriptionEn, keywordsEn)  
-          🔸 English meta data should match SEO trends and be attractive for clicks  
+    🔹 **What to do?**
+    - Generate an **SEO title** in English (titleEn) based on "title-ua".
+      🔸 It should be **relevant**, **optimized for search queries**
+      🔸 It can be **slightly modified for better SEO**
+    - Generate an **H1 heading** in English (h1En) based on "titleEn".
+      🔸 It should be **compelling and engaging** for readers.
+      🔸 It should be **consistent with titleEn** but can be slightly different for better user experience.
+    - Create a **short and attractive meta description** in Ukrainian (descriptionUa)
+      🔸 It should **clearly convey the essence of the content** and **motivate clicks**
+    - Generate **relevant keywords** in Ukrainian (keywordsUa)
+      🔸 Use **popular search queries** that match the content's topic
+    - Generate an **SEO title** in Ukrainian (titleUa).
+      🔸 It should be **relevant**, **optimized for search queries**
+      🔸 It can be **slightly modified for better SEO**
+    - Generate an **H1 heading** in Ukrainian (h1Ua) based on "titleUa".
+      🔸 It should be **compelling and engaging** for readers.
+      🔸 It should be **consistent with titleUa** but can be slightly different for better user experience.
+    - Do the same for English (descriptionEn, keywordsEn)
+      🔸 English meta data should match SEO trends and be attractive for clicks
 
-        🔹 **Input data format (JSON)**:
-        {
-          "title-ua": "<Ukrainian title>",
-          "content-ua": "<Ukrainian HTML content with tags>"
-        }
+    🔹 **Input data format (JSON)**:
+    {
+      "title-ua": "<Ukrainian title>",
+      "content-ua": "<Ukrainian HTML content with tags>"
+    }
 
-        🔹 **Output data format (JSON, no explanations)**:
-        {
-          "titleEn": "<English SEO title>",
-          "descriptionUa": "<SEO description in Ukrainian>",
-          "keywordsUa": "<SEO keywords in Ukrainian>",
-          "descriptionEn": "<SEO description in English>",
-          "keywordsEn": "<SEO keywords in English>"
-        }
+    🔹 **Output data format (JSON, no explanations)**:
+    {
+      "titleEn": "<English SEO title>",
+      "h1En": "<English H1 heading>",
+      "descriptionUa": "<SEO description in Ukrainian>",
+      "keywordsUa": "<SEO keywords in Ukrainian>",
+      "titleUa": "<Ukrainian SEO title>",
+      "h1Ua": "<Ukrainian H1 heading>",
+      "descriptionEn": "<SEO description in English>",
+      "keywordsEn": "<SEO keywords in English>"
+    }
 
-        Respond **only in JSON format**, without explanations or comments.
-      `,
+    Respond **only in JSON format**, without explanations or comments.
+  `,
       prompt: JSON.stringify({
         'title-ua': titleUa,
         'content-ua': contentUa,

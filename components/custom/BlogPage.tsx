@@ -10,10 +10,10 @@ import {
   BLOG_PAGINATION_PARAMS,
   BLOG_COUNT_CAPTION,
   BLOG_SEARCH_INPUT_PARAMS,
-  IMetaBlog,
 } from '@/models/blog.model';
 import { EBreadcrumb } from '@/models/breadcrumb.model';
 import { ELanguage } from '@/models/language.model';
+import { IMeta } from '@/models/meta/default.model';
 import { ESegment, EUrlSearchParam, TSearchParams } from '@/models/url.model';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -30,7 +30,7 @@ interface IFilterProps {
   searchParams: Awaited<TSearchParams>;
   h1Title: string;
   pageNumber: number;
-  metaData: IMetaBlog;
+  metaData: IMeta;
   breadcrumbsItems: EBreadcrumb[];
   searchQuery?: string;
 }

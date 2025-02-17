@@ -13,12 +13,12 @@ import { ESegment } from '@/models/url.model';
 import { ELanguage } from '@/models/language.model';
 import { Session } from 'next-auth';
 import SeoLink from './SeoLink';
-import ThemeToggle from './theme-toggle';
 import { HEADER_MODEL, SIDEBAR } from '@/models/header.model';
 import LanguageSwitcher from './LanguageSwitcher';
 import { BookOpenText } from 'lucide-react';
 import UserMenu from './UserMenu';
 import LoginProviders from './LoginProviders';
+import ThemeToggleWrapped from './ThemeToggle';
 
 const { BLOG } = ESegment;
 const { sideBarOpenIcon } = HEADER_MODEL;
@@ -64,7 +64,7 @@ export default function SideBar({
 
             <LanguageSwitcher withCaption />
 
-            <ThemeToggle lang={lang} withCaption />
+            <ThemeToggleWrapped lang={lang} withCaption />
 
             {session ? (
               <UserMenu
@@ -83,4 +83,3 @@ export default function SideBar({
     </>
   );
 }
-// <VisuallyHidden.Root>

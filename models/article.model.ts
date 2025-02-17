@@ -33,9 +33,7 @@ export type TArticleLocalized = {
   keywords?: string;
   text?: string;
   spotifyId?: string | null;
-  viewCount: {
-    viewCount: number;
-  } | null;
+  viewCount: number;
   articleTags?:
     | {
         tag: TTagLocalized;

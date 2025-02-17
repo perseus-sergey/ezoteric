@@ -24,8 +24,9 @@ import { getImageSrc } from '@/controllers/articles.controller';
 import ValidImage from '@/components/custom/ValidImage';
 import SpotifyPlayer from '@/components/custom/SpotifyPlayer';
 import EditPostLink from '@/components/custom/EditPostLink';
+import TagList from '@/components/custom/TagList';
 
-const { BLOG } = ESegment;
+const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -158,14 +159,15 @@ export default async function Page({ params }: { params: TParams }) {
         <div className="article-text relative py-8 sm:px-16 px-2 bg-tertiary rounded-2xl">
           {isAdmin && (
             <EditPostLink
-              lang={lang}
+              href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}
               isPublished={published}
-              articleId={id}
               isVisible
             />
           )}
 
           <DangerHtml text={text} />
+
+          <TagList tags={article.articleTags} lang={lang} />
         </div>
       )}
 
@@ -175,7 +177,7 @@ export default async function Page({ params }: { params: TParams }) {
           items={[
             {
               caption: INFO_PANEL_CAPTION.views,
-              value: viewCount?.viewCount || 0,
+              value: viewCount || 0,
             },
             {
               caption: INFO_PANEL_CAPTION.date,

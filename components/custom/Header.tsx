@@ -1,4 +1,3 @@
-import ThemeToggle from './theme-toggle';
 import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
 import { ESegment } from '@/models/url.model';
@@ -10,8 +9,9 @@ import LanguageSwitcher from './LanguageSwitcher';
 import LoginProviders from './LoginProviders';
 import SideBar from './SideBar';
 import { Suspense } from 'react';
+import ThemeToggleWrapped from './ThemeToggle';
 
-const { BLOG } = ESegment;
+const { BLOG, TESTS } = ESegment;
 const { logo, links } = HEADER_MODEL;
 
 export const Header = async ({
@@ -46,13 +46,18 @@ export const Header = async ({
       </div>
 
       <nav className="hidden md:flex flex-row gap-4 items-center font-georgia">
+        <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${TESTS}`}>
+          {/* {links.blog.caption[lang]} */}
+          Tests
+        </SeoLink>
+
         <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>
           {links.blog.caption[lang]}
         </SeoLink>
 
         <LanguageSwitcher />
 
-        <ThemeToggle lang={lang} />
+        <ThemeToggleWrapped lang={lang} />
 
         {session ? (
           <UserMenu

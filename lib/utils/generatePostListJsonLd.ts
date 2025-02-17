@@ -5,18 +5,20 @@ import { TArticleLocalized } from '@/models/article.model';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
-const { BLOG } = ESegment;
+const { BLOG, TESTS } = ESegment;
 
 export const generatePostListJsonLd = ({
   lang,
   title,
   description,
   posts,
+  isTestsPage = false,
 }: {
   lang: ELanguage;
   title: string;
   description: string;
   posts: TArticleLocalized[] | null;
+  isTestsPage?: boolean;
 }) => {
   if (!posts) return {};
 
@@ -29,7 +31,7 @@ export const generatePostListJsonLd = ({
 
     description,
 
-    url: `${BASE_URL}/${lang}/${BLOG}`,
+    url: `${BASE_URL}/${lang}/${isTestsPage ? TESTS : BLOG}`,
 
     mainEntity: {
       '@type': 'ItemList',
@@ -41,7 +43,7 @@ export const generatePostListJsonLd = ({
           '@type': 'BlogPosting',
           headline: post.title,
           description: post.description,
-          url: `${BASE_URL}/${lang}/${BLOG}/${post.slug}`,
+          url: `${BASE_URL}/${lang}/${isTestsPage ? TESTS : BLOG}/${post.slug}`,
           datePublished: post.createdAt.toISOString(),
           dateModified: post.updatedAt.toISOString(),
 
@@ -53,7 +55,7 @@ export const generatePostListJsonLd = ({
           },
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `${BASE_URL}/${lang}/${BLOG}/${post.slug}`,
+            '@id': `${BASE_URL}/${lang}/${isTestsPage ? TESTS : BLOG}/${post.slug}`,
           },
           author: {
             '@type': 'Person',

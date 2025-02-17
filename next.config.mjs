@@ -16,8 +16,18 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/:lang/tests/page/(1|0)',
+        destination: '/:lang/tests',
+        permanent: true,
+      },
+      {
         source: '/:lang/blog/tag/:slug/page/(1|0)',
         destination: '/:lang/blog/tag/:slug',
+        permanent: true,
+      },
+      {
+        source: '/:lang/tests/category/:slug/page/(1|0)',
+        destination: '/:lang/tests/category/:slug',
         permanent: true,
       },
     ];

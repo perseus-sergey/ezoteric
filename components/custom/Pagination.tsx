@@ -70,9 +70,9 @@ const Pagination = ({
     const urlSearchParams = makeUrlSearchParams(searchParams || {});
 
     if (startUrl !== undefined) {
-      if (value === 1) return `${startUrl}?${urlSearchParams.toString()}`;
-
-      return `${startUrl}/${ESegment.PAGE}/${value}?${urlSearchParams.toString()}`;
+      return value === 1
+        ? `${startUrl}?${urlSearchParams.toString()}`
+        : `${startUrl}/${ESegment.PAGE}/${value}?${urlSearchParams.toString()}`;
     }
 
     if (value === 1) {

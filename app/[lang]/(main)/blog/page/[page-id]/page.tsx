@@ -100,7 +100,7 @@ export default async function Page({
           title: BLOG_H1[lang],
           href: BLOG,
         },
-        { title: `${PAGE_CAPTION[lang]}: ${pageId}` },
+        { title: `${PAGE_CAPTION[lang]} №${pageId}` },
       ]}
     />
   );

@@ -38,7 +38,6 @@ export const insertTagToDb = async (newTag: TNewTag) => {
 };
 
 export const updateTagToDb = async (tagId: number, updatedTag: TNewTag) => {
-  console.log('🚀 ~ updateTagToDb ~ updatedTag:', updatedTag);
   try {
     const [tag] = await db
       .update(tblTag)

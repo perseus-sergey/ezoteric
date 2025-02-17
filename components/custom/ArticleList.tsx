@@ -3,6 +3,9 @@ import ArticleCard from './ArticleCard';
 import EmptyData from './EmptyData';
 import { TArticleLocalized } from '@/models/article.model';
 import EditPostLink from './EditPostLink';
+import { ESegment } from '@/models/url.model';
+
+const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
 interface IArticleListProps {
   lang: ELanguage;
@@ -26,9 +29,8 @@ const ArticleList = ({
 
             {isAdmin && (
               <EditPostLink
-                lang={lang}
                 isPublished={article.published}
-                articleId={article.id}
+                href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${article.id}`}
               />
             )}
           </li>

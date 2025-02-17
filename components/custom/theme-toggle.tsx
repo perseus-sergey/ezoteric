@@ -1,12 +1,11 @@
 'use client';
 
+import * as motion from 'motion/react-client';
+
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
 import { THEME_SELECT } from '@/models/header.model';
 import { ELanguage } from '@/models/language.model';
-import { Moon, Sun } from 'lucide-react';
-import { TooltipSimple } from './TooltipSimple';
+import { MoonStar, Sun } from 'lucide-react';
 
 const { dark, light } = THEME_SELECT;
 
@@ -18,36 +17,36 @@ export default function ThemeToggle({
   withCaption?: boolean;
 }) {
   const { setTheme, theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
-  const ariaLabel =
-    theme === 'dark' ? light.ariaLabel[lang] : dark.ariaLabel[lang];
+  const isDark = theme === 'dark';
+  const ariaLabel = isDark ? light.ariaLabel[lang] : dark.ariaLabel[lang];
 
   return (
-    <TooltipSimple content={ariaLabel}>
-      <Button
-        onClick={() => {
-          setTheme(theme === 'dark' ? 'light' : 'dark');
-        }}
-        variant="ghost"
-        className="opacity-60"
+    <motion.button
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      className="relative flex items-center justify-center gap-2 p-4 opacity-80"
+      aria-label={ariaLabel}
+      whileTap={{ scale: 0.9 }}
+    >
+      <motion.div
+        key={theme} // Це змушує motion змінювати іконку плавно
+        initial={{ opacity: 0, rotate: -90 }}
+        animate={{ opacity: 1, rotate: 0 }}
+        exit={{ opacity: 0, rotate: 90 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
-        {theme === 'dark' ? <Sun /> : <Moon />}
-        {withCaption
-          ? theme === 'dark'
-            ? light.caption[lang]
-            : dark.caption[lang]
-          : null}
-        {!withCaption && <span className="sr-only">{ariaLabel}</span>}
-      </Button>
-    </TooltipSimple>
+        {isDark ? (
+          <Sun className="text-yellow-200" />
+        ) : (
+          <MoonStar fill="black" strokeWidth={0.7} />
+        )}
+      </motion.div>
+      {withCaption
+        ? theme === 'dark'
+          ? light.caption[lang]
+          : dark.caption[lang]
+        : null}
+      {!withCaption && <span className="sr-only">{ariaLabel}</span>}
+    </motion.button>
   );
 }

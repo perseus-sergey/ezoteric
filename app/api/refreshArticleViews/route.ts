@@ -1,21 +1,42 @@
 import { getDB } from '@/db/root';
-import { TBL_ARTICLE_VIEWS_COUNTS, TBL_ARTICLE_VIEWS } from '@/db/schema';
+import {
+  tblArticle,
+  tblArticleViews,
+  tblTests,
+  tblTestViews,
+} from '@/db/schema';
 import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
+const db = getDB();
+
 export async function GET() {
   try {
-    await getDB().transaction(async (tx) => {
-      await tx.execute(
-        sql`INSERT INTO ${sql.raw(TBL_ARTICLE_VIEWS_COUNTS)} (article_id, view_count)
-              SELECT article_id, COUNT(*) 
-              FROM ${sql.raw(TBL_ARTICLE_VIEWS)}
-              GROUP BY article_id
-              ON CONFLICT (article_id) 
-              DO UPDATE SET view_count = EXCLUDED.view_count
-            `
-      );
+    await db.transaction(async (tx) => {
+      await tx
+        .update(tblArticle)
+        .set({
+          viewCount: sql`(
+            select count(*) 
+            from ${tblArticleViews} 
+            where ${tblArticleViews.articleId} = ${tblArticle.id}
+          )`,
+        })
+        .where(sql`${tblArticle.id} = ${tblArticle.id}`);
+    });
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(tblTests)
+        .set({
+          viewCount: sql`(
+            select count(*) 
+            from ${tblTestViews} 
+            where ${tblTestViews.testId} = ${tblTests.id}
+          )`,
+        })
+        .where(sql`${tblArticle.id} = ${tblArticle.id}`);
     });
 
     return new Response('SUCCESS!', {

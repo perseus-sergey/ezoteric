@@ -11,16 +11,14 @@ import { getImageSrc } from '@/controllers/articles.controller';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import ValidImage from './ValidImage';
-import Link from 'next/link';
-import { Badge } from '../ui/badge';
-import * as motion from 'motion/react-client';
+import TagList from './TagList';
 
 interface IArticleCardProps {
   lang: ELanguage;
   article: TArticleLocalized;
 }
 
-const { BLOG, TAG } = ESegment;
+const { BLOG } = ESegment;
 
 const ArticleCard = ({ lang, article }: IArticleCardProps) => {
   const imgSrc = getImageSrc(article.slug, article.imageSrc);
@@ -45,34 +43,13 @@ const ArticleCard = ({ lang, article }: IArticleCardProps) => {
         </CardContent>
 
         <CardFooter className="flex-col items-start gap-4">
-          {article.articleTags && article.articleTags.length > 0 && (
-            <ul className="flex gap-2 flex-wrap">
-              {article.articleTags?.map(({ tag }, i) => (
-                <motion.li
-                  key={tag.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ delay: 0.05 * i, type: 'spring' }}
-                >
-                  <Badge variant="outline">
-                    <Link
-                      className="text-nowrap"
-                      href={`/${lang}/${BLOG}/${TAG}/${tag.slug}`}
-                    >
-                      {tag.name}
-                    </Link>
-                  </Badge>
-                </motion.li>
-              ))}
-            </ul>
-          )}
+          <TagList tags={article.articleTags} lang={lang} />
 
           <BottomInfoPanel
             items={[
               {
                 caption: INFO_PANEL_CAPTION.views,
-                value: article.viewCount?.viewCount,
+                value: article.viewCount,
               },
               {
                 caption: INFO_PANEL_CAPTION.date,

@@ -1,14 +1,9 @@
 import { ELanguage } from './language.model';
+import { IMeta } from './meta/default.model';
 
 const { UA, EN } = ELanguage;
 
-export interface IMetaBlog {
-  title: string;
-  description: string;
-  keywords: string;
-}
-
-export const META_BLOG: Record<ELanguage, (q?: string) => IMetaBlog> = {
+export const META_BLOG: Record<ELanguage, (q?: string) => IMeta> = {
   [UA]: (q?: string) => ({
     title: 'Блог - Езотерика, Нумерологія, Таро, Астрологія, Фен-шуй',
     description: `${
@@ -34,7 +29,7 @@ export const META_BLOG: Record<ELanguage, (q?: string) => IMetaBlog> = {
 
 export const META_BLOG_PAGINATED: Record<
   ELanguage,
-  (page: number, q?: string) => IMetaBlog
+  (page: number, q?: string) => IMeta
 > = {
   [UA]: (page: number, q?: string) => ({
     title: `Сторінка ${page} - Блог: Езотерика, Нумерологія, Таро, Астрологія, Фен-шуй`,
@@ -44,29 +39,28 @@ export const META_BLOG_PAGINATED: Record<
   }),
   [EN]: (page: number, q?: string) => ({
     title: `Page ${page} - Blog: Esotericism, Numerology, Tarot, Astrology, Feng Shui`,
-    description: `View page ${page} of our blog${page ? ` for search query 🔎«${q}»` : ''}, where you'll find new articles on esotericism, numerology, Tarot, astrology, feng shui and other unconventional sciences.`,
+    description: `View page ${page} of our blog${q ? ` for search query 🔎«${q}»` : ''}, where you'll find new articles on esotericism, numerology, Tarot, astrology, feng shui and other unconventional sciences.`,
     keywords:
       'esotericism, numerology, Tarot, astrology, feng shui, unconventional sciences, blog, articles',
   }),
 };
 
-export const META_BLOG_TAG: Record<ELanguage, (tagName: string) => IMetaBlog> =
-  {
-    [UA]: (tagName: string) => ({
-      title: `${tagName} - Блог`,
-      description: `Статті, вміст яких торкається теми «${tagName}». Дізнайтеся більше про себе та світ навколо через статті, пов'язані з тегом «${tagName}».`,
-      keywords: `${tagName}, блог, статті, езотерика, нумерологія, Таро, астрологія, фен-шуй, нетрадиційні науки`,
-    }),
-    [EN]: (tagName: string) => ({
-      title: `${tagName} - Blog`,
-      description: `Articles with content related to the topic «${tagName}». Learn more about yourself and the world around you through articles related to the tag «${tagName}».`,
-      keywords: `${tagName}, blog, articles, esotericism, numerology, Tarot, astrology, feng shui, unconventional sciences`,
-    }),
-  };
+export const META_BLOG_TAG: Record<ELanguage, (tagName: string) => IMeta> = {
+  [UA]: (tagName: string) => ({
+    title: `${tagName} - Блог`,
+    description: `Статті, вміст яких торкається теми «${tagName}». Дізнайтеся більше про себе та світ навколо через статті, пов'язані з тегом «${tagName}».`,
+    keywords: `${tagName}, блог, статті, езотерика, нумерологія, Таро, астрологія, фен-шуй, нетрадиційні науки`,
+  }),
+  [EN]: (tagName: string) => ({
+    title: `${tagName} - Blog`,
+    description: `Articles with content related to the topic «${tagName}». Learn more about yourself and the world around you through articles related to the tag «${tagName}».`,
+    keywords: `${tagName}, blog, articles, esotericism, numerology, Tarot, astrology, feng shui, unconventional sciences`,
+  }),
+};
 
 export const META_BLOG_TAG_PAGINATED: Record<
   ELanguage,
-  (tagName: string, page: number) => IMetaBlog
+  (tagName: string, page: number) => IMeta
 > = {
   [UA]: (tagName: string, page: number) => ({
     title: `${tagName} - Блог | Сторінка ${page}`,
@@ -111,7 +105,7 @@ export const BLOG_COUNT_CAPTION = {
 };
 
 export const BLOG_PAGINATION_PARAMS = {
-  perPage: 10,
+  perPage: 7,
   offsetNumber: 3,
   firstPageTitle: '<<',
   lastPageTitle: '>>',

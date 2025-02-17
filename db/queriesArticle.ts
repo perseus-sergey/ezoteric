@@ -109,6 +109,7 @@ export const getArticlesChunk = cache(
             slug: true,
             imageSrc: true,
             published: true,
+            viewCount: true,
           },
           extras: {
             title:
@@ -134,11 +135,6 @@ export const getArticlesChunk = cache(
                     ),
                   },
                 },
-              },
-            },
-            viewCount: {
-              columns: {
-                viewCount: true,
               },
             },
           },
@@ -185,6 +181,7 @@ export const getArticleBySlug = cache(
           imageSrc: true,
           published: true,
           spotifyId: true,
+          viewCount: true,
         },
         extras: {
           title:
@@ -217,11 +214,6 @@ export const getArticleBySlug = cache(
                   ),
                 },
               },
-            },
-          },
-          viewCount: {
-            columns: {
-              viewCount: true,
             },
           },
         },

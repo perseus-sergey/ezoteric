@@ -1,21 +1,15 @@
-import { ELanguage } from '@/models/language.model';
-import { ESegment } from '@/models/url.model';
 import Link from 'next/link';
 import { PencilLine } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { clsx } from 'clsx';
 
-const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
-
 const EditPostLink = ({
-  articleId,
+  href,
   isPublished,
-  lang,
   isVisible = false,
 }: {
-  articleId: number;
+  href: string;
   isPublished?: boolean;
-  lang: ELanguage;
   isVisible?: boolean;
 }) => (
   <>
@@ -24,7 +18,7 @@ const EditPostLink = ({
         'group-hover:visible hover:opacity-70 absolute left-2 top-2 flex bg-muted w-fit p-1 rounded-sm text-muted-foreground',
         !isVisible && 'invisible'
       )}
-      href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${articleId}`}
+      href={href}
     >
       <PencilLine className="size-5" />
     </Link>

@@ -62,7 +62,7 @@ export default function SearchInput({
   lang,
 }: IFilterProps) {
   const searchParams = useSearchParams();
-  const { replace } = useRouter();
+  const { push } = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
   const [prevUrl, setPrevUrl] = useState(searchParams.toString());
@@ -120,7 +120,7 @@ export default function SearchInput({
       params.delete(searchQueryTitle);
     }
 
-    replace(`${startUrl}?${params.toString()}`);
+    push(`${startUrl}?${params.toString()}`);
   };
 
   const cancelClickHandler = () => {

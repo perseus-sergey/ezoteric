@@ -19,8 +19,16 @@ import { LOGOUT_MODAL } from '@/models/modal.model';
 import Image from 'next/image';
 import { ConfirmDialog } from './ConfirmDialog';
 
-const { BLOG, MASTER, ARTICLE_ADD, UPLOAD_IMAGE, CHAT_VIEWER, TAGS_EDIT } =
-  ESegment;
+const {
+  BLOG,
+  MASTER,
+  ARTICLE_ADD,
+  UPLOAD_IMAGE,
+  CHAT_VIEWER,
+  TAGS_EDIT,
+  CATEGORIES_EDIT,
+  TESTS,
+} = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
 
 export default function UserMenu({
@@ -87,6 +95,15 @@ export default function UserMenu({
 
               <DropdownMenuItem>
                 <Link
+                  href={`/${lang}/${MASTER}/${TESTS}/${ARTICLE_ADD}`}
+                  className="flex items-center gap-2"
+                >
+                  <FilePlus className="size-4 opacity-40" /> Add New Test
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <Link
                   href={`/${lang}/${MASTER}/${BLOG}/${UPLOAD_IMAGE}`}
                   className="flex items-center gap-2"
                 >
@@ -100,6 +117,15 @@ export default function UserMenu({
                   className="flex items-center gap-2"
                 >
                   <BadgeCheck className="size-4 opacity-40" /> Tags Edit
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <Link
+                  href={`/${lang}/${MASTER}/${CATEGORIES_EDIT}`}
+                  className="flex items-center gap-2"
+                >
+                  <BadgeCheck className="size-4 opacity-40" /> Edit Categories
                 </Link>
               </DropdownMenuItem>
 
