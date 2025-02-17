@@ -322,22 +322,24 @@ export const updateArticle = async (
   updatedArticle: TArticleFormValues,
   articleId: number
 ) => {
-  const { tags, ...article } = updatedArticle;
+  const { tags, ...articleData } = updatedArticle;
+
   try {
     const res = await db.transaction(async (tx) => {
-      // Update article
+      // 1. Update article with updatedAt
+      const now = new Date();
       const [resTx] = await tx
         .update(tblArticle)
-        .set(article)
+        .set({ ...articleData, updatedAt: now }) // Set updatedAt explicitly
         .where(eq(tblArticle.id, articleId))
         .returning({ updatedAt: tblArticle.updatedAt });
 
-      // Delete existing tags
+      // 2. Delete existing tags
       await tx
         .delete(tblArticleTag)
         .where(eq(tblArticleTag.articleId, articleId));
 
-      // Insert new tags
+      // 3. Insert new tags
       if (tags?.length) {
         await tx.insert(tblArticleTag).values(
           tags.map((tagId) => ({
@@ -351,6 +353,7 @@ export const updateArticle = async (
     });
     return res;
   } catch (error) {
+    console.error('Error updating article:', error); // Log the error
     throw new Error(`Update Article failed: ${(error as Error).message}`);
   }
 };

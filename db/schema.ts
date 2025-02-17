@@ -118,10 +118,7 @@ export const tblTests = pgTable(
     keywordsUa: varchar(`keywords${langSuffix.uk}`, { length: 255 }).notNull(),
     keywordsEn: varchar(`keywords${langSuffix.en}`, { length: 255 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
-      .defaultNow()
-      .$onUpdateFn(() => new Date())
-      .notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
     imageSrc: varchar('image_src', { length: 255 }),
     published: boolean('published').notNull().default(true),
     spotifyId: varchar('spotify_id', { length: 255 }),
@@ -297,10 +294,7 @@ export const tblArticle = pgTable(
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     createdAt: timestamp('createdAt').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
-      .defaultNow()
-      .$onUpdateFn(() => new Date())
-      .notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
     slug: varchar('slug', { length: 255 }).notNull().unique(),
     titleUa: varchar(`title${langSuffix.uk}`, { length: 255 })
       .notNull()

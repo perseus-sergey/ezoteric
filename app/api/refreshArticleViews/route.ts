@@ -5,7 +5,7 @@ import {
   tblTests,
   tblTestViews,
 } from '@/db/schema';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +14,7 @@ const db = getDB();
 export async function GET() {
   try {
     await db.transaction(async (tx) => {
+      // Update articles
       await tx
         .update(tblArticle)
         .set({
@@ -23,10 +24,9 @@ export async function GET() {
             where ${tblArticleViews.articleId} = ${tblArticle.id}
           )`,
         })
-        .where(sql`${tblArticle.id} = ${tblArticle.id}`);
-    });
+        .where(eq(tblArticle.id, tblArticle.id));
 
-    await db.transaction(async (tx) => {
+      // Update tests
       await tx
         .update(tblTests)
         .set({
@@ -36,7 +36,7 @@ export async function GET() {
             where ${tblTestViews.testId} = ${tblTests.id}
           )`,
         })
-        .where(sql`${tblArticle.id} = ${tblArticle.id}`);
+        .where(eq(tblTests.id, tblTests.id));
     });
 
     return new Response('SUCCESS!', {

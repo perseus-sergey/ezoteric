@@ -159,9 +159,10 @@ export const updateTest = async (
   try {
     const res = await db.transaction(async (tx) => {
       // 1. Update tblTests
+      const now = new Date();
       const [resTx] = await tx
         .update(tblTests)
-        .set(testData)
+        .set({ ...testData, updatedAt: now })
         .where(eq(tblTests.id, testId))
         .returning({ updatedAt: tblTests.updatedAt });
 
