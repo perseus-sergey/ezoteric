@@ -18,21 +18,17 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 // =================================================================
 // - add tests to sitemap
 // - make h1 for articles in db
-// check tests pagination & search
+// - check tests pagination & search
 // tests ai prompt change for rating
 
-// add tags to app/[lang]/(main)/blog/[slug]/page.tsx
-// popover instead of alertDialog for tag editing
-// installsat: remove from sitemap pages with schedules
+// add cards with references of relative articles depend of post tags to app/[lang]/(main)/blog/[slug]/page.tsx
+// installsat: remove from sitemap pages with schedules (ask ai how it is better to do)
 // installsat: remove redundant pages with pagination from sitemap
-// improve components/custom/NotFoundPage.tsx & components/custom/EmptyData.tsx
-// remove lib/hooks/useSearch.ts
 
 // змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // chat: add message time
-// blog: priority for first img?
 // message: review all tools components/custom/message.tsx
 // JsonLd: add site logo
 

@@ -173,7 +173,7 @@ export default async function Page({ params }: { params: TParams }) {
             <TestExecution test={test} lang={lang} />
           </div>
 
-          <motion.li
+          <motion.div
             className="list-none"
             initial={{ opacity: 0, x: -70 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -188,7 +188,7 @@ export default async function Page({ params }: { params: TParams }) {
                 {test.category.name}
               </Link>
             </Badge>
-          </motion.li>
+          </motion.div>
         </div>
       )}
 

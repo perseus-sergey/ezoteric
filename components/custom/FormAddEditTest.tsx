@@ -503,54 +503,6 @@ export default function FormAddEditTest({
               </FormItem>
             )}
           />
-
-          {/* Slug */}
-          <FormField
-            control={control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Slug</FormLabel>
-                <div className="w-full flex items-center gap-4">
-                  <div className="relative text-muted-foreground flex-1">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="pr-8"
-                        placeholder="test-slug"
-                        disabled={slugDisabled}
-                      />
-                    </FormControl>
-                    <button
-                      type="button"
-                      onClick={slugDisableToggle}
-                      className="absolute right-2 bottom-1/2 translate-y-1/2"
-                    >
-                      {!slugDisabled ? (
-                        <LockOpen className="size-5" />
-                      ) : (
-                        <Lock className="size-5" />
-                      )}
-                    </button>
-                  </div>
-                  <Button
-                    title="Update Slug"
-                    type="button"
-                    onClick={slugRefreshHandler}
-                    disabled={slugDisabled}
-                    variant="outline"
-                  >
-                    <RefreshCcw className="size-5" />
-                  </Button>
-                </div>
-                <FormDescription>
-                  {`Унікальний ідентифікатор статті. Складається автоматично із поля "Title (EN)" на етапі додавання статті.`}
-                  <br />⚠ Не бажано змінювати вручну.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </Fieldset>
 
         {/* Questions */}
@@ -669,6 +621,54 @@ export default function FormAddEditTest({
                 Категорія, в якій буде знаходитись даний тест.
               </FormDescription>
               <FormMessage className="w-fit" />
+            </FormItem>
+          )}
+        />
+
+        {/* Slug */}
+        <FormField
+          control={control}
+          name="slug"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Slug</FormLabel>
+              <div className="w-full flex items-center gap-4">
+                <div className="relative text-muted-foreground flex-1">
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="pr-8"
+                      placeholder="test-slug"
+                      disabled={slugDisabled}
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    onClick={slugDisableToggle}
+                    className="absolute right-2 bottom-1/2 translate-y-1/2"
+                  >
+                    {!slugDisabled ? (
+                      <LockOpen className="size-5" />
+                    ) : (
+                      <Lock className="size-5" />
+                    )}
+                  </button>
+                </div>
+                <Button
+                  title="Update Slug"
+                  type="button"
+                  onClick={slugRefreshHandler}
+                  disabled={slugDisabled}
+                  variant="outline"
+                >
+                  <RefreshCcw className="size-5" />
+                </Button>
+              </div>
+              <FormDescription>
+                {`Унікальний ідентифікатор статті. Складається автоматично із поля "Title (EN)" на етапі додавання статті.`}
+                <br />⚠ Не бажано змінювати вручну.
+              </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />

@@ -45,7 +45,7 @@ const TestCard = ({ lang, test }: ITestCardProps) => {
         </CardContent>
 
         <CardFooter className="flex-col items-start gap-4">
-          <motion.li
+          <motion.div
             className="list-none"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -60,7 +60,7 @@ const TestCard = ({ lang, test }: ITestCardProps) => {
                 {test.category.name}
               </Link>
             </Badge>
-          </motion.li>
+          </motion.div>
 
           <BottomInfoPanel
             items={[
