@@ -1,4 +1,4 @@
-import { getPostsSiteMap } from '@/db/queriesSiteMap';
+import { getPostsSiteMap, getTestsSiteMap } from '@/db/queriesSiteMap';
 import { DEFAULT_LANG, ELanguage } from '@/models/language.model';
 import { ESegment, MAIN_URL } from '@/models/url.model';
 import { MetadataRoute } from 'next';
@@ -6,7 +6,7 @@ import { MetadataRoute } from 'next';
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 const { UA, EN } = ELanguage;
 
-const { BLOG } = ESegment;
+const { BLOG, TESTS } = ESegment;
 
 type TChangeFrequency =
   | 'always'
@@ -72,13 +72,24 @@ const getSiteMapItemList = ({
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const postList = await getPostsSiteMap();
+  const testList = await getTestsSiteMap();
 
   return [
     getSiteMapItem({ changeFrequency: 'daily' }),
+
     getSiteMapItem({ startPath: BLOG, changeFrequency: 'daily' }),
+
+    getSiteMapItem({ startPath: TESTS, changeFrequency: 'daily' }),
+
     ...getSiteMapItemList({
       startPath: BLOG,
       itemList: postList,
+      changeFrequency: 'daily',
+    }),
+
+    ...getSiteMapItemList({
+      startPath: TESTS,
+      itemList: testList,
       changeFrequency: 'daily',
     }),
   ];

@@ -158,6 +158,8 @@ export default function FormAddEditTest({
       testFormSchema.shape.questions.parse(parsedQuestions);
 
       setValue('questions', parsedQuestions, dirtyValidate);
+
+      toast.success('Questions successfully generated');
     } catch (error) {
       toast.error(`Invalid JSON format: ${error}`);
     }
@@ -180,6 +182,8 @@ export default function FormAddEditTest({
       testFormSchema.shape.conclusions.parse(parsedConclusions);
 
       setValue('conclusions', parsedConclusions, dirtyValidate);
+
+      toast.success('Conclusions successfully generated');
     } catch (error) {
       toast.error(`Invalid JSON format: ${error}`);
     }

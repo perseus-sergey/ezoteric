@@ -30,6 +30,7 @@ export type TArticleLocalized = {
   published?: boolean;
   description: string;
   title: string;
+  h1?: string | null;
   keywords?: string;
   text?: string;
   spotifyId?: string | null;

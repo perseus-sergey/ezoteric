@@ -8,7 +8,7 @@ export const META_TESTS: Record<ELanguage, (q?: string) => IMeta> = {
     title: 'Тести - Езотерика, Нумерологія, Таро, Астрологія, Фен-шуй',
     description: `${
       q
-        ? `Результати пошуку в назвах або текстах тестів за запитом 🔎«${q}».`
+        ? `Результати пошуку в назвах або описах тестів за запитом 🔎«${q}».`
         : 'Наш сайт пропонує тести про езотерику, нумерологію, Таро, астрологію, фен-шуй та інші нетрадиційні науки.'
     } Дізнайтеся більше про себе та світ навколо!`,
     keywords:
@@ -19,7 +19,7 @@ export const META_TESTS: Record<ELanguage, (q?: string) => IMeta> = {
     title: 'Tests - Esotericism, Numerology, Tarot, Astrology, Feng Shui',
     description: `${
       q
-        ? `Search results in test titles or texts for query 🔎"${q}".`
+        ? `Search results in test titles or descriptions for query 🔎"${q}".`
         : 'Our website offers tests on esotericism, numerology, Tarot, astrology, Feng Shui, and other alternative sciences.'
     } Learn more about yourself and the world around you!`,
     keywords:
@@ -32,18 +32,18 @@ export const META_TESTS_PAGINATED: Record<
   (page: number, q?: string) => IMeta
 > = {
   [UA]: (page: number, q?: string) => ({
-    title: `Сторінка ${page} - Тести: Езотерика, Нумерологія, Таро, Астрологія, Фен-шуй`,
-    description: `Перегляньте ${page} сторінку списку наших тестів${q ? ` для пошукового запиту 🔎«${q}»` : ''}, де ви знайдете нові тести про езотерику, нумерологію, Таро, астрологію, фен-шуй та інші нетрадиційні науки.`,
+    title: `Сторінка ${page} - Тести: Езотерика, Психологія, Нумерологія, Таро, Астрологія, Фен-шуй`,
+    description: `Перегляньте ${page} сторінку списку наших тестів${q ? ` для пошукового запиту 🔎«${q}»` : ''}, де ви знайдете нові тести з езотерики, психології, нумерології, Таро, астрології, фен-шуй та інших нетрадиційних напрямків.`,
     keywords:
-      'езотерика, нумерологія, Таро, астрологія, фен-шуй, нетрадиційні науки, тести',
+      'езотерика, нумерологія, Психологія, Таро, астрологія, фен-шуй, нетрадиційні науки, тести',
   }),
   [EN]: (page: number, q?: string) => ({
-    title: `Page ${page} - Tests: Esotericism, Numerology, Tarot, Astrology, Feng Shui`,
+    title: `Page ${page} - Tests: Esotericism, Psychology, Numerology, Tarot, Astrology, Feng Shui`,
     description: `Browse page ${page} of our test list${
       q ? ` for search query 🔎"${q}"` : ''
-    }, where you will find new tests on esotericism, numerology, Tarot, astrology, Feng Shui, and other alternative sciences.`,
+    }, where you will find new tests on esotericism, psychology, numerology, Tarot, astrology, Feng Shui, and other alternative sciences.`,
     keywords:
-      'esotericism, numerology, Tarot, astrology, Feng Shui, alternative sciences, tests, page',
+      'esotericism, numerology, Psychology, Tarot, astrology, Feng Shui, alternative sciences, tests, page',
   }),
 };
 
@@ -116,7 +116,7 @@ export const TESTS_EXECUTION = {
   },
   dialogDescription: {
     [EN]: 'Answer the questions to discover your result.',
-    [UA]: 'Зробіть свій вибір, щоб дізнатися свій результат.',
+    [UA]: 'Зробіть свій вибір, щоб дізнатися результат.',
   },
   closeBtnCaption: {
     [UA]: 'Закрити',

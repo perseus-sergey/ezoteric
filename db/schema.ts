@@ -105,8 +105,8 @@ export const tblTests = pgTable(
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     slug: varchar('slug', { length: 255 }).notNull().unique(),
-    h1En: varchar(`h1${langSuffix.en}`, { length: 255 }).notNull().unique(),
-    h1Ua: varchar(`h1${langSuffix.uk}`, { length: 255 }).notNull().unique(),
+    h1En: varchar(`h1${langSuffix.en}`, { length: 255 }).notNull(),
+    h1Ua: varchar(`h1${langSuffix.uk}`, { length: 255 }).notNull(),
     titleUa: varchar(`title${langSuffix.uk}`, { length: 255 })
       .notNull()
       .unique(),
@@ -302,6 +302,8 @@ export const tblArticle = pgTable(
     titleEn: varchar(`title${langSuffix.en}`, { length: 255 })
       .notNull()
       .unique(),
+    h1En: varchar(`h1${langSuffix.en}`, { length: 255 }),
+    h1Ua: varchar(`h1${langSuffix.uk}`, { length: 255 }),
     descriptionUa: varchar(`description${langSuffix.uk}`, {
       length: 640,
     }).notNull(),

@@ -188,6 +188,9 @@ export const getArticleBySlug = cache(
             sql<string>`${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}`.as(
               'title'
             ),
+          h1: sql<string>`${tblArticle[lang === UA ? 'h1Ua' : 'h1En']}`.as(
+            'h1'
+          ),
           description:
             sql<string>`${tblArticle[lang === UA ? 'descriptionUa' : 'descriptionEn']}`.as(
               'description'

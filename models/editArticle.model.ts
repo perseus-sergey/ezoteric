@@ -14,6 +14,22 @@ export const articleFormSchema = z.object({
     .min(2, { message: 'Title is too short' })
     .max(255, { message: 'Title is too long.' })
     .trim(),
+  h1En: z
+    .string()
+    .trim()
+    .max(255, { message: 'H1 is too long.' })
+    .or(z.literal('')) // Дозволяє порожній рядок
+    .refine((value) => value.length === 0 || value.length >= 2, {
+      message: 'H1 is too short',
+    }),
+  h1Ua: z
+    .string()
+    .trim()
+    .max(255, { message: 'H1 is too long.' })
+    .or(z.literal('')) // Дозволяє порожній рядок
+    .refine((value) => value.length === 0 || value.length >= 2, {
+      message: 'H1 is too short',
+    }),
   descriptionUa: z
     .string()
     .max(640, { message: 'Description is too long.' })

@@ -49,6 +49,11 @@ import { useRouter } from 'next/navigation';
 import { DEFAULT_LANG } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 
+const dirtyValidate = {
+  shouldDirty: true,
+  shouldValidate: true,
+};
+
 export const FormAddEditArticle = ({
   availableTags,
   editorApiKey,
@@ -72,15 +77,27 @@ export const FormAddEditArticle = ({
           ...article,
           tags: article.articleTags.map((tagObj) => tagObj.tag.id) ?? [],
           imageSrc: article.imageSrc ?? undefined,
+          h1En: article.h1En ?? undefined,
+          h1Ua: article.h1Ua ?? undefined,
         }
       : newArticleDefaultValues,
   });
 
-  const titleEnValue = form.watch('titleEn'); // Відстежуємо значення titleEn
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    formState,
+    setFocus,
+  } = form;
+
+  const titleEnValue = watch('titleEn'); // Відстежуємо значення titleEn
 
   const slugRefreshHandler = useCallback(
     () =>
-      form.setValue('slug', makeSlug(titleEnValue), {
+      setValue('slug', makeSlug(titleEnValue), {
         shouldDirty: true,
         shouldValidate: true,
       }),
@@ -97,12 +114,12 @@ export const FormAddEditArticle = ({
   const slugDisableToggle = () => setSlugDisabled((prevState) => !prevState);
 
   const handleTranslate = async () => {
-    const { textUa } = form.getValues();
+    const { textUa } = getValues();
 
     if (textUa.length < 100) {
       toast.error('Будь ласка, заповніть поле "Text (UA)" перед перекладом.');
 
-      form.setFocus('textUa');
+      setFocus('textUa');
       return;
     }
 
@@ -111,7 +128,7 @@ export const FormAddEditArticle = ({
     try {
       const aiResponse = await aiTranslateArticle(textUa);
 
-      form.setValue('textEn', aiResponse.translatedHtml, {
+      setValue('textEn', aiResponse.translatedHtml, {
         shouldDirty: true,
         shouldValidate: true,
       });
@@ -125,7 +142,7 @@ export const FormAddEditArticle = ({
   };
 
   const handleMetaGenerate = async () => {
-    const { textUa, titleUa } = form.getValues();
+    const { textUa, titleUa } = getValues();
 
     // Remove all html-tags
     const rowText = textUa.replace(/<[^>]*>/g, '');
@@ -138,7 +155,7 @@ export const FormAddEditArticle = ({
             'Будь ласка, Спершу відредагуйте поле "Text (UA)" перед генеруванням мета даних.',
         }
       );
-      form.setFocus('textUa');
+      setFocus('textUa');
       return;
     }
 
@@ -150,7 +167,7 @@ export const FormAddEditArticle = ({
             'Будь ласка, Спершу відредагуйте поле "Title (UA)" перед генеруванням мета даних.',
         }
       );
-      form.setFocus('titleUa');
+      setFocus('titleUa');
       return;
     }
 
@@ -163,26 +180,13 @@ export const FormAddEditArticle = ({
       );
 
       // Update the form fields with the translated values
-      form.setValue('descriptionUa', generatedMeta.descriptionUa, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      form.setValue('keywordsUa', generatedMeta.keywordsUa, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      form.setValue('titleEn', generatedMeta.titleEn, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      form.setValue('descriptionEn', generatedMeta.descriptionEn, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-      form.setValue('keywordsEn', generatedMeta.keywordsEn, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
+      setValue('descriptionUa', generatedMeta.descriptionUa, dirtyValidate);
+      setValue('keywordsUa', generatedMeta.keywordsUa, dirtyValidate);
+      setValue('titleEn', generatedMeta.titleEn, dirtyValidate);
+      setValue('descriptionEn', generatedMeta.descriptionEn, dirtyValidate);
+      setValue('keywordsEn', generatedMeta.keywordsEn, dirtyValidate);
+      setValue('h1Ua', generatedMeta.h1Ua, dirtyValidate);
+      setValue('h1En', generatedMeta.h1En, dirtyValidate);
 
       toast.success('Successfully generated meta data.');
     } catch (error) {
@@ -193,7 +197,7 @@ export const FormAddEditArticle = ({
   };
 
   const handleAiTags = async () => {
-    const formTextEn = form.getValues('textEn');
+    const formTextEn = getValues('textEn');
 
     if (formTextEn.length < 100) {
       toast.error(
@@ -203,7 +207,7 @@ export const FormAddEditArticle = ({
             'Будь ласка, Спершу відредагуйте поле "Text (EN)" перед підбором тегів.',
         }
       );
-      form.setFocus('textEn');
+      setFocus('textEn');
       return;
     }
 
@@ -216,7 +220,7 @@ export const FormAddEditArticle = ({
         toast('AI не вдалося підібрати жодного тегу до цієі статті.');
       } else {
         toast.success(`AI вдало підібрав ${aiTags.length} тегів до статті.`);
-        form.setValue('tags', aiTags, {
+        setValue('tags', aiTags, {
           shouldDirty: true,
           shouldValidate: true,
         });
@@ -254,12 +258,12 @@ export const FormAddEditArticle = ({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className="space-y-8 bg-tertiary p-6 rounded-md"
       >
         {/* Title UA */}
         <FormField
-          control={form.control}
+          control={control}
           name="titleUa"
           render={({ field }) => (
             <FormItem>
@@ -287,7 +291,7 @@ export const FormAddEditArticle = ({
         {/* TinyMCE Editor for textUa */}
         <Controller
           name="textUa"
-          control={form.control}
+          control={control}
           render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Text (UA)</FormLabel>
@@ -320,7 +324,7 @@ export const FormAddEditArticle = ({
         {/* TinyMCE Editor for textEn */}
         <Controller
           name="textEn"
-          control={form.control}
+          control={control}
           render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Text (EN)</FormLabel>
@@ -355,7 +359,7 @@ export const FormAddEditArticle = ({
 
           {/* Title EN */}
           <FormField
-            control={form.control}
+            control={control}
             name="titleEn"
             render={({ field }) => (
               <FormItem>
@@ -368,9 +372,39 @@ export const FormAddEditArticle = ({
             )}
           />
 
+          {/* H1 UA */}
+          <FormField
+            control={control}
+            name="h1Ua"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>H1 (UA)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Головна Назва для тегу H1" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* H1 EN */}
+          <FormField
+            control={control}
+            name="h1En"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>H1 (EN)</FormLabel>
+                <FormControl>
+                  <Input placeholder="H1 in English" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Description UA */}
           <FormField
-            control={form.control}
+            control={control}
             name="descriptionUa"
             render={({ field }) => (
               <FormItem>
@@ -385,7 +419,7 @@ export const FormAddEditArticle = ({
 
           {/* Keywords UA */}
           <FormField
-            control={form.control}
+            control={control}
             name="keywordsUa"
             render={({ field }) => (
               <FormItem>
@@ -403,7 +437,7 @@ export const FormAddEditArticle = ({
 
           {/* Description EN */}
           <FormField
-            control={form.control}
+            control={control}
             name="descriptionEn"
             render={({ field }) => (
               <FormItem>
@@ -418,7 +452,7 @@ export const FormAddEditArticle = ({
 
           {/* Keywords EN */}
           <FormField
-            control={form.control}
+            control={control}
             name="keywordsEn"
             render={({ field }) => (
               <FormItem>
@@ -433,7 +467,7 @@ export const FormAddEditArticle = ({
 
           {/* Slug */}
           <FormField
-            control={form.control}
+            control={control}
             name="slug"
             render={({ field }) => (
               <FormItem>
@@ -482,7 +516,7 @@ export const FormAddEditArticle = ({
         {/* Tags */}
         <Controller
           name="tags"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <Fieldset legendText="Tags" className="p-2 space-y-4">
               {field.value?.length > 0 && (
@@ -550,7 +584,7 @@ export const FormAddEditArticle = ({
 
         {/* Image Name */}
         <FormField
-          control={form.control}
+          control={control}
           name="imageSrc"
           render={({ field }) => (
             <FormItem>
@@ -565,7 +599,7 @@ export const FormAddEditArticle = ({
 
         {/* Spotify */}
         <FormField
-          control={form.control}
+          control={control}
           name="spotifyId"
           render={({ field }) => (
             <FormItem>
@@ -584,7 +618,7 @@ export const FormAddEditArticle = ({
 
         {/* Published */}
         <FormField
-          control={form.control}
+          control={control}
           name="published"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start w-fit space-x-3 space-y-0 rounded-md border p-4 shadow">
@@ -607,7 +641,7 @@ export const FormAddEditArticle = ({
 
         <Button
           type="submit"
-          disabled={isSaving || !form.formState.isDirty}
+          disabled={isSaving || !formState.isDirty}
           className={clsx(isSaving && 'cursor-progress')}
         >
           {isSaving && <LoadingAnimated />} Зберегти

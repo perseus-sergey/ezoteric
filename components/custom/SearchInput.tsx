@@ -98,9 +98,7 @@ export default function SearchInput({
       setIsLoading(false); // Якщо URL змінився, вимикаємо завантаження
       setPrevUrl(currentUrl);
     }
-
-    form.setFocus('searchQuery');
-  }, [searchParams]);
+  }, [searchParams.toString()]);
 
   const handleSearch = () => {
     setIsLoading(true);

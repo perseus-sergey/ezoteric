@@ -77,6 +77,7 @@ export default async function Page({ params }: { params: TParams }) {
 
   const {
     title,
+    h1,
     text,
     description,
     updatedAt,
@@ -108,7 +109,7 @@ export default async function Page({ params }: { params: TParams }) {
         lang={lang}
       />
 
-      <Title>{title}</Title>
+      <Title>{h1 || title}</Title>
 
       {!published && (
         <section
