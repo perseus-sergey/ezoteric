@@ -16,10 +16,10 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// - add tests to sitemap
-// - make h1 for articles in db
 // - check tests pagination & search
 // tests ai prompt change for rating
+// similar tests
+// similar image sizes
 
 // add cards with references of relative articles depend of post tags to app/[lang]/(main)/blog/[slug]/page.tsx
 // installsat: remove from sitemap pages with schedules (ask ai how it is better to do)

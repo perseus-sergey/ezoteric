@@ -105,7 +105,7 @@ export const BLOG_COUNT_CAPTION = {
 };
 
 export const BLOG_PAGINATION_PARAMS = {
-  perPage: 7,
+  perPage: 10,
   offsetNumber: 3,
   firstPageTitle: '<<',
   lastPageTitle: '>>',

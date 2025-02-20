@@ -1,4 +1,3 @@
-import * as React from 'react';
 import * as motion from 'motion/react-client';
 
 import BottomInfoPanel from '@/components/custom/BottomInfoPanel';
@@ -25,6 +24,8 @@ import ValidImage from '@/components/custom/ValidImage';
 import SpotifyPlayer from '@/components/custom/SpotifyPlayer';
 import EditPostLink from '@/components/custom/EditPostLink';
 import TagList from '@/components/custom/TagList';
+import SimilarArticlesBlock from '@/components/custom/SimilarArticlesBlock';
+import { Suspense } from 'react';
 
 const { MASTER, BLOG, ARTICLE_EDIT } = ESegment;
 
@@ -86,7 +87,10 @@ export default async function Page({ params }: { params: TParams }) {
     id,
     published,
     spotifyId,
+    articleTags,
   } = article;
+
+  const tagIds = articleTags?.map((articleTag) => articleTag.tag.id);
 
   const currDate = getFormattedDateStrYearFirst(updatedAt);
 
@@ -168,32 +172,44 @@ export default async function Page({ params }: { params: TParams }) {
 
           <DangerHtml text={text} />
 
-          <TagList tags={article.articleTags} lang={lang} />
+          <section className="flex items-center justify-end sm:justify-between gap-2 flex-wrap sm:flex-nowrap">
+            <TagList tags={article.articleTags} lang={lang} />
+
+            <div className="py-1 px-4 flex justify-end whitespace-nowrap">
+              <BottomInfoPanel
+                lang={lang}
+                items={[
+                  {
+                    caption: INFO_PANEL_CAPTION.views,
+                    value: viewCount || 0,
+                  },
+                  {
+                    caption: INFO_PANEL_CAPTION.date,
+                    value: <time dateTime={currDate}>{currDate}</time>,
+                  },
+                ]}
+              />
+            </div>
+          </section>
         </div>
       )}
 
-      <div className="py-1 px-4 sm:w-fit rounded-sm bg-tertiary-gradient">
-        <BottomInfoPanel
-          lang={lang}
-          items={[
-            {
-              caption: INFO_PANEL_CAPTION.views,
-              value: viewCount || 0,
-            },
-            {
-              caption: INFO_PANEL_CAPTION.date,
-              value: <time dateTime={currDate}>{currDate}</time>,
-            },
-          ]}
-        />
+      {tagIds && tagIds.length > 0 ? (
+        <Suspense>
+          <SimilarArticlesBlock
+            lang={lang}
+            articleId={article.id}
+            tagIds={tagIds}
+          />
+        </Suspense>
+      ) : null}
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generatePostJsonLd({ lang, article })),
-          }}
-        />
-      </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generatePostJsonLd({ lang, article })),
+        }}
+      />
     </article>
   );
 }

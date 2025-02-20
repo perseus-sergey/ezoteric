@@ -8,11 +8,12 @@ interface IValidImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   defaultSrc: string;
   src: string;
   alt: string;
-  width?: number | `${number}` | undefined;
-  height?: number | `${number}` | undefined;
-  placeholder?: PlaceholderValue | undefined;
-  blurDataURL?: string | undefined;
-  priority?: boolean | undefined;
+  width?: number | `${number}`;
+  height?: number | `${number}`;
+  placeholder?: PlaceholderValue;
+  blurDataURL?: string;
+  priority?: boolean;
+  fill?: boolean;
 }
 
 const ValidImage = ({
@@ -20,6 +21,7 @@ const ValidImage = ({
   alt,
   defaultSrc,
   className,
+  fill,
   ...props
 }: IValidImgProps) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -34,6 +36,7 @@ const ValidImage = ({
       src={imgSrc}
       alt={alt}
       onError={handleError}
+      fill={fill}
       {...props}
     />
   );

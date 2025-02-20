@@ -21,7 +21,10 @@ const TagList = ({ tags, lang }: ITagListProps) => {
   return (
     tags &&
     tags.length > 0 && (
-      <ul className="flex gap-2 flex-wrap">
+      <ul
+        className="flex gap-2 sm:justify-start justify-end flex-wrap"
+        style={{ padding: '0' }}
+      >
         {tags?.map(({ tag }, i) => (
           <motion.li
             key={tag.id}

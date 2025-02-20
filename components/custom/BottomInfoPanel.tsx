@@ -26,6 +26,7 @@ const BottomInfoPanel = ({ items, lang }: IBottomInfoPanel) => {
       {filteredItems.map(({ caption: { title, icon }, value }, i) => (
         <motion.li
           key={i}
+          className="list-none"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}

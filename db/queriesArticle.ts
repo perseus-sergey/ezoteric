@@ -2,7 +2,7 @@
 
 import 'server-only';
 
-import { and, eq, exists, or, sql } from 'drizzle-orm';
+import { and, eq, exists, inArray, not, or, sql } from 'drizzle-orm';
 
 import {
   TArticle,
@@ -233,6 +233,61 @@ export const getArticleBySlug = cache(
     }
   }
 );
+
+export interface ISimilarArticle {
+  slug: string;
+  updatedAt: Date;
+  imageSrc: string | null;
+  title: string;
+}
+
+export async function getSimilarArticlesByTags(
+  lang: ELanguage,
+  currentArticleId: number,
+  tagIds: number[],
+  limit: number = 8
+): Promise<ISimilarArticle[] | null> {
+  const publishedCondition = eq(tblArticle.published, true);
+
+  try {
+    const similarArticles = await db.query.tblArticle.findMany({
+      where: (article, { and, exists }) =>
+        and(
+          not(eq(article.id, currentArticleId)), // Exclude the current article
+          publishedCondition,
+          exists(
+            db
+              .select()
+              .from(tblArticleTag)
+              .where(
+                and(
+                  eq(tblArticleTag.articleId, article.id),
+                  inArray(tblArticleTag.tagId, tagIds) // At least one tag in common
+                )
+              )
+          )
+        ),
+      orderBy: (articles, { desc }) => [desc(articles.updatedAt)],
+      limit: limit,
+      columns: {
+        slug: true,
+        imageSrc: true,
+        updatedAt: true,
+      },
+      extras: {
+        title:
+          sql<string>`${tblArticle[lang === UA ? 'titleUa' : 'titleEn']}`.as(
+            'title'
+          ),
+      },
+    });
+
+    return similarArticles;
+  } catch (error) {
+    console.error('Error getting similar articles:', error);
+    return null;
+  }
+}
 
 export const getArticleByImage = async (imageName: string) => {
   const filters = [];

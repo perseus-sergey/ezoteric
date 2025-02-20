@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import TestExecution from '@/components/custom/TestExecution';
 import { TESTS_CARD_IMAGE, TESTS_H1 } from '@/models/tests.model';
+import SimilarArticlesBlock from '@/components/custom/SimilarArticlesBlock';
 
 const { TESTS, CATEGORY, MASTER, ARTICLE_EDIT } = ESegment;
 
@@ -87,6 +88,7 @@ export default async function Page({ params }: { params: TParams }) {
     id,
     published,
     spotifyId,
+    category,
   } = test;
 
   const currDate = getFormattedDateStrYearFirst(updatedAt);
@@ -173,49 +175,55 @@ export default async function Page({ params }: { params: TParams }) {
             <TestExecution test={test} lang={lang} />
           </div>
 
-          <motion.div
-            className="list-none"
-            initial={{ opacity: 0, x: -70 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -70 }}
-            transition={{ type: 'spring' }}
-          >
-            <Badge variant="outline">
-              <Link
-                className="text-nowrap"
-                href={`/${lang}/${TESTS}/${CATEGORY}/${test.category.slug}`}
-              >
-                {test.category.name}
-              </Link>
-            </Badge>
-          </motion.div>
+          <section className="flex items-center justify-end sm:justify-between gap-2 flex-wrap sm:flex-nowrap">
+            <motion.div
+              className="list-none"
+              initial={{ opacity: 0, x: -70 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -70 }}
+              transition={{ type: 'spring' }}
+            >
+              <Badge variant="outline">
+                <Link
+                  className="text-nowrap"
+                  href={`/${lang}/${TESTS}/${CATEGORY}/${category.slug}`}
+                >
+                  {category.name}
+                </Link>
+              </Badge>
+            </motion.div>
+
+            <div className="py-1 px-4 flex justify-end whitespace-nowrap">
+              <BottomInfoPanel
+                lang={lang}
+                items={[
+                  {
+                    caption: INFO_PANEL_CAPTION.views,
+                    value: viewCount || 0,
+                  },
+                  {
+                    caption: INFO_PANEL_CAPTION.date,
+                    value: <time dateTime={currDate}>{currDate}</time>,
+                  },
+                ]}
+              />
+            </div>
+          </section>
         </div>
       )}
 
-      <div className="py-1 px-4 sm:w-fit rounded-sm bg-tertiary-gradient">
-        <BottomInfoPanel
-          lang={lang}
-          items={[
-            {
-              caption: INFO_PANEL_CAPTION.views,
-              value: viewCount || 0,
-            },
-            {
-              caption: INFO_PANEL_CAPTION.date,
-              value: <time dateTime={currDate}>{currDate}</time>,
-            },
-          ]}
-        />
+      <React.Suspense>
+        <SimilarArticlesBlock lang={lang} articleId={id} catId={category.id} />
+      </React.Suspense>
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
-              generatePostJsonLd({ lang, article: test, isTestPage: true })
-            ),
-          }}
-        />
-      </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            generatePostJsonLd({ lang, article: test, isTestPage: true })
+          ),
+        }}
+      />
     </article>
   );
 }

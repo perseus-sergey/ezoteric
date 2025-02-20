@@ -4,9 +4,9 @@ import 'server-only';
 import { getDB } from './root';
 import { cache } from 'react';
 import { ELanguage } from '@/models/language.model';
-import { TTestLocalized } from '@/models/test.model';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, not, sql } from 'drizzle-orm';
 import { tblTestCategories, tblTests, tblTestViews } from './schema';
+import { TTestLocalized } from '@/models/test.model';
 
 const { UA, EN } = ELanguage;
 
@@ -34,9 +34,6 @@ export const getTestsChunk = cache(
   ): Promise<{
     tests: TTestLocalized[] | null;
     totalCount: number | null;
-    // =================================================================
-    // check if ti needs categoryName
-    // =================================================================
     categoryName: string | null;
   }> => {
     // Search condition
@@ -72,55 +69,104 @@ export const getTestsChunk = cache(
           ),
 
         // Fetch tests with pagination
-        db.query.tblTests.findMany({
-          limit: perPage,
-          offset,
-          where: (test, { and }) =>
+        db
+          .select({
+            id: tblTests.id,
+            slug: tblTests.slug,
+            updatedAt: tblTests.updatedAt,
+            createdAt: tblTests.createdAt,
+            imageSrc: tblTests.imageSrc,
+            published: tblTests.published,
+            viewCount: tblTests.viewCount,
+            title: tblTests[lang === EN ? 'titleEn' : 'titleUa'],
+            description:
+              tblTests[lang === EN ? 'descriptionEn' : 'descriptionUa'],
+            text: tblTests[lang === EN ? 'textEn' : 'textUa'],
+
+            category: {
+              id: tblTestCategories.id,
+              slug: tblTestCategories.slug,
+              name: tblTestCategories[lang === EN ? 'nameEn' : 'nameUa'],
+            },
+          })
+          .from(tblTests)
+          .innerJoin(
+            tblTestCategories,
+            eq(tblTests.categoryId, tblTestCategories.id)
+          )
+          .where(
             and(
               searchCondition,
               isAdmin ? undefined : publishedCondition,
               categorySlug
                 ? eq(tblTestCategories.slug, categorySlug)
                 : undefined
-            ),
-          orderBy: (tests, { desc }) => [desc(tests.updatedAt)],
+            )
+          )
+          .orderBy(desc(tblTests.updatedAt))
+          .limit(perPage)
+          .offset(offset),
 
-          columns: {
-            id: true,
-            updatedAt: true,
-            createdAt: true,
-            slug: true,
-            imageSrc: true,
-            published: true,
-            viewCount: true,
-          },
-          extras: {
-            title:
-              sql<string>`${tblTests[lang === EN ? 'titleEn' : 'titleUa']}`.as(
-                'title'
-              ),
-            description:
-              sql<string>`${tblTests[lang === EN ? 'descriptionEn' : 'descriptionUa']}`.as(
-                'description'
-              ),
-            text: sql<string>`${tblTests[lang === EN ? 'textEn' : 'textUa']}`.as(
-              'text'
-            ),
-          },
-          with: {
-            category: {
-              columns: {
-                id: true,
-                slug: true,
-              },
-              extras: {
-                name: sql<string>`${tblTestCategories[lang === EN ? 'nameEn' : 'nameUa']}`.as(
-                  'name'
-                ),
-              },
-            },
-          },
-        }),
+        // Fetch tests with pagination
+        // db.query.tblTests.findMany({
+        //   limit: perPage,
+        //   offset,
+        //   where: (test, { and }) =>
+        //     and(
+        //       searchCondition,
+        //       isAdmin ? undefined : publishedCondition,
+        //       categorySlug
+        //         ? exists(
+        //             db
+        //               .select()
+        //               .from(tblTestCategories)
+        //               .where(
+        //                 and(
+        //                   eq(tblTestCategories.id, test.categoryId),
+        //                   eq(tblTestCategories.slug, categorySlug)
+        //                 )
+        //               )
+        //           )
+        //         : undefined
+        //     ),
+        //   orderBy: (tests, { desc }) => [desc(tests.updatedAt)],
+
+        //   columns: {
+        //     id: true,
+        //     updatedAt: true,
+        //     createdAt: true,
+        //     slug: true,
+        //     imageSrc: true,
+        //     published: true,
+        //     viewCount: true,
+        //   },
+        //   extras: {
+        //     title:
+        //       sql<string>`${tblTests[lang === EN ? 'titleEn' : 'titleUa']}`.as(
+        //         'title'
+        //       ),
+        //     description:
+        //       sql<string>`${tblTests[lang === EN ? 'descriptionEn' : 'descriptionUa']}`.as(
+        //         'description'
+        //       ),
+        //     text: sql<string>`${tblTests[lang === EN ? 'textEn' : 'textUa']}`.as(
+        //       'text'
+        //     ),
+        //   },
+        //   with: {
+        //     category: {
+        //       columns: {
+        //         id: true,
+        //         slug: true,
+        //       },
+        //       extras: {
+        //         name: sql<string>`${tblTestCategories[lang === EN ? 'nameEn' : 'nameUa']}`.as(
+        //           'name'
+        //         ),
+        //       },
+        //     },
+        //   },
+        // }),
 
         // Запит на отримання назви категорії
         categorySlug
@@ -237,6 +283,43 @@ export const getTestBySlug = cache(async (slug: string, lang: ELanguage) => {
 });
 
 export type TTestRelationsLocalized = Awaited<ReturnType<typeof getTestBySlug>>;
+
+export async function getSimilarTestsByCategory(
+  lang: ELanguage,
+  currentTestId: number,
+  categoryId: number,
+  limit: number = 8
+) {
+  const publishedCondition = eq(tblTests.published, true);
+
+  try {
+    const similarTests = await db.query.tblTests.findMany({
+      where: (test, { and, eq }) =>
+        and(
+          not(eq(test.id, currentTestId)), // Exclude the current test
+          publishedCondition,
+          eq(test.categoryId, categoryId) // Must be in the same category
+        ),
+      orderBy: (tests, { desc }) => [desc(tests.updatedAt)],
+      limit: limit,
+      columns: {
+        slug: true,
+        imageSrc: true,
+        updatedAt: true,
+      },
+      extras: {
+        title: sql<string>`${tblTests[lang === UA ? 'titleUa' : 'titleEn']}`.as(
+          'title'
+        ),
+      },
+    });
+
+    return similarTests;
+  } catch (error) {
+    console.error('Error getting similar tests by category:', error);
+    return null;
+  }
+}
 
 export const updateTestView = async (testId: number, isAdmin: boolean) => {
   if (process.env.NODE_ENV !== 'production' || isAdmin) return;
