@@ -1,4 +1,4 @@
-import { Calendar, Eye, MessageCircle } from 'lucide-react';
+import { Calendar, CheckCircle, Eye, MessageCircle } from 'lucide-react';
 import { ELanguage } from './language.model';
 import SeoSVG from '@/components/custom/SeoSVG';
 
@@ -34,6 +34,14 @@ export const INFO_PANEL_CAPTION = {
       [EN]: 'Views',
     },
     icon: <Eye />,
+  },
+
+  completed: {
+    title: {
+      [UA]: 'Завершено',
+      [EN]: 'Completed',
+    },
+    icon: <CheckCircle />,
   },
 
   date: {

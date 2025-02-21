@@ -69,6 +69,10 @@ const TestCard = ({ lang, test }: ITestCardProps) => {
                 value: test.viewCount,
               },
               {
+                caption: INFO_PANEL_CAPTION.completed,
+                value: test.completedCount || 0,
+              },
+              {
                 caption: INFO_PANEL_CAPTION.date,
                 value: <time dateTime={currDate}>{currDate}</time>,
               },

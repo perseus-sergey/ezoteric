@@ -85,6 +85,7 @@ export default async function Page({ params }: { params: TParams }) {
     updatedAt,
     imageSrc,
     viewCount,
+    completedCount,
     id,
     published,
     spotifyId,
@@ -172,7 +173,7 @@ export default async function Page({ params }: { params: TParams }) {
           <DangerHtml text={text} />
 
           <div className="w-full flex justify-center">
-            <TestExecution test={test} lang={lang} />
+            <TestExecution test={test} lang={lang} isAdmin={isAdmin} />
           </div>
 
           <section className="flex items-center justify-end sm:justify-between gap-2 flex-wrap sm:flex-nowrap">
@@ -200,6 +201,10 @@ export default async function Page({ params }: { params: TParams }) {
                   {
                     caption: INFO_PANEL_CAPTION.views,
                     value: viewCount || 0,
+                  },
+                  {
+                    caption: INFO_PANEL_CAPTION.completed,
+                    value: completedCount || 0,
                   },
                   {
                     caption: INFO_PANEL_CAPTION.date,

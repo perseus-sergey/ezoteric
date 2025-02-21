@@ -2,6 +2,7 @@ import { getDB } from '@/db/root';
 import {
   tblArticle,
   tblArticleViews,
+  tblTestCompleted,
   tblTests,
   tblTestViews,
 } from '@/db/schema';
@@ -27,16 +28,19 @@ export async function GET() {
         .where(eq(tblArticle.id, tblArticle.id));
 
       // Update tests
-      await tx
-        .update(tblTests)
-        .set({
-          viewCount: sql`(
+      // eslint-disable-next-line drizzle/enforce-update-with-where
+      await tx.update(tblTests).set({
+        viewCount: sql`(
             select count(*) 
             from ${tblTestViews} 
             where ${tblTestViews.testId} = ${tblTests.id}
           )`,
-        })
-        .where(eq(tblTests.id, tblTests.id));
+        completedCount: sql`(
+            select count(*) 
+            from ${tblTestCompleted} 
+            where ${tblTestCompleted.testId} = ${tblTests.id}
+          )`,
+      });
     });
 
     return new Response('SUCCESS!', {

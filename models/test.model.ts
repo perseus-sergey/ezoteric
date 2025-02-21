@@ -34,5 +34,6 @@ export type TTestLocalized = {
   text?: string;
   spotifyId?: string | null;
   viewCount: number;
+  completedCount: number;
   category: TTestCategoryLocalized;
 };

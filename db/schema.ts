@@ -30,6 +30,7 @@ export const TBL_TESTS_QUESTIONS = 'ezo_test_questions';
 export const TBL_TESTS_ANSWERS = 'ezo_test_answers';
 export const TBL_TESTS_CONCLUSIONS = 'ezo_test_conclusions';
 export const TBL_TEST_VIEWS = 'ezo_test_views';
+export const TBL_TEST_COMPLETED = 'ezo_test_completed';
 export const TBL_TEST_CATEGORIES = 'ezo_test_categories';
 export const TBL_TAGS = 'ezo_tags';
 export const TBL_ARTICLE_TAGS = 'ezo_article_tags';
@@ -123,6 +124,7 @@ export const tblTests = pgTable(
     published: boolean('published').notNull().default(true),
     spotifyId: varchar('spotify_id', { length: 255 }),
     viewCount: integer('view_count').notNull().default(0),
+    completedCount: integer('completed_count').notNull().default(0),
     categoryId: integer('category_id')
       .references(() => tblTestCategories.id)
       .notNull(),
@@ -229,6 +231,21 @@ export const tblTestViews = pgTable(
   })
 );
 
+// TBL_TEST_COMPLETED
+export const tblTestCompleted = pgTable(
+  TBL_TEST_COMPLETED,
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    completedDate: timestamp('view_timestamp').defaultNow().notNull(),
+    testId: integer('test_id')
+      .notNull()
+      .references(() => tblTests.id),
+  },
+  (table) => ({
+    testIdIdx: index('test_id_completed_idx').on(table.testId),
+  })
+);
+
 // =================================================================
 // ------------------- Tests Relations ---------------------------
 // =================================================================
@@ -241,6 +258,7 @@ export const testsRelations = relations(tblTests, ({ many, one }) => ({
     references: [tblTestCategories.id],
   }),
   views: many(tblTestViews),
+  completedCount: many(tblTestCompleted),
 }));
 
 export const testQuestionsRelations = relations(
@@ -277,6 +295,16 @@ export const testViewsRelations = relations(tblTestViews, ({ one }) => ({
     references: [tblTests.id],
   }),
 }));
+
+export const testCompletedRelations = relations(
+  tblTestCompleted,
+  ({ one }) => ({
+    test: one(tblTests, {
+      fields: [tblTestCompleted.testId],
+      references: [tblTests.id],
+    }),
+  })
+);
 
 export const testCategoriesRelations = relations(
   tblTestCategories,

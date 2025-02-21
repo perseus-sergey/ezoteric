@@ -5,7 +5,12 @@ import { getDB } from './root';
 import { cache } from 'react';
 import { ELanguage } from '@/models/language.model';
 import { and, desc, eq, not, sql } from 'drizzle-orm';
-import { tblTestCategories, tblTests, tblTestViews } from './schema';
+import {
+  tblTestCategories,
+  tblTestCompleted,
+  tblTests,
+  tblTestViews,
+} from './schema';
 import { TTestLocalized } from '@/models/test.model';
 
 const { UA, EN } = ELanguage;
@@ -78,6 +83,7 @@ export const getTestsChunk = cache(
             imageSrc: tblTests.imageSrc,
             published: tblTests.published,
             viewCount: tblTests.viewCount,
+            completedCount: tblTests.completedCount,
             title: tblTests[lang === EN ? 'titleEn' : 'titleUa'],
             description:
               tblTests[lang === EN ? 'descriptionEn' : 'descriptionUa'],
@@ -209,6 +215,7 @@ export const getTestBySlug = cache(async (slug: string, lang: ELanguage) => {
         published: true,
         spotifyId: true,
         viewCount: true,
+        completedCount: true,
       },
       extras: {
         title: sql<string>`${tblTests[lang === UA ? 'titleUa' : 'titleEn']}`.as(
@@ -328,5 +335,15 @@ export const updateTestView = async (testId: number, isAdmin: boolean) => {
     await db.insert(tblTestViews).values({ testId });
   } catch (error) {
     console.error('Помилка при додаванні перегляду статті:', error);
+  }
+};
+
+export const updateTestCompleted = async (testId: number, isAdmin: boolean) => {
+  if (process.env.NODE_ENV !== 'production' || isAdmin) return;
+
+  try {
+    await db.insert(tblTestCompleted).values({ testId });
+  } catch (error) {
+    console.error('Помилка при додаванні проходження тесту:', error);
   }
 };

@@ -36,7 +36,7 @@ export default async function SimilarArticlesBlock({
   if (!similarArticles || similarArticles.length === 0) return null;
 
   return (
-    <nav className="p-4 my-2">
+    <nav className="my-2">
       <ul className="flex flex-wrap gap-4 justify-center">
         {similarArticles.map((similarArticle) => (
           <li key={similarArticle.slug} className="rounded-sm overflow-hidden">

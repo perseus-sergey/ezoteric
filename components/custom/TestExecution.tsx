@@ -12,7 +12,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { TTestRelationsLocalized } from '@/db/queriesTests';
+import {
+  TTestRelationsLocalized,
+  updateTestCompleted,
+} from '@/db/queriesTests';
 import { ELanguage } from '@/models/language.model';
 import { useEffect, useState } from 'react';
 import Fieldset from './Fieldset';
@@ -29,6 +32,7 @@ import { TESTS_EXECUTION } from '@/models/tests.model';
 interface IProps {
   test: TTestRelationsLocalized;
   lang: ELanguage;
+  isAdmin: boolean;
 }
 
 const {
@@ -43,7 +47,7 @@ const {
 
 const COLORS_TOP = ['#13FFAA', '#1E67C6', '#CE84CF', '#DD335C'];
 
-export default function TestExecution({ test, lang }: IProps) {
+export default function TestExecution({ test, lang, isAdmin }: IProps) {
   const color = useMotionValue(COLORS_TOP[0]);
 
   useEffect(() => {
@@ -81,7 +85,7 @@ export default function TestExecution({ test, lang }: IProps) {
         </motion.button>
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-4xl max-h-dvh overflow-y-auto flex flex-col">
-        <TestModalContent test={test} lang={lang} />
+        <TestModalContent test={test} lang={lang} isAdmin={isAdmin} />
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -90,9 +94,11 @@ export default function TestExecution({ test, lang }: IProps) {
 function TestModalContent({
   test,
   lang,
+  isAdmin,
 }: {
   test: TTestRelationsLocalized;
   lang: ELanguage;
+  isAdmin: boolean;
 }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
@@ -124,11 +130,13 @@ function TestModalContent({
     setCurrentQuestionIndex(currentQuestionIndex + 1);
   };
 
-  const handleShowResult = () => {
+  const handleShowResult = async () => {
     if (selectedAnswerRating !== null) {
       setTotalScore(totalScore + selectedAnswerRating);
     }
     setShowResult(true);
+
+    await updateTestCompleted(test.id, isAdmin);
   };
 
   const getConclusion = () => {

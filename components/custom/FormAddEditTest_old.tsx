@@ -43,7 +43,6 @@ import {
 } from '@/models/editArticle.model';
 import {
   aiGenerateMeta,
-  aiGenerateTest,
   aiTranslateArticle,
 } from '@/controllers/aiTranslateArticle.controller';
 import { toast } from 'sonner';
@@ -113,10 +112,12 @@ export default function FormAddEditTest({
   test?: TestWithRelations;
 }) {
   const [slugDisabled, setSlugDisabled] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isMetaGenerating, setIsMetaGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [jsonQuestions, setJsonQuestions] = useState('');
+  const [jsonConclusions, setJsonConclusions] = useState('');
 
   const router = useRouter();
 
@@ -149,42 +150,42 @@ export default function FormAddEditTest({
     setJsonQuestions(value);
   };
 
-  const handleAiGenerateTest = async () => {
-    const { textUa } = getValues();
-
-    const rowText = textUa.replace(/<[^>]*>/g, '');
-
-    if (rowText.length < 100) {
-      toast.error(
-        'Будь ласка, заповніть поле "Text (UA)" перед створенням тесту.'
-      );
-
-      setFocus('textUa');
-      return;
-    }
-
-    setIsGenerating(true);
-
+  const generateQuestionsFromJson = () => {
     try {
-      const aiResponse = await aiGenerateTest(rowText);
-
-      setJsonQuestions(aiResponse);
-
-      const { questions, conclusions } = JSON.parse(aiResponse);
+      const parsedQuestions = JSON.parse(jsonQuestions);
 
       // Validate parsed data against a simplified schema:
-      testFormSchema.shape.questions.parse(questions);
-      testFormSchema.shape.conclusions.parse(conclusions);
+      testFormSchema.shape.questions.parse(parsedQuestions);
 
-      setValue('questions', questions, dirtyValidate);
+      setValue('questions', parsedQuestions, dirtyValidate);
 
-      setValue('conclusions', conclusions, dirtyValidate);
-
-      toast.success('Текст успішно згенеровано.');
+      toast.success('Questions successfully generated');
     } catch (error) {
-      toast.error(`Помилка генераціі: ${error}`);
-    } finally {
-      setIsGenerating(false);
+      toast.error(`Invalid JSON format: ${error}`);
+    }
+  };
+
+  const conclusions = watch('conclusions');
+  useEffect(() => {
+    setJsonConclusions(JSON.stringify(conclusions, null, 2));
+  }, [JSON.stringify(conclusions)]);
+
+  const handleJsonConclusionsChange = (value: string) => {
+    setJsonConclusions(value);
+  };
+
+  const generateConclusionsFromJson = () => {
+    try {
+      const parsedConclusions = JSON.parse(jsonConclusions);
+
+      // Validate parsed data against a simplified schema:
+      testFormSchema.shape.conclusions.parse(parsedConclusions);
+
+      setValue('conclusions', parsedConclusions, dirtyValidate);
+
+      toast.success('Conclusions successfully generated');
+    } catch (error) {
+      toast.error(`Invalid JSON format: ${error}`);
     }
   };
 
@@ -214,7 +215,7 @@ export default function FormAddEditTest({
       return;
     }
 
-    setIsGenerating(true);
+    setIsTranslating(true);
 
     try {
       const aiResponse = await aiTranslateArticle(textUa);
@@ -225,7 +226,7 @@ export default function FormAddEditTest({
     } catch (error) {
       toast.error(`Помилка перекладу: ${error}`);
     } finally {
-      setIsGenerating(false);
+      setIsTranslating(false);
     }
   };
 
@@ -259,7 +260,7 @@ export default function FormAddEditTest({
       return;
     }
 
-    setIsGenerating(true);
+    setIsMetaGenerating(true);
 
     try {
       const generatedMeta: IGenerateArticleMeta = await aiGenerateMeta(
@@ -280,7 +281,7 @@ export default function FormAddEditTest({
     } catch (error) {
       toast.error(`Error AI meta generating: ${error}`);
     } finally {
-      setIsGenerating(false);
+      setIsMetaGenerating(false);
     }
   };
 
@@ -346,8 +347,12 @@ export default function FormAddEditTest({
           )}
         />
 
-        <Button type="button" onClick={handleTranslate} disabled={isGenerating}>
-          {isGenerating ? (
+        <Button
+          type="button"
+          onClick={handleTranslate}
+          disabled={isTranslating}
+        >
+          {isTranslating ? (
             <LoadingAnimated />
           ) : (
             <GenerateAI className="size-5" />
@@ -381,9 +386,9 @@ export default function FormAddEditTest({
           <Button
             type="button"
             onClick={handleMetaGenerate}
-            disabled={isGenerating || isGenerating}
+            disabled={isTranslating || isMetaGenerating}
           >
-            {isGenerating ? (
+            {isMetaGenerating ? (
               <LoadingAnimated />
             ) : (
               <GenerateAI className="size-5" />
@@ -500,39 +505,55 @@ export default function FormAddEditTest({
           />
         </Fieldset>
 
-        <Button type="button" onClick={handleAiGenerateTest}>
-          {isGenerating ? (
-            <LoadingAnimated />
-          ) : (
-            <GenerateAI className="size-5" />
-          )}{' '}
-          Generate Test
-        </Button>
-
-        {/* JSON Output */}
-        <FormItem>
-          <FormLabel>JSON Questions Representation</FormLabel>
-          <FormControl>
-            <Textarea
-              value={jsonQuestions}
-              onChange={(e) => handleJsonQuestionsChange(e.target.value)}
-              rows={10}
-              placeholder="Enter questions in JSON format"
-            />
-          </FormControl>
-          <FormDescription>
-            This field displays the current structure of the questions and
-            answers in JSON format.
-          </FormDescription>
-        </FormItem>
-
         {/* Questions */}
         <Fieldset legendText="Questions" className="p-2 space-y-4">
+          {/* JSON Output */}
+          <FormItem>
+            <FormLabel>JSON Questions Representation</FormLabel>
+            <FormControl>
+              <Textarea
+                value={jsonQuestions}
+                onChange={(e) => handleJsonQuestionsChange(e.target.value)}
+                rows={10}
+                placeholder="Enter questions in JSON format"
+              />
+            </FormControl>
+            <FormDescription>
+              This field displays the current structure of the questions and
+              answers in JSON format.
+            </FormDescription>
+          </FormItem>
+
+          <Button type="button" onClick={generateQuestionsFromJson}>
+            Generate from JSON
+          </Button>
+
           <QuestionsBlock control={control} />
         </Fieldset>
 
         {/* Conclusions */}
         <Fieldset legendText="Conclusions" className="p-2 space-y-4">
+          {/* JSON Output */}
+          <FormItem>
+            <FormLabel>JSON Conclusion Representation</FormLabel>
+            <FormControl>
+              <Textarea
+                value={jsonConclusions}
+                onChange={(e) => handleJsonConclusionsChange(e.target.value)}
+                rows={10}
+                placeholder="Enter Conclusions in JSON format"
+              />
+            </FormControl>
+            <FormDescription>
+              This field displays the current structure of the Conclusions in
+              JSON format.
+            </FormDescription>
+          </FormItem>
+
+          <Button type="button" onClick={generateConclusionsFromJson}>
+            Generate from JSON
+          </Button>
+
           <ConclusionsBlock control={control} />
         </Fieldset>
 
