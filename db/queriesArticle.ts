@@ -2,7 +2,7 @@
 
 import 'server-only';
 
-import { and, eq, exists, inArray, not, or, sql } from 'drizzle-orm';
+import { and, eq, exists, inArray, not, sql } from 'drizzle-orm';
 
 import {
   TArticle,
@@ -288,35 +288,6 @@ export async function getSimilarArticlesByTags(
     return null;
   }
 }
-
-export const getArticleByImage = async (imageName: string) => {
-  const filters = [];
-
-  filters.push(eq(tblArticle.published, true));
-  filters.push(
-    or(
-      sql`${tblArticle.imageSrc} LIKE ${`%${imageName}%`}`,
-      sql`${tblArticle.textEn} LIKE ${`%${imageName}%`}`
-    )
-  );
-
-  try {
-    const res = await db
-      .select({
-        title: tblArticle.titleEn,
-        slug: tblArticle.slug,
-      })
-      .from(tblArticle)
-      .where(and(...filters))
-      .limit(1);
-
-    return res[0];
-  } catch (error) {
-    throw new Error(
-      `Get Article By Image Source failed: ${(error as Error).message}`
-    );
-  }
-};
 
 export type TArticleWithTagsUpdated = TArticle & {
   articleTags: { tag: TTag }[];

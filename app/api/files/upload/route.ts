@@ -1,6 +1,6 @@
-import { getArticleByImage } from '@/db/queriesArticle';
 import {
   deleteImageInfoFromDB,
+  getArticleByImage,
   getImageInfoFromDB,
   insertImageInfoToDB,
 } from '@/db/queriesImages';
@@ -163,7 +163,7 @@ export async function DELETE(request: Request) {
           error: 'File is already used in a published article',
           articleDetails: {
             title: articleUsingImage.title,
-            slug: articleUsingImage.slug,
+            pathName: articleUsingImage.pathName,
           },
         },
         { status: 409 } // Conflict status

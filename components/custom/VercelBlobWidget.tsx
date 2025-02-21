@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { makeUrlSearchParams } from '@/lib/utils/urlMaker';
 import { fetcher } from '@/lib/utils/utils';
 import { BLOB_STORAGE_PATH } from '@/models/image.model';
-import { DEFAULT_LANG } from '@/models/language.model';
 import { IUploadBlobResponse } from '@/models/uploadFile.model';
-import { ESegment, EUrlSearchParam } from '@/models/url.model';
+import { EUrlSearchParam } from '@/models/url.model';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { DownloadCloud, ExternalLink, UploadCloud } from 'lucide-react';
 import Link from 'next/link';
@@ -182,11 +181,11 @@ export default function VercelBlobWidget() {
               () => (
                 <div className="flex flex-col gap-2 items-center w-full">
                   <p className="flex items-center gap-2">
-                    File is already used in a published article
+                    File is already used in a test or article
                   </p>
                   {result.articleDetails && (
                     <Link
-                      href={`/${DEFAULT_LANG}/${ESegment.BLOG}/${result.articleDetails.slug}`}
+                      href={result.articleDetails.pathName}
                       className="flex gap-1 items-center justify-center"
                     >
                       <span className="font-bold underline">
