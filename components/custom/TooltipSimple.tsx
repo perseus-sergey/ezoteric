@@ -19,7 +19,7 @@ export const TooltipSimple = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
-        <TooltipContent>{content}</TooltipContent>
+        {content && <TooltipContent>{content}</TooltipContent>}
       </Tooltip>
     </TooltipProvider>
   );

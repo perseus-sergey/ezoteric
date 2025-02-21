@@ -13,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { TinyEditor } from './TinyEditor';
-import { CodeBlock } from './CodeBlock';
 import { Checkbox } from '../ui/checkbox';
 import { useCallback, useEffect, useState } from 'react';
 import { Lock, LockOpen, RefreshCcw } from 'lucide-react';
@@ -48,6 +47,7 @@ import { Separator } from '../ui/separator';
 import { useRouter } from 'next/navigation';
 import { DEFAULT_LANG } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
+import { CodeTemplatesForImage } from './CodeTemplatesForImage';
 
 const dirtyValidate = {
   shouldDirty: true,
@@ -276,17 +276,7 @@ export const FormAddEditArticle = ({
           )}
         />
 
-        <div className="flex gap-4 items-center">
-          <CodeBlock code={`class="section-image__wrapper"`} />
-
-          <div className="flex items-center gap-2 w-fit px-2 py-1 bg-muted-foreground rounded-md">
-            <div className="bg-muted rounded-md size-6" />
-            <div className="space-y-1">
-              <div className="bg-muted rounded-md h-2 w-24" />
-              <div className="bg-muted rounded-md h-2 w-24" />
-            </div>
-          </div>
-        </div>
+        <CodeTemplatesForImage />
 
         {/* TinyMCE Editor for textUa */}
         <Controller

@@ -63,6 +63,7 @@ import { cn } from '@/lib/utils/utils';
 import { ConclusionsBlock, QuestionsBlock } from './DndElements';
 import { TinyEditor } from './TinyEditor';
 import { TooltipSimple } from './TooltipSimple';
+import { CodeTemplatesForImage } from './CodeTemplatesForImage';
 
 const dirtyValidate = {
   shouldDirty: true,
@@ -339,6 +340,9 @@ export default function FormAddEditTest({
             </FormItem>
           )}
         />
+
+        {/* HTML For Image Paste */}
+        <CodeTemplatesForImage />
 
         {/* TinyMCE Editor for textUa */}
         <Controller
