@@ -10,6 +10,7 @@ import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 
 import hands_with_artifacts_500 from '@/public/images/hands_with_artifacts_500.jpg';
 import main_h1_21 from '@/public/images/main_h1_21.jpg';
+import { Suspense } from 'react';
 
 // const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
@@ -119,7 +120,9 @@ export default async function Page({ params }: { params: TParams }) {
           ))}
         </div>
 
-        <NumerologyForm lang={lang} />
+        <Suspense>
+          <NumerologyForm lang={lang} />
+        </Suspense>
       </section>
 
       {/* <Title titleType="h2">{FOOTER_MODEL.title[lang]}</Title>
