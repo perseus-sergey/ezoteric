@@ -30,6 +30,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Check,
   ChevronsUpDown,
+  CircleArrowOutDownLeftIcon,
   Lock,
   LockOpen,
   RefreshCcw,
@@ -61,6 +62,7 @@ import { insertNewTest, updateTest } from '@/db/queriesTestEdit';
 import { cn } from '@/lib/utils/utils';
 import { ConclusionsBlock, QuestionsBlock } from './DndElements';
 import { TinyEditor } from './TinyEditor';
+import { TooltipSimple } from './TooltipSimple';
 
 const dirtyValidate = {
   shouldDirty: true,
@@ -116,7 +118,7 @@ export default function FormAddEditTest({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const [jsonQuestions, setJsonQuestions] = useState('');
+  const [jsonField, setJsonField] = useState('');
 
   const router = useRouter();
 
@@ -140,13 +142,13 @@ export default function FormAddEditTest({
     setFocus,
   } = form;
 
-  const questions = watch('questions');
-  useEffect(() => {
-    setJsonQuestions(JSON.stringify(questions, null, 2));
-  }, [JSON.stringify(questions)]);
+  // const questions = watch('questions');
+  // useEffect(() => {
+  //   setJsonField(JSON.stringify(questions, null, 2));
+  // }, [JSON.stringify(questions)]);
 
   const handleJsonQuestionsChange = (value: string) => {
-    setJsonQuestions(value);
+    setJsonField(value);
   };
 
   const handleAiGenerateTest = async () => {
@@ -168,9 +170,23 @@ export default function FormAddEditTest({
     try {
       const aiResponse = await aiGenerateTest(rowText);
 
-      setJsonQuestions(aiResponse);
+      setJsonField(aiResponse);
 
-      const { questions, conclusions } = JSON.parse(aiResponse);
+      generateTestFromJson(aiResponse);
+
+      toast.success('Текст успішно згенеровано.');
+    } catch (error) {
+      toast.error(`Помилка генераціі: ${error}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const generateTestFromJson = (jsonText: string) => {
+    if (!jsonText) return;
+
+    try {
+      const { questions, conclusions } = JSON.parse(jsonText);
 
       // Validate parsed data against a simplified schema:
       testFormSchema.shape.questions.parse(questions);
@@ -180,11 +196,9 @@ export default function FormAddEditTest({
 
       setValue('conclusions', conclusions, dirtyValidate);
 
-      toast.success('Текст успішно згенеровано.');
+      toast.success('Test successfully generated');
     } catch (error) {
-      toast.error(`Помилка генераціі: ${error}`);
-    } finally {
-      setIsGenerating(false);
+      toast.error(`Invalid JSON format: ${error}`);
     }
   };
 
@@ -500,6 +514,7 @@ export default function FormAddEditTest({
           />
         </Fieldset>
 
+        {/* AI Test Generate Button */}
         <Button type="button" onClick={handleAiGenerateTest}>
           {isGenerating ? (
             <LoadingAnimated />
@@ -512,14 +527,29 @@ export default function FormAddEditTest({
         {/* JSON Output */}
         <FormItem>
           <FormLabel>JSON Questions Representation</FormLabel>
-          <FormControl>
-            <Textarea
-              value={jsonQuestions}
-              onChange={(e) => handleJsonQuestionsChange(e.target.value)}
-              rows={10}
-              placeholder="Enter questions in JSON format"
-            />
-          </FormControl>
+          <div className="relative">
+            <FormControl>
+              <Textarea
+                value={jsonField}
+                onChange={(e) => handleJsonQuestionsChange(e.target.value)}
+                rows={10}
+                placeholder="Enter questions in JSON format"
+              />
+            </FormControl>
+
+            <TooltipSimple content="Generate Test From This JSON" asChild>
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={() => generateTestFromJson(jsonField)}
+                disabled={!jsonField}
+                className="absolute top-0 right-0 opacity-70"
+              >
+                <CircleArrowOutDownLeftIcon />
+              </Button>
+            </TooltipSimple>
+          </div>
           <FormDescription>
             This field displays the current structure of the questions and
             answers in JSON format.
