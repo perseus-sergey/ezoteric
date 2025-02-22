@@ -18,11 +18,12 @@ import Link from 'next/link';
 interface ITestCardProps {
   lang: ELanguage;
   test: TTestLocalized;
+  idxInList: number;
 }
 
 const { TESTS, CATEGORY } = ESegment;
 
-const TestCard = ({ lang, test }: ITestCardProps) => {
+const TestCard = ({ lang, test, idxInList }: ITestCardProps) => {
   const imgSrc = getImageSrc(test.slug, test.imageSrc);
   const currDate = getFormattedDateStrYearFirst(test.updatedAt);
 
@@ -88,6 +89,7 @@ const TestCard = ({ lang, test }: ITestCardProps) => {
         title={getSeoCardLinkTitle(test.title)[lang]}
       >
         <ValidImage
+          priority={idxInList === 0}
           defaultSrc={TESTS_CARD_IMAGE.defaultImgSrc}
           className="rounded-sm"
           sizes={`${TESTS_CARD_IMAGE.size.width * 0.7}px`}

@@ -17,10 +17,10 @@ const { MASTER, TESTS, ARTICLE_EDIT } = ESegment;
 const TestList = ({ testList, lang, isAdmin, searchQuery }: ITestListProps) =>
   testList && testList.length > 0 ? (
     <ul className="space-y-4">
-      {testList.map((test) => {
+      {testList.map((test, idx) => {
         return (
           <li key={test.id} className="relative group">
-            <TestCard lang={lang} test={test} />
+            <TestCard lang={lang} test={test} idxInList={idx} />
 
             {isAdmin && (
               <EditPostLink

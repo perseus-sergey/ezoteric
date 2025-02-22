@@ -16,6 +16,7 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
+// blog: img of first post/test - add priority
 // - check tests pagination & search
 // - db add completed tests amount
 

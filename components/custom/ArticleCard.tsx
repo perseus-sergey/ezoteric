@@ -16,11 +16,12 @@ import TagList from './TagList';
 interface IArticleCardProps {
   lang: ELanguage;
   article: TArticleLocalized;
+  idxInList: number;
 }
 
 const { BLOG } = ESegment;
 
-const ArticleCard = ({ lang, article }: IArticleCardProps) => {
+const ArticleCard = ({ lang, article, idxInList }: IArticleCardProps) => {
   const imgSrc = getImageSrc(article.slug, article.imageSrc);
   const currDate = getFormattedDateStrYearFirst(article.updatedAt);
 
@@ -67,6 +68,7 @@ const ArticleCard = ({ lang, article }: IArticleCardProps) => {
         title={getSeoCardLinkTitle(article.title)[lang]}
       >
         <ValidImage
+          priority={idxInList === 0}
           defaultSrc={BLOG_CARD_IMAGE.defaultImgSrc}
           className="rounded-sm"
           sizes={`${BLOG_CARD_IMAGE.size.width * 0.7}px`}

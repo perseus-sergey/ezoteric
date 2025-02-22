@@ -22,10 +22,10 @@ const ArticleList = ({
 }: IArticleListProps) =>
   articleList && articleList.length > 0 ? (
     <ul className="space-y-4">
-      {articleList.map((article) => {
+      {articleList.map((article, idx) => {
         return (
           <li key={article.id} className="relative group">
-            <ArticleCard lang={lang} article={article} />
+            <ArticleCard lang={lang} article={article} idxInList={idx} />
 
             {isAdmin && (
               <EditPostLink
