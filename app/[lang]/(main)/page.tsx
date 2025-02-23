@@ -11,11 +11,12 @@ import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 import hands_with_artifacts_500 from '@/public/images/hands_with_artifacts_500.jpg';
 import main_h1_21 from '@/public/images/main_h1_21.jpg';
 import { Suspense } from 'react';
+import { NUMEROLOGY_FORM_MODEL } from '@/models/meta/numerology.model';
 
 // const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
-const { h1, startText, ourServices, startTextImgAlt, numerForm } = MAIN_TEXT;
+const { h1, startText, ourServices, startTextImgAlt } = MAIN_TEXT;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 export const revalidate = 86400; // 3600 * 24 invalidate cache every 24 hours
@@ -105,17 +106,19 @@ export default async function Page({ params }: { params: TParams }) {
       <section className="p-4 rounded-lg flex gap-8 items-center justify-center flex-wrap lg:flex-nowrap bg-tertiary">
         <div>
           <Title titleType="h2" className="mb-4">
-            {numerForm.title[lang]}
+            {NUMEROLOGY_FORM_MODEL.title[lang]}
           </Title>
 
-          {numerForm.text[lang].map((text, i) => (
+          {NUMEROLOGY_FORM_MODEL.text[lang].map((text, i) => (
             <p key={i}>{text}</p>
           ))}
 
           <h3 className="font-bold font-georgia p-1 sm:p-2 text-center text-xl sm:text-2xl">
-            {numerForm.form.resultDescription.title[lang]}
+            {NUMEROLOGY_FORM_MODEL.numerologyForm.resultDescription.title[lang]}
           </h3>
-          {numerForm.form.resultDescription.texts[lang].map((text, i) => (
+          {NUMEROLOGY_FORM_MODEL.numerologyForm.resultDescription.texts[
+            lang
+          ].map((text, i) => (
             <p key={i}>{text}</p>
           ))}
         </div>

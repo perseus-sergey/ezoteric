@@ -143,11 +143,6 @@ export default function FormAddEditTest({
     setFocus,
   } = form;
 
-  // const questions = watch('questions');
-  // useEffect(() => {
-  //   setJsonField(JSON.stringify(questions, null, 2));
-  // }, [JSON.stringify(questions)]);
-
   const handleJsonQuestionsChange = (value: string) => {
     setJsonField(value);
   };

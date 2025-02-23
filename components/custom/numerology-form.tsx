@@ -2,21 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 import { useState } from 'react';
-import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 import { ELanguage } from '@/models/language.model';
-import {
-  BIRTH_DATE_FORMAT,
-  IModalAiResponseProps,
-  MAIN_TEXT,
-  MODAL_NUMEROLOGY,
-  numerologyFormSchema,
-  TNumerologySchema,
-} from '@/models/meta/home.model';
-import { generateAiNumerology } from '@/controllers/numerology.controller';
 import {
   Form,
   FormControl,
@@ -30,50 +19,66 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { SubmitButton } from './submit-button';
 import dynamic from 'next/dynamic';
+import {
+  ENumerologySystem,
+  INumerologyResults,
+  MODAL_NUMEROLOGY,
+  NUMEROLOGY_FORM_MODEL,
+  numerologyFormSchema,
+  TNumerologySchema,
+} from '@/models/meta/numerology.model';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { generateAiNumerology } from '@/controllers/numerology.controller';
 
 const ModalNumerologyResponse = dynamic(
   () => import('./Modals/ModalNumerologyResponse'),
   { ssr: false }
 );
 
-const {
-  numerForm: { form: numerForm },
-} = MAIN_TEXT;
+const { numerologyForm } = NUMEROLOGY_FORM_MODEL;
 const { modalResponseErrors } = MODAL_NUMEROLOGY;
 
 export default function NumerologyForm({ lang }: { lang: ELanguage }) {
-  const [aiResult, setAiResult] = useState<IModalAiResponseProps | null>(null);
-  const [hasResult, setHasResult] = useState(false);
+  const [numerologyResults, setNumerologyResults] =
+    useState<INumerologyResults | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const [selectedSystem, setSelectedSystem] = useState<ENumerologySystem>(
+  //   ENumerologySystem.Pythagorean
+  // );
 
-  const form = useForm<z.infer<TNumerologySchema>>({
+  const form = useForm<TNumerologySchema>({
     resolver: zodResolver(numerologyFormSchema(lang)),
     defaultValues: {
       username: '',
       birthdate: '',
+      numerologySystem: ENumerologySystem.Pythagorean,
     },
   });
 
-  async function onSubmit(data: z.infer<TNumerologySchema>) {
+  async function onSubmit(data: TNumerologySchema) {
     setIsLoading(true);
 
     try {
-      const result = await generateAiNumerology(
+      const generatedRes = await generateAiNumerology(
         data.username,
         data.birthdate,
-        lang
+        lang,
+        data.numerologySystem
       );
 
-      setAiResult({
-        aiResponse: result,
+      setNumerologyResults({
+        ...generatedRes,
         formData: {
           username: data.username,
-          birthdate: format(data.birthdate, BIRTH_DATE_FORMAT),
+          birthdate: data.birthdate,
+          numerologySystem: data.numerologySystem,
         },
       });
-      setHasResult(true);
+      setIsOpen(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
+      console.log('🚀 ~ onSubmit ~ _error:', _error);
       toast.error(() => (
         <>
           <h2 className="font-semibold">{modalResponseErrors[lang][0]}</h2>
@@ -97,15 +102,68 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
             <CardContent className="pt-4 space-y-4">
               <FormField
                 control={form.control}
+                name="numerologySystem"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel className="pl-2">
+                      {numerologyForm.system.label[lang]}
+                    </FormLabel>
+
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <RadioGroupItem
+                              value={ENumerologySystem.Pythagorean}
+                              id="pythagorean"
+                            />
+                          </FormControl>
+
+                          <FormLabel
+                            htmlFor="pythagorean"
+                            className="font-normal pl-2"
+                          >
+                            {numerologyForm.system.pythagorean[lang]}{' '}
+                          </FormLabel>
+                        </FormItem>
+
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <RadioGroupItem
+                              value={ENumerologySystem.Chaldean}
+                              id="chaldean"
+                            />
+                          </FormControl>
+
+                          <FormLabel
+                            htmlFor="chaldean"
+                            className="font-normal pl-2"
+                          >
+                            {numerologyForm.system.chaldean[lang]}{' '}
+                            {/* Додайте labels в ваш конфіг форм (i18n) */}
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="pl-2">
-                      {numerForm.name.label[lang]}
+                      {numerologyForm.name.label[lang]}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={numerForm.name.placeholder[lang]}
+                        placeholder={numerologyForm.name.placeholder[lang]}
                         {...field}
                         className="dark:border-stone-600"
                       />
@@ -121,7 +179,7 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="pl-2">
-                      {numerForm.birthdate.label[lang]}
+                      {numerologyForm.birthdate.label[lang]}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -138,20 +196,20 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
             <CardFooter>
               <SubmitButton
                 pending={isLoading}
-                submitCaption={numerForm.submit.title[lang]}
-                pendingCaption={numerForm.submit.pending[lang]}
+                submitCaption={numerologyForm.submit.title[lang]}
+                pendingCaption={numerologyForm.submit.pending[lang]}
               />
             </CardFooter>
           </Card>
         </form>
       </Form>
 
-      {hasResult && (
+      {isOpen && (
         <ModalNumerologyResponse
           lang={lang}
-          aiResult={aiResult}
-          openDialogFn={setHasResult}
-          isOpen={hasResult}
+          numerologyResult={numerologyResults}
+          setIsOpen={setIsOpen}
+          isOpen={isOpen}
         />
       )}
     </>

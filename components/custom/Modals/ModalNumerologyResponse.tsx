@@ -1,8 +1,6 @@
+// 'use server';
+
 import { ELanguage } from '@/models/language.model';
-import {
-  IModalAiResponseProps,
-  MODAL_NUMEROLOGY,
-} from '@/models/meta/home.model';
 
 import {
   AlertDialog,
@@ -14,11 +12,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Dispatch, SetStateAction } from 'react';
+import {
+  INumerologyResults,
+  MODAL_NUMEROLOGY,
+} from '@/models/meta/numerology.model';
+import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 
 interface IProps {
   lang: ELanguage;
-  aiResult: IModalAiResponseProps | null;
-  openDialogFn: Dispatch<SetStateAction<boolean>>;
+  numerologyResult: INumerologyResults | null;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
   isOpen: boolean;
 }
 
@@ -28,58 +31,89 @@ const {
   modalResponseErrors,
   modalDescription,
   modalResponseParams: {
-    lifePathNumber,
-    destinyNumber,
-    personalityNumber,
-    overallInterpretation,
+    lifePathNumberCaption,
+    destinyNumberCaption,
+    personalityNumberCaption,
+    overallInterpretationCaption,
+    soulNumberCaption,
   },
 } = MODAL_NUMEROLOGY;
 
 export default function ModalNumerologyResponse({
   lang,
-  aiResult,
-  openDialogFn,
+  numerologyResult,
+  setIsOpen,
   isOpen,
 }: IProps) {
-  if (!aiResult) return null;
+  if (!numerologyResult) return null;
+
+  const {
+    formData,
+    lifePathInvolvedNumbers,
+    lifePathNumber,
+    lifePathNumberInterpretation,
+    soulInvolvedNumbers,
+    soulNumber,
+    soulNumberInterpretation,
+    personalityInvolvedNumbers,
+    personalityNumber,
+    personalityNumberInterpretation,
+    overallInterpretation,
+    destinyInvolvedNumbers,
+    destinyNumber,
+    destinyNumberInterpretation,
+  } = numerologyResult;
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={openDialogFn}>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent className="overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center text-2xl">
             {modalCaption[lang]}
           </AlertDialogTitle>
           <AlertDialogTitle>
-            {`${modalDescription[lang]} "${aiResult.formData.username}" (${aiResult.formData.birthdate})`}
+            {`${modalDescription[lang]} "${formData.username}" (${getFormattedDateStrYearFirst(formData.birthdate)})`}
           </AlertDialogTitle>
-          {aiResult.aiResponse ? (
+          {numerologyResult ? (
             <ul className="max-h-[40dvh] space-y-4 overflow-y-auto">
               <li>
                 <AlertDialogDescription>
-                  <strong>{lifePathNumber[lang]}:</strong>{' '}
-                  {aiResult.aiResponse.lifePathNumber} -{' '}
-                  {aiResult.aiResponse.lifePathNumberInterpretation}
+                  <strong>{lifePathNumberCaption[lang]}:</strong>{' '}
+                  {lifePathNumber}{' '}
+                  {lifePathInvolvedNumbers.length > 0 &&
+                    `(${lifePathInvolvedNumbers.join(', ')})`}{' '}
+                  - {lifePathNumberInterpretation}
                 </AlertDialogDescription>
               </li>
               <li>
                 <AlertDialogDescription>
-                  <strong>{destinyNumber[lang]}:</strong>{' '}
-                  {aiResult.aiResponse.destinyNumber} -{' '}
-                  {aiResult.aiResponse.destinyNumberInterpretation}
+                  <strong>{soulNumberCaption[lang]}:</strong> {soulNumber}{' '}
+                  {soulInvolvedNumbers.length > 0 &&
+                    `(${soulInvolvedNumbers.join(', ')})`}{' '}
+                  - {soulNumberInterpretation}
                 </AlertDialogDescription>
               </li>
               <li>
                 <AlertDialogDescription>
-                  <strong>{personalityNumber[lang]}:</strong>{' '}
-                  {aiResult.aiResponse.personalityNumber} -{' '}
-                  {aiResult.aiResponse.personalityNumberInterpretation}
+                  <strong>{destinyNumberCaption[lang]}:</strong> {destinyNumber}{' '}
+                  {destinyInvolvedNumbers.length > 0 &&
+                    `(${destinyInvolvedNumbers.join(', ')})`}{' '}
+                  - {destinyNumberInterpretation}
                 </AlertDialogDescription>
               </li>
               <li>
                 <AlertDialogDescription>
-                  <strong>{overallInterpretation[lang]}:</strong>{' '}
-                  {aiResult.aiResponse.overallInterpretation}
+                  <strong>{personalityNumberCaption[lang]}:</strong>{' '}
+                  {personalityNumber}{' '}
+                  {personalityInvolvedNumbers.length > 0 &&
+                    `(${personalityInvolvedNumbers.join(', ')})`}{' '}
+                  - {personalityNumberInterpretation}
+                </AlertDialogDescription>
+              </li>
+              <li>
+                <AlertDialogDescription>
+                  <strong>{overallInterpretationCaption[lang]}:</strong>{' '}
+                  {overallInterpretation}
                 </AlertDialogDescription>
               </li>
             </ul>

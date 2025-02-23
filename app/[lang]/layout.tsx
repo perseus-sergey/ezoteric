@@ -16,7 +16,8 @@ import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
-// blog: img of first post/test - add priority
+// інформації. ... (імітація обчислень) ...
+// add destination to numerology form section
 // - check tests pagination & search
 // - db add completed tests amount
 

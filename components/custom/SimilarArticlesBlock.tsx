@@ -11,6 +11,7 @@ import { IMG_PROPERTIES } from '@/models/image.model';
 import { ARTICLE_IMG } from '@/models/article.model';
 import { CalendarCheck2 } from 'lucide-react';
 import { getSimilarTestsByCategory } from '@/db/queriesTests';
+import { Title } from './Title';
 
 interface IProps {
   articleId: number;
@@ -36,7 +37,10 @@ export default async function SimilarArticlesBlock({
   if (!similarArticles || similarArticles.length === 0) return null;
 
   return (
-    <nav className="my-2">
+    <nav className="mt-4 py-4 bg-tertiary/70 text-quaternary-foreground rounded-2xl">
+      <Title titleType="h2" className="text-tertiary-foreground">
+        Similar Articles
+      </Title>
       <ul className="flex flex-wrap gap-4 justify-center">
         {similarArticles.map((similarArticle) => (
           <li key={similarArticle.slug} className="rounded-sm overflow-hidden">
