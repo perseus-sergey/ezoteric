@@ -58,7 +58,7 @@ export const LANGUAGE_SELECT: Record<ELanguage, LanguageData> = {
     caption: 'English',
     ariaLabel: 'Переключити мову на англійську',
     icon: (
-      <SeoSVG strokeWidth={0.2} viewBox="0 0 36 36">
+      <SeoSVG strokeWidth={0.2} viewBox="0 0 36 36" className="size-6">
         <path
           fill="#00247D"
           d="M0 9.059V13h5.628zM4.664 31H13v-5.837zM23 25.164V31h8.335zM0 23v3.941L5.63 23zM31.337 5H23v5.837zM36 26.942V23h-5.631zM36 13V9.059L30.371 13zM13 5H4.664L13 10.837z"
@@ -79,7 +79,7 @@ export const LANGUAGE_SELECT: Record<ELanguage, LanguageData> = {
     caption: 'Українська',
     ariaLabel: 'Switch language to Ukrainian',
     icon: (
-      <SeoSVG strokeWidth={0.2} viewBox="0 0 64 64">
+      <SeoSVG strokeWidth={0.2} viewBox="0 0 64 64" className="size-6">
         <path
           fill="#1b75bb"
           d="M54 10H10C3.373 10 0 14.925 0 21v11h64V21c0-6.075-3.373-11-10-11"
@@ -140,23 +140,23 @@ export const SIDEBAR = {
 };
 
 export const FOOTER_MODEL = {
-  title: { [ELanguage.UA]: `Контакти`, [ELanguage.EN]: 'Contact Us' },
+  title: { [UA]: `Контакти`, [EN]: 'Contact Us' },
   description: {
-    [ELanguage.UA]: `Зв'яжіться з нами:`,
-    [ELanguage.EN]: `Get in touch with us:`,
+    [UA]: `Зв'яжіться з нами:`,
+    [EN]: `Get in touch with us:`,
   },
   phone: {
-    caption: { [ELanguage.UA]: 'Телефон', [ELanguage.EN]: 'Phone' },
+    caption: { [UA]: 'Телефон', [EN]: 'Phone' },
     ariaLabel: {
-      [ELanguage.UA]: 'Зателефонувати нам',
-      [ELanguage.EN]: 'Call us',
+      [UA]: 'Зателефонувати нам',
+      [EN]: 'Call us',
     },
   },
 
   mail: {
     ariaLabel: {
-      [ELanguage.UA]: 'Надіслати нам листа',
-      [ELanguage.EN]: 'Send us an email',
+      [UA]: 'Надіслати нам листа',
+      [EN]: 'Send us an email',
     },
   },
 };

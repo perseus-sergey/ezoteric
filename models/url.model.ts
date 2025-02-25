@@ -1,4 +1,7 @@
 export const MAIN_URL = 'https://ezoteric.net';
+export const MAIN_DEV_URL = 'http://localhost:3000';
+
+export const NUMEROLOGY_FORM_ID = 'numerology-form-id';
 
 export enum EUrlSearchParam {
   QUERY = 'q',

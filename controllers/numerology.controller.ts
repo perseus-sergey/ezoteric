@@ -322,7 +322,7 @@ The input will be provided in the following JSON format:
     "personalityNumber": [<Number>] // Intermediate master/karmic numbers for Personality Number
   },
   "system": "pythagorean" | "chaldean", // **Numerology system chosen by user**
-  "language": "en" | "uk"
+  "language": "en" | "uk" // "uk" - ukrainian
 }
 \`\`\`
 

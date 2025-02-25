@@ -9,7 +9,7 @@ export function LoadingAnimated({
   return (
     <LoaderIcon
       focusable="false"
-      className={cn('animate-spin', className)}
+      className={cn('animate-spin size-6', className)}
       aria-live="polite"
       role="status"
       {...props}

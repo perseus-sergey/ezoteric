@@ -17,7 +17,7 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 
 // =================================================================
 // інформації. ... (імітація обчислень) ...
-// add destination to numerology form section
+// header dropdown tests categories (+ NUMEROLOGY_FORM_ID)
 // - check tests pagination & search
 // - db add completed tests amount
 

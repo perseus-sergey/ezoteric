@@ -1,8 +1,8 @@
 import { motion } from 'motion/react';
 
-import { EzotericIcon } from '@/svg/EzotericIcon';
 import { ELanguage } from '@/models/language.model';
 import { CHAT_MODEL } from '@/models/chat.model';
+import { Osaka } from '@/svg/Osaka';
 
 const { overviewText } = CHAT_MODEL;
 
@@ -17,7 +17,8 @@ export const Overview = ({ lang }: { lang: ELanguage }) => {
       transition={{ delay: 0.5 }}
     >
       <div className="bg-tertiary text-sm w-full p-4 flex items-center gap-4">
-        <EzotericIcon />
+        <Osaka className="size-6" />
+
         <p>{overviewText[lang]}</p>
       </div>
     </motion.div>

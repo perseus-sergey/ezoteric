@@ -44,7 +44,7 @@ export const PreviewMessage = ({
     >
       <div className="size-10 flex flex-col justify-center items-center shrink-0 rounded-full bg-tertiary/70 text-tertiary-foreground/80">
         {role === 'assistant' ? (
-          <Meditation />
+          <Meditation className="size-6" />
         ) : userImgSrc ? (
           <Image
             src={userImgSrc}

@@ -2,22 +2,25 @@
 import { getELangKey } from '@/lib/utils/getLanguage';
 import Image from 'next/image';
 import { MAIN_TEXT } from '@/models/meta/home.model';
-import NumerologyForm from '@/components/custom/numerology-form';
-import { MAIN_URL, TParams } from '@/models/url.model';
+import { MAIN_DEV_URL, MAIN_URL, TParams } from '@/models/url.model';
 import { Title } from '@/components/custom/Title';
-import { DEFAULT_META_DATA } from '@/models/meta/default.model';
-import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 
 import hands_with_artifacts_500 from '@/public/images/hands_with_artifacts_500.jpg';
 import main_h1_21 from '@/public/images/main_h1_21.jpg';
-import { Suspense } from 'react';
-import { NUMEROLOGY_FORM_MODEL } from '@/models/meta/numerology.model';
+import { TarotTwoCards } from '@/svg/TarotTwoCards';
+import { fetchJsonLd } from '@/lib/utils/utils';
+import NumerologyForm from '@/components/custom/numerology-form';
 
 // const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
 
-const { h1, startText, ourServices, startTextImgAlt } = MAIN_TEXT;
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+const BASE_URL =
+  process.env.NODE_ENV !== 'production'
+    ? MAIN_DEV_URL
+    : process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+
+const { h1, startBlock, ourServices, startBlockImgAlt, numerologyBlock } =
+  MAIN_TEXT;
 
 export const revalidate = 86400; // 3600 * 24 invalidate cache every 24 hours
 
@@ -27,27 +30,9 @@ export default async function Page({ params }: { params: TParams }) {
   const p = await params;
   const lang = getELangKey(p.lang);
 
-  const jsonLD = generatePostJsonLd({
-    lang,
-    imgHeight: main_h1_21.height,
-    imgWidth: main_h1_21.width,
-    article: {
-      id: 0,
-      slug: '',
-      createdAt: new Date('2024-12-01'),
-      updatedAt: new Date(),
-      imageSrc: `${BASE_URL}/images/main_h1_21.jpg`,
-      viewCount: 1,
-      ...DEFAULT_META_DATA[lang],
-      text: [
-        [...startText[lang].map((text) => `<p>${text}</p>`)],
-        [...ourServices.text[lang].map((text) => `<p>${text}</p>`)],
-        `<ul className="h-full flex flex-col justify-evenly">
-        ${ourServices.serviceList[lang].map((li) => `<li><strong>${li[0]}</strong>: ${li[1]}</li>`)}
-        </ul>`,
-      ].join(''),
-    },
-  });
+  const apiRoute = `${BASE_URL}/api/jsonld?lang=${lang}`;
+  const jsonLD = await fetchJsonLd(apiRoute);
+  // console.log('🚀 ~ Page ~ jsonLD:', jsonLD);
 
   return (
     <article className="relative mx-auto">
@@ -58,25 +43,23 @@ export default async function Page({ params }: { params: TParams }) {
 
         <Image
           src={main_h1_21}
-          alt={startTextImgAlt[lang]}
+          alt={startBlockImgAlt[lang]}
           placeholder="blur"
           className="rounded-md hidden sm:block"
         />
 
-        <div className="sm:bg-transparent bg-tertiary sm:bg-gradient-to-t from-70% from-tertiary to-transparent p-6 sm:pt-14 my-2 sm:m-0 sm:absolute bottom-0 left-0 rounded-md">
-          {startText[lang].map((text, i) => (
-            <p key={i}>{text}</p>
-          ))}
+        <div className="sm:bg-transparent bg-tertiary sm:bg-gradient-to-t from-70% from-tertiary to-transparent py-6 px-12 sm:pt-14 my-2 sm:m-0 sm:absolute bottom-0 left-0 rounded-md">
+          {startBlock[lang]}
         </div>
       </div>
 
       <section className="py-4">
         <Title titleType="h2">{ourServices.title[lang]}</Title>
 
-        <div className="bg-secondary/90 rounded-lg my-2 p-6">
-          {ourServices.text[lang].map((text, i) => (
-            <p key={i}>{text}</p>
-          ))}
+        <div className="pr-8 pl-24 bg-secondary/90 rounded-lg my-2 flex items-center justify-around flex-wrap md:flex-nowrap gap-x-8 py-6">
+          <div>{ourServices.text[lang]}</div>
+
+          <TarotTwoCards className="size-20 text-foreground/40 shrink-0" />
         </div>
 
         <div className="flex flex-col lg:flex-row lg:h-[500px] h-fit items-center justify-center rounded-lg bg-secondary text-secondary-foreground overflow-hidden">
@@ -85,10 +68,8 @@ export default async function Page({ params }: { params: TParams }) {
               src={hands_with_artifacts_500}
               alt={ourServices.imgAlt[lang]}
               placeholder="blur"
-              className="shrink-0"
+              className="shrink-0 rounded-none lg:rounded-br-[200px]"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent from-80% to-secondary"></div>
-            <div className="lg:hidden absolute inset-0 bg-gradient-to-l from-transparent from-80% to-secondary"></div>
           </div>
 
           <div className="h-full p-6">
@@ -103,29 +84,10 @@ export default async function Page({ params }: { params: TParams }) {
         </div>
       </section>
 
-      <section className="p-4 rounded-lg flex gap-8 items-center justify-center flex-wrap lg:flex-nowrap bg-tertiary">
-        <div>
-          <Title titleType="h2" className="mb-4">
-            {NUMEROLOGY_FORM_MODEL.title[lang]}
-          </Title>
+      <section className="py-4 px-2 sm:px-12 rounded-lg bg-tertiary">
+        {numerologyBlock.content[lang]}
 
-          {NUMEROLOGY_FORM_MODEL.text[lang].map((text, i) => (
-            <p key={i}>{text}</p>
-          ))}
-
-          <h3 className="font-bold font-georgia p-1 sm:p-2 text-center text-xl sm:text-2xl">
-            {NUMEROLOGY_FORM_MODEL.numerologyForm.resultDescription.title[lang]}
-          </h3>
-          {NUMEROLOGY_FORM_MODEL.numerologyForm.resultDescription.texts[
-            lang
-          ].map((text, i) => (
-            <p key={i}>{text}</p>
-          ))}
-        </div>
-
-        <Suspense>
-          <NumerologyForm lang={lang} />
-        </Suspense>
+        <NumerologyForm lang={lang} className="my-4" />
       </section>
 
       {/* <Title titleType="h2">{FOOTER_MODEL.title[lang]}</Title>
@@ -156,13 +118,12 @@ export default async function Page({ params }: { params: TParams }) {
         </li>
       </ul> */}
 
-      {/* <ChatWidget key={id} id={id} initialMessages={[]} lang={lang} /> */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLD),
-        }}
-      />
+      {jsonLD && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
+        />
+      )}
     </article>
   );
 }

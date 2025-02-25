@@ -21,7 +21,8 @@ export default function SeoSVG({
       viewBox={viewBox}
       strokeWidth={strokeWidth}
       stroke={color}
-      className={cn('size-6', className)}
+      className={cn('shrink-0', className)}
+      // className={cn('size-6', className)}
       {...props}
     >
       {children}

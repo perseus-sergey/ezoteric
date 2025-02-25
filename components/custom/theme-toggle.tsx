@@ -36,7 +36,7 @@ export default function ThemeToggle({
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
         {isDark ? (
-          <Sun className="text-yellow-200" />
+          <Sun className="size-6 text-yellow-200" />
         ) : (
           <MoonStar fill="black" strokeWidth={0.7} />
         )}

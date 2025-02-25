@@ -25,7 +25,7 @@ const config: Config = {
 
       backgroundImage: {
         'tertiary-gradient':
-          'linear-gradient(to bottom,hsl(var(--tertiary) / 0.2),hsl(var(--tertiary)),hsl(var(--tertiary) / 0.2))',
+          'linear-gradient(to bottom,hsl(var(--tertiary) / 0),hsl(var(--tertiary) / 0.6),hsl(var(--tertiary)),hsl(var(--tertiary) / 0.6),hsl(var(--tertiary) / 0))',
       },
 
       colors: {

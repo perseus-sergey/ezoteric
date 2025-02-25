@@ -17,7 +17,6 @@ import {
 import { Input } from '@/components/ui/input';
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { SubmitButton } from './submit-button';
 import dynamic from 'next/dynamic';
 import {
   ENumerologySystem,
@@ -29,6 +28,12 @@ import {
 } from '@/models/meta/numerology.model';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { generateAiNumerology } from '@/controllers/numerology.controller';
+import { cn } from '@/lib/utils/utils';
+import ButtonBorderGlowing from './ButtonBorderGlowing';
+import { Button } from '../ui/button';
+import { LoadingAnimated } from '@/svg/LoadingAnimated';
+import { CheckCircle } from 'lucide-react';
+import { NumerologyPictogram } from '@/svg/NumerologyPictogram';
 
 const ModalNumerologyResponse = dynamic(
   () => import('./Modals/ModalNumerologyResponse'),
@@ -38,14 +43,15 @@ const ModalNumerologyResponse = dynamic(
 const { numerologyForm } = NUMEROLOGY_FORM_MODEL;
 const { modalResponseErrors } = MODAL_NUMEROLOGY;
 
-export default function NumerologyForm({ lang }: { lang: ELanguage }) {
+interface IProps extends React.HTMLAttributes<HTMLElement> {
+  lang: ELanguage;
+}
+
+export default function NumerologyForm({ lang, className }: IProps) {
   const [numerologyResults, setNumerologyResults] =
     useState<INumerologyResults | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // const [selectedSystem, setSelectedSystem] = useState<ENumerologySystem>(
-  //   ENumerologySystem.Pythagorean
-  // );
 
   const form = useForm<TNumerologySchema>({
     resolver: zodResolver(numerologyFormSchema(lang)),
@@ -96,16 +102,16 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
         <form
           aria-label="Numerology Form"
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 w-full sm:w-96 shrink-0"
+          className={cn('space-y-4 w-full', className)}
         >
-          <Card>
-            <CardContent className="pt-4 space-y-4">
+          <Card className="relative py-8 max-w-2xl mx-auto bg-gradient-to-l from-secondary to-transparent rounded-xl shadow-xl">
+            <CardContent className="space-y-4">
               <FormField
                 control={form.control}
                 name="numerologySystem"
                 render={({ field }) => (
                   <FormItem className="mb-4">
-                    <FormLabel className="pl-2">
+                    <FormLabel className="pl-2 text-xl">
                       {numerologyForm.system.label[lang]}
                     </FormLabel>
 
@@ -113,7 +119,7 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                       <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="flex flex-col space-y-1"
+                        className="flex flex-col sm:flex-row sm:gap-6 gap-4 pl-4"
                       >
                         <FormItem className="space-y-0">
                           <FormControl>
@@ -144,7 +150,6 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                             className="font-normal pl-2"
                           >
                             {numerologyForm.system.chaldean[lang]}{' '}
-                            {/* Додайте labels в ваш конфіг форм (i18n) */}
                           </FormLabel>
                         </FormItem>
                       </RadioGroup>
@@ -193,13 +198,30 @@ export default function NumerologyForm({ lang }: { lang: ELanguage }) {
                 )}
               />
             </CardContent>
-            <CardFooter>
-              <SubmitButton
-                pending={isLoading}
-                submitCaption={numerologyForm.submit.title[lang]}
-                pendingCaption={numerologyForm.submit.pending[lang]}
-              />
+            <CardFooter className="w-full flex justify-center p-0 pt-8">
+              <Button
+                asChild
+                type={isLoading ? 'button' : 'submit'}
+                aria-disabled={isLoading}
+                disabled={isLoading}
+              >
+                <ButtonBorderGlowing>
+                  {isLoading
+                    ? numerologyForm.submit.pending[lang]
+                    : numerologyForm.submit.title[lang]}
+                  {isLoading ? (
+                    <LoadingAnimated />
+                  ) : (
+                    <CheckCircle className="opacity-80" />
+                  )}
+                </ButtonBorderGlowing>
+              </Button>
             </CardFooter>
+
+            <NumerologyPictogram
+              className="shrink-0 size-16 absolute top-4 right-4 text-foreground/40"
+              lang={lang}
+            />
           </Card>
         </form>
       </Form>

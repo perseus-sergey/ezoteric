@@ -38,7 +38,7 @@ export default function SideBar({
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" className="p-1.5 h-fit md:hidden">
-            <MenuIcon />
+            <MenuIcon className="size-6" />
             <span className="sr-only">{sideBarOpenIcon.ariaLabel[lang]}</span>
           </Button>
         </SheetTrigger>
@@ -57,7 +57,7 @@ export default function SideBar({
                 title={links.blog.ariaLabel[lang]}
                 href={`/${lang}/${BLOG}`}
               >
-                <BookOpenText className="size-4 text-muted-foreground" />
+                <BookOpenText className="size-6 text-muted-foreground" />
                 {links.blog.caption[lang]}
               </SeoLink>
             </SheetClose>

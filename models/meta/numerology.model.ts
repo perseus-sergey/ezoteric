@@ -41,8 +41,8 @@ export const NUMEROLOGY_FORM_MODEL = {
     },
     submit: {
       title: {
-        [UA]: 'Отримати інформацію',
-        [EN]: 'Get Information',
+        [UA]: 'Розрахувати',
+        [EN]: 'Calculate',
       },
       pending: {
         [EN]: 'Please wait',

@@ -36,6 +36,29 @@ export const fetcher = async (url: string) => {
   return res.json();
 };
 
+export async function fetchJsonLd(url: string) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(url, {
+      signal: controller.signal,
+      next: { revalidate: 86400 },
+    });
+
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('❌ Error fetching JSON-LD:', error);
+    return null;
+  }
+}
+
 export function getLocalStorage(key: string) {
   if (typeof window !== 'undefined') {
     return JSON.parse(localStorage.getItem(key) || '[]');

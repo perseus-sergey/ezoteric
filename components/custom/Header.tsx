@@ -2,7 +2,6 @@ import { ELanguage } from '@/models/language.model';
 import SeoLink from './SeoLink';
 import { ESegment } from '@/models/url.model';
 import { HEADER_MODEL } from '@/models/header.model';
-import { EzotericIcon } from '@/svg/EzotericIcon';
 import UserMenu from './UserMenu';
 import { Session } from 'next-auth';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -10,6 +9,7 @@ import LoginProviders from './LoginProviders';
 import SideBar from './SideBar';
 import { Suspense } from 'react';
 import ThemeToggleWrapped from './ThemeToggle';
+import { Osaka } from '@/svg/Osaka';
 
 const { BLOG, TESTS } = ESegment;
 const { logo, links } = HEADER_MODEL;
@@ -33,16 +33,14 @@ export const Header = async ({
           <SideBar isAdmin={isAdmin} session={session} lang={lang} />
         </Suspense>
 
-        <div className="flex flex-row gap-2 items-center">
-          <EzotericIcon />
-          <SeoLink
-            title={logo[lang]}
-            href={`/${lang}`}
-            className="dark:text-zinc-300 truncate w-28 md:w-fit font-georgia"
-          >
-            Ezoteric.net
-          </SeoLink>
-        </div>
+        <SeoLink
+          title={logo[lang]}
+          href={`/${lang}`}
+          className="flex flex-row gap-4 items-center dark:text-zinc-300 truncate w-28 md:w-fit font-georgia"
+        >
+          <Osaka className="size-8" />
+          Ezoteric.net
+        </SeoLink>
       </div>
 
       <nav className="hidden md:flex flex-row gap-4 items-center font-georgia">
