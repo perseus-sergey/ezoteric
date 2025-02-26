@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
 import SeoLink from './SeoLink';
 import { IMG_PROPERTIES } from '@/models/image.model';
 import { TEST_IMG, TTestLocalized } from '@/models/test.model';
-import { TESTS_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/tests.model';
+import { TESTS_CARD_IMAGE, getSeoTestLinkTitle } from '@/models/tests.model';
 import { ESegment } from '@/models/url.model';
 import { cutText } from '@/lib/utils/cutText';
 import { getImageSrc } from '@/controllers/articles.controller';
@@ -33,7 +33,7 @@ const TestCard = ({ lang, test, idxInList }: ITestCardProps) => {
         <CardTitle className="p-6">
           <SeoLink
             href={`/${lang}/${TESTS}/${test.slug}`}
-            title={getSeoCardLinkTitle(test.title)[lang]}
+            title={getSeoTestLinkTitle(test.title)[lang]}
           >
             {test.title}
           </SeoLink>
@@ -86,7 +86,7 @@ const TestCard = ({ lang, test, idxInList }: ITestCardProps) => {
 
       <SeoLink
         href={`/${lang}/${TESTS}/${test.slug}`}
-        title={getSeoCardLinkTitle(test.title)[lang]}
+        title={getSeoTestLinkTitle(test.title)[lang]}
       >
         <ValidImage
           priority={idxInList === 0}

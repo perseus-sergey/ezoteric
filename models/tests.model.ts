@@ -175,7 +175,7 @@ export const TESTS_PAGINATION_PARAMS = {
   },
 };
 
-export const getSeoCardLinkTitle = (title: string) => ({
+export const getSeoTestLinkTitle = (title: string) => ({
   [UA]: `Перейти до проходження тесту "${title}"`,
   [EN]: `Go to test "${title}"`,
 });

@@ -19,10 +19,10 @@ import { BookOpenText } from 'lucide-react';
 import UserMenu from './UserMenu';
 import LoginProviders from './LoginProviders';
 import ThemeToggleWrapped from './ThemeToggle';
+import { TarotTwoCards } from '@/svg/TarotTwoCards';
 
-const { BLOG } = ESegment;
-const { sideBarOpenIcon } = HEADER_MODEL;
-const { links } = HEADER_MODEL;
+const { BLOG, TESTS } = ESegment;
+const { sideBarOpenIcon, links } = HEADER_MODEL;
 
 export default function SideBar({
   session,
@@ -42,6 +42,7 @@ export default function SideBar({
             <span className="sr-only">{sideBarOpenIcon.ariaLabel[lang]}</span>
           </Button>
         </SheetTrigger>
+
         <SheetContent side="left" className="p-3 w-80 bg-muted">
           <SheetHeader>
             <SheetTitle className="text-left">{SIDEBAR.title[lang]}</SheetTitle>
@@ -59,6 +60,17 @@ export default function SideBar({
               >
                 <BookOpenText className="size-6 text-muted-foreground" />
                 {links.blog.caption[lang]}
+              </SeoLink>
+            </SheetClose>
+
+            <SheetClose asChild>
+              <SeoLink
+                className="flex items-center gap-2 px-4 py-2"
+                title={links.tests.dropdownMenu.allTests.caption[lang]}
+                href={`/${lang}/${TESTS}`}
+              >
+                <TarotTwoCards className="size-6 opacity-70" />
+                {links.tests.caption[lang]}
               </SeoLink>
             </SheetClose>
 

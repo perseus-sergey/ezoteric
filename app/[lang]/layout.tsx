@@ -14,10 +14,14 @@ import { auth } from '../(auth)/auth';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
 import Image from 'next/image';
 import bgImg from '@/public/images/ezoteric_1024.jpeg';
+import { Suspense } from 'react';
 
 // =================================================================
 // інформації. ... (імітація обчислень) ...
 // header dropdown tests categories (+ NUMEROLOGY_FORM_ID)
+// add similar articles and tests to main page
+// improve components/custom/Modals/ModalNumerologyResponse.tsx
+// - check jsonld main page
 // - check tests pagination & search
 // - db add completed tests amount
 
@@ -99,7 +103,9 @@ export default async function Layout({ children, params }: TProps) {
           enableSystem
           // disableTransitionOnChange
         >
-          <Header isAdmin={isAdmin} session={session} lang={lang} />
+          <Suspense>
+            <Header isAdmin={isAdmin} session={session} lang={lang} />
+          </Suspense>
 
           <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 px-2 sm:px-4 flex flex-col">
             <Toaster position="top-center" richColors />

@@ -10,8 +10,9 @@ import SideBar from './SideBar';
 import { Suspense } from 'react';
 import ThemeToggleWrapped from './ThemeToggle';
 import { Osaka } from '@/svg/Osaka';
+import TestMenu from './TestMenu';
 
-const { BLOG, TESTS } = ESegment;
+const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
 
 export const Header = async ({
@@ -44,10 +45,9 @@ export const Header = async ({
       </div>
 
       <nav className="hidden md:flex flex-row gap-4 items-center font-georgia">
-        <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${TESTS}`}>
-          {/* {links.blog.caption[lang]} */}
-          Tests
-        </SeoLink>
+        <Suspense>
+          <TestMenu lang={lang} />
+        </Suspense>
 
         <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>
           {links.blog.caption[lang]}

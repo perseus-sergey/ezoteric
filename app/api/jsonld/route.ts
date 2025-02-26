@@ -1,12 +1,12 @@
 import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
-import { MAIN_TEXT } from '@/models/meta/home.model';
+import { MAIN_TEXT, NUMEROLOGY_JSX } from '@/models/meta/home.model';
 import { MAIN_URL } from '@/models/url.model';
 import { NextResponse } from 'next/server';
 import main_h1_21 from '@/public/images/main_h1_21.jpg';
 
-const { h1, startBlock, ourServices, numerologyBlock } = MAIN_TEXT;
+const { h1, startBlock, ourServices } = MAIN_TEXT;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 export async function GET(request: Request) {
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
           `<ul">
           ${ourServices.serviceList[lang].map((li) => `<li><strong>${li[0]}</strong>: ${li[1]}</li>`)}
           </ul>`,
-          renderToStaticMarkup(numerologyBlock.content[lang]),
+          renderToStaticMarkup(NUMEROLOGY_JSX[lang]),
         ]
           .join('')
           .replace(/\sclass="[^"]*"/g, '') // Видаляє всі class="..."

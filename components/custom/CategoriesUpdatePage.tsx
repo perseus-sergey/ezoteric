@@ -7,9 +7,10 @@ import { Suspense, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
-import { getCatsFromDb, insertCategoryToDb } from '@/db/queriesTestEdit';
+import { insertCategoryToDb } from '@/db/queriesTestEdit';
 import UpdatedTestCategory from './UpdatedTestCategory';
 import ModalUpdateTestCategory from './ModalUpdateTestCategory';
+import { getTestCategoriesFromDb } from '@/db/queriesTests';
 
 const CategoriesUpdatePage = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -20,7 +21,7 @@ const CategoriesUpdatePage = () => {
     error,
     isLoading,
     mutate,
-  } = useSWR<TTestCategory[], Error>('categories', getCatsFromDb);
+  } = useSWR<TTestCategory[], Error>('categories', getTestCategoriesFromDb);
 
   const addCategory = useCallback(
     async (insertedCat: TNewTestCategory) => {

@@ -16,6 +16,13 @@ export const TEST_IMG = {
   },
 };
 
+export const SIMILAR_TESTS = {
+  title: {
+    [EN]: 'Similar tests',
+    [UA]: 'Подібні тести',
+  },
+};
+
 export const NOT_PUBLISHED = {
   [UA]: 'Ви переглядаєте неопубліковану версію тесту. Будь ласка, зверніть увагу, що інформація може бути застарілою або неточною. Слідкуйте за оновленнями.',
   [EN]: 'You are viewing an unpublished version of the test. Please note that the information may be out of date or inaccurate. Stay tuned for updates.',

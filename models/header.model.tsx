@@ -22,6 +22,57 @@ export const HEADER_MODEL = {
         [EN]: 'Blog',
       },
     },
+
+    tests: {
+      ariaLabel: {
+        [UA]: 'Перейти на сторінку з тестами',
+        [EN]: 'Go to the tests page',
+      },
+      caption: {
+        [UA]: 'Тести',
+        [EN]: 'Tests',
+      },
+
+      subCaption: {
+        [UA]: 'Меню Тестів',
+        [EN]: 'Tests Menu',
+      },
+
+      dropdownMenu: {
+        allTests: {
+          ariaLabel: {
+            [UA]: 'Перейти на сторінку з всіма тестами',
+            [EN]: 'Go to the all tests page',
+          },
+          caption: {
+            [UA]: 'Всі тести',
+            [EN]: 'All tests',
+          },
+        },
+
+        numerologyTest: {
+          ariaLabel: {
+            [UA]: 'Перейти на сторінку з тестом по нумерології',
+            [EN]: 'Go to the numerology test page',
+          },
+          caption: {
+            [EN]: 'Numerology Test',
+            [UA]: 'Тест з Нумерології',
+          },
+        },
+
+        testCategories: {
+          caption: {
+            [EN]: 'Test Categories',
+            [UA]: 'Категорії тестів',
+          },
+          ariaLabel: {
+            [UA]: 'Перейти на сторінку з тестами в категорії: ',
+            [EN]: 'Go to the test page in category: ',
+          },
+        },
+      },
+    },
   },
 
   sideBarOpenIcon: {

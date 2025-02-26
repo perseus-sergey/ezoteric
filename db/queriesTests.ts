@@ -28,6 +28,27 @@ export const getTestCategoriesFromDb = async () => {
   }
 };
 
+export const getHeaderTestCats = cache(
+  async (lang: ELanguage): Promise<{ slug: string; name: string }[]> => {
+    try {
+      const res = await getDB().query.tblTestCategories.findMany({
+        columns: {
+          slug: true,
+        },
+        extras: {
+          name: sql<string>`${tblTestCategories[lang === ELanguage.UA ? 'nameUa' : 'nameEn']}`.as(
+            'name'
+          ),
+        },
+        orderBy: (cats, { asc }) => [asc(cats.nameEn)],
+      });
+      return res;
+    } catch (error) {
+      throw new Error(`fetching Categories failed: ${error}`);
+    }
+  }
+);
+
 export const getTestsChunk = cache(
   async (
     offset: number,

@@ -1,7 +1,7 @@
 // import { Mail, PhoneCall } from 'lucide-react';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import Image from 'next/image';
-import { MAIN_TEXT } from '@/models/meta/home.model';
+import { MAIN_TEXT, NUMEROLOGY_JSX } from '@/models/meta/home.model';
 import { MAIN_DEV_URL, MAIN_URL, TParams } from '@/models/url.model';
 import { Title } from '@/components/custom/Title';
 
@@ -19,8 +19,7 @@ const BASE_URL =
     ? MAIN_DEV_URL
     : process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
-const { h1, startBlock, ourServices, startBlockImgAlt, numerologyBlock } =
-  MAIN_TEXT;
+const { h1, startBlock, ourServices, startBlockImgAlt } = MAIN_TEXT;
 
 export const revalidate = 86400; // 3600 * 24 invalidate cache every 24 hours
 
@@ -85,7 +84,7 @@ export default async function Page({ params }: { params: TParams }) {
       </section>
 
       <section className="py-4 px-2 sm:px-12 rounded-lg bg-tertiary">
-        {numerologyBlock.content[lang]}
+        {NUMEROLOGY_JSX[lang]}
 
         <NumerologyForm lang={lang} className="my-4" />
       </section>

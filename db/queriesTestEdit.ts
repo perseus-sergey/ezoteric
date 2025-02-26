@@ -23,17 +23,6 @@ import { getTestCategoriesFromDb } from './queriesTests';
 
 const db = getDB();
 
-export const getCatsFromDb = async () => {
-  try {
-    const res = await getDB().query.tblTestCategories.findMany({
-      orderBy: (cats, { asc }) => [asc(cats.nameEn)],
-    });
-    return res;
-  } catch (error) {
-    throw new Error(`fetching Categories failed: ${error}`);
-  }
-};
-
 export const insertCategoryToDb = async (newCategory: TNewTestCategory) => {
   try {
     const [cat] = await db
