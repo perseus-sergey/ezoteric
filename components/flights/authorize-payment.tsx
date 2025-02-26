@@ -7,8 +7,9 @@ import useSWR from 'swr';
 
 import { fetcher } from '@/lib/utils/utils';
 
-import { CheckCircle, InfoIcon } from '../custom/icons';
 import { Input } from '../ui/input';
+import { CheckCircle } from 'lucide-react';
+import { InfoIcon } from '@/svg/InfoIcon';
 
 export function AuthorizePayment({
   intent = { reservationId: 'sample-uuid' },

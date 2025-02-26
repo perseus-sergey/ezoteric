@@ -24,7 +24,7 @@ export default function ThemeToggle({
   return (
     <motion.button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="relative flex items-center justify-center gap-2 p-4 opacity-80"
+      className="relative flex items-center justify-center gap-4 p-4 opacity-80"
       aria-label={ariaLabel}
       whileTap={{ scale: 0.9 }}
     >

@@ -5,7 +5,6 @@ import { motion } from 'motion/react';
 import { clsx } from 'clsx';
 import { ReactNode } from 'react';
 
-import { UserIcon } from './icons';
 import { Markdown } from './markdown';
 import { Weather } from './weather';
 import { AuthorizePayment } from '../flights/authorize-payment';
@@ -18,6 +17,7 @@ import { VerifyPayment } from '../flights/verify-payment';
 import { Meditation } from '@/svg/Meditation';
 import Image from 'next/image';
 import { PreviewUploaded } from './PreviewUploaded';
+import { UserIcon } from '@/svg/UserIcon';
 
 export const PreviewMessage = ({
   chatId,
@@ -54,7 +54,7 @@ export const PreviewMessage = ({
             className="rounded-full"
           />
         ) : (
-          <UserIcon />
+          <UserIcon className="size-4" />
         )}
       </div>
 

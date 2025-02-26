@@ -9,8 +9,8 @@ import {
 import { ELanguage } from '@/models/language.model';
 import Link from 'next/link';
 import { Fragment } from 'react';
-import { HomeIcon } from './icons';
 import { EBreadcrumb, homeAriaLabel } from '@/models/breadcrumb.model';
+import { HomeIcon } from '@/svg/HomeIcon';
 
 const BrCrumb = ({
   items,

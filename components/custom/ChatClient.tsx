@@ -17,10 +17,10 @@ import {
 } from '@/models/chat.model';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
-import { MessageIcon } from './icons';
 import { removeChatFromDb, saveChatToDb } from '@/actions/chat.action';
 import { toast } from 'sonner';
 import SeoSVG from './SeoSVG';
+import { MessageIcon } from '@/svg/MessageIcon';
 
 const { chatTitle, chatBtn, closeBtn } = CHAT_MODEL;
 

@@ -6,11 +6,11 @@ import UserMenu from './UserMenu';
 import { Session } from 'next-auth';
 import LanguageSwitcher from './LanguageSwitcher';
 import LoginProviders from './LoginProviders';
-import SideBar from './SideBar';
 import { Suspense } from 'react';
 import ThemeToggleWrapped from './ThemeToggle';
 import { Osaka } from '@/svg/Osaka';
-import TestMenu from './TestMenu';
+import SideBar from './SideBar';
+import TestsMenu from './TestsMenu';
 
 const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
@@ -30,9 +30,7 @@ export const Header = async ({
       className="border-grid sticky z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center"
     >
       <div className="flex flex-row gap-3 items-center">
-        <Suspense>
-          <SideBar isAdmin={isAdmin} session={session} lang={lang} />
-        </Suspense>
+        <SideBar isAdmin={isAdmin} session={session} lang={lang} />
 
         <SeoLink
           title={logo[lang]}
@@ -46,7 +44,7 @@ export const Header = async ({
 
       <nav className="hidden md:flex flex-row gap-4 items-center font-georgia">
         <Suspense>
-          <TestMenu lang={lang} />
+          <TestsMenu lang={lang} />
         </Suspense>
 
         <SeoLink title={links.blog.ariaLabel[lang]} href={`/${lang}/${BLOG}`}>

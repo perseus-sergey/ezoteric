@@ -55,7 +55,7 @@ export default async function Page({ params }: { params: TParams }) {
       <section className="py-4">
         <Title titleType="h2">{ourServices.title[lang]}</Title>
 
-        <div className="pr-8 pl-24 bg-secondary/90 rounded-lg my-2 flex items-center justify-around flex-wrap md:flex-nowrap gap-x-8 py-6">
+        <div className="px-8 md:pl-24 bg-secondary/90 rounded-lg my-2 flex items-center justify-around flex-wrap md:flex-nowrap gap-x-8 py-6">
           <div>{ourServices.text[lang]}</div>
 
           <TarotTwoCards className="size-20 text-foreground/40 shrink-0" />

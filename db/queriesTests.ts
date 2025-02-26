@@ -44,7 +44,9 @@ export const getHeaderTestCats = cache(
       });
       return res;
     } catch (error) {
-      throw new Error(`fetching Categories failed: ${error}`);
+      console.log('🚀 ~ error:', error);
+      // throw new Error(`fetching Categories failed: ${error}`);
+      return [];
     }
   }
 );

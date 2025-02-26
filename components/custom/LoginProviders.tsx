@@ -22,7 +22,7 @@ export default function LoginProviders({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={withIcons ? 'ghost' : 'outline'}>
+        <Button variant={withIcons ? 'ghost' : 'outline'} className="gap-4">
           {withIcons && <User className="text-muted-foreground" />}
           {HEADER_LOGIN.signin[lang]}
         </Button>

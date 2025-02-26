@@ -5,7 +5,6 @@ import { getELangKey } from '@/lib/utils/getLanguage';
 import { ELanguage } from '@/models/language.model';
 import { Button } from '../ui/button';
 import { LANGUAGE_SELECT } from '@/models/header.model';
-import { clsx } from 'clsx';
 import { TooltipSimple } from './TooltipSimple';
 
 const { EN, UA } = ELanguage;
@@ -35,7 +34,7 @@ const LanguageSwitcher = ({
     <TooltipSimple content={ariaLabel}>
       <Button
         variant="ghost"
-        className={clsx(!withCaption && 'size-10 [&_svg]:size-6')}
+        className={!withCaption ? 'size-10 [&_svg]:size-6' : 'gap-4'}
         onClick={handleLanguageChange}
       >
         {icon}

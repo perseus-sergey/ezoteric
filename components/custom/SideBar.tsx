@@ -1,4 +1,3 @@
-import { MenuIcon } from './icons';
 import { Button } from '../ui/button';
 import {
   Sheet,
@@ -9,19 +8,23 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '../ui/sheet';
+
 import { ESegment } from '@/models/url.model';
 import { ELanguage } from '@/models/language.model';
 import { Session } from 'next-auth';
 import SeoLink from './SeoLink';
 import { HEADER_MODEL, SIDEBAR } from '@/models/header.model';
 import LanguageSwitcher from './LanguageSwitcher';
-import { BookOpenText } from 'lucide-react';
+import { BookOpenText, Menu } from 'lucide-react';
 import UserMenu from './UserMenu';
 import LoginProviders from './LoginProviders';
 import ThemeToggleWrapped from './ThemeToggle';
-import { TarotTwoCards } from '@/svg/TarotTwoCards';
+import TestsMenu from './TestsMenu';
+import { Quest } from '@/svg/Quest';
+import { Separator } from '../ui/separator';
+import { Suspense } from 'react';
 
-const { BLOG, TESTS } = ESegment;
+const { BLOG } = ESegment;
 const { sideBarOpenIcon, links } = HEADER_MODEL;
 
 export default function SideBar({
@@ -38,7 +41,7 @@ export default function SideBar({
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" className="p-1.5 h-fit md:hidden">
-            <MenuIcon className="size-6" />
+            <Menu className="size-6" />
             <span className="sr-only">{sideBarOpenIcon.ariaLabel[lang]}</span>
           </Button>
         </SheetTrigger>
@@ -54,7 +57,7 @@ export default function SideBar({
           <nav className="w-fit px-4 py-8 flex flex-col items-start gap-2 font-georgia">
             <SheetClose asChild>
               <SeoLink
-                className="flex items-center gap-2 px-4 py-2"
+                className="flex items-center gap-4 px-4 py-2"
                 title={links.blog.ariaLabel[lang]}
                 href={`/${lang}/${BLOG}`}
               >
@@ -63,20 +66,20 @@ export default function SideBar({
               </SeoLink>
             </SheetClose>
 
-            <SheetClose asChild>
-              <SeoLink
-                className="flex items-center gap-2 px-4 py-2"
-                title={links.tests.dropdownMenu.allTests.caption[lang]}
-                href={`/${lang}/${TESTS}`}
-              >
-                <TarotTwoCards className="size-6 opacity-70" />
-                {links.tests.caption[lang]}
-              </SeoLink>
-            </SheetClose>
+            <div className="flex items-center gap-4 px-4 py-2">
+              <Quest className="size-6 opacity-90" />
+              <Suspense>
+                <TestsMenu lang={lang} className="p-0" isSideMenu />
+              </Suspense>
+            </div>
+
+            <Separator />
 
             <LanguageSwitcher withCaption />
 
             <ThemeToggleWrapped lang={lang} withCaption />
+
+            <Separator />
 
             {session ? (
               <UserMenu

@@ -89,7 +89,7 @@ export default function UserMenu({
                   href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}
                   className="flex items-center gap-2"
                 >
-                  <FilePlus className="size-4 opacity-40" /> Add New Post
+                  <FilePlus className="size-4 opacity-70" /> Add New Post
                 </Link>
               </DropdownMenuItem>
 
@@ -98,7 +98,7 @@ export default function UserMenu({
                   href={`/${lang}/${MASTER}/${TESTS}/${ARTICLE_ADD}`}
                   className="flex items-center gap-2"
                 >
-                  <FilePlus className="size-4 opacity-40" /> Add New Test
+                  <FilePlus className="size-4 opacity-70" /> Add New Test
                 </Link>
               </DropdownMenuItem>
 
@@ -107,7 +107,7 @@ export default function UserMenu({
                   href={`/${lang}/${MASTER}/${BLOG}/${UPLOAD_IMAGE}`}
                   className="flex items-center gap-2"
                 >
-                  <ImagesIcon className="size-4 opacity-40" /> Image Storage
+                  <ImagesIcon className="size-4 opacity-70" /> Image Storage
                 </Link>
               </DropdownMenuItem>
 
@@ -116,7 +116,7 @@ export default function UserMenu({
                   href={`/${lang}/${MASTER}/${TAGS_EDIT}`}
                   className="flex items-center gap-2"
                 >
-                  <BadgeCheck className="size-4 opacity-40" /> Tags Edit
+                  <BadgeCheck className="size-4 opacity-70" /> Tags Edit
                 </Link>
               </DropdownMenuItem>
 
@@ -125,7 +125,7 @@ export default function UserMenu({
                   href={`/${lang}/${MASTER}/${CATEGORIES_EDIT}`}
                   className="flex items-center gap-2"
                 >
-                  <BadgeCheck className="size-4 opacity-40" /> Edit Categories
+                  <BadgeCheck className="size-4 opacity-70" /> Edit Categories
                 </Link>
               </DropdownMenuItem>
 
@@ -134,7 +134,7 @@ export default function UserMenu({
                   href={`/${lang}/${MASTER}/${CHAT_VIEWER}`}
                   className="flex items-center gap-2"
                 >
-                  <Eye className="size-4 opacity-40" /> Chat Viewer
+                  <Eye className="size-4 opacity-70" /> Chat Viewer
                 </Link>
               </DropdownMenuItem>
             </>

@@ -1,6 +1,6 @@
-import { LoaderIcon } from '@/components/custom/icons';
 import { cn } from '@/lib/utils/utils';
 import { SVGProps } from 'react';
+import { LoaderIcon } from './LoaderIcon';
 
 export function LoadingAnimated({
   className,

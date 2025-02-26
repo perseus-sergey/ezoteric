@@ -6,7 +6,6 @@ import { ChatRequestOptions, CreateMessage, Message } from 'ai';
 import React, { useRef, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
-import { ArrowUpIcon, StopIcon } from './icons';
 import useWindowSize from './use-window-size';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -14,6 +13,8 @@ import { chatSuggestedActions, CLEAR_CHAT } from '@/models/chat.model';
 import { ELanguage } from '@/models/language.model';
 import { Eraser } from 'lucide-react';
 import { ConfirmDialog } from './ConfirmDialog';
+import { ArrowUpIcon } from '@/svg/ArrowUpIcon';
+import { StopIcon } from '@/svg/StopIcon';
 
 export function MultimodalInput({
   lang,
