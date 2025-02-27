@@ -361,7 +361,7 @@ export default function FormAddEditTest({
 
         <Button type="button" onClick={handleTranslate} disabled={isGenerating}>
           {isGenerating ? (
-            <LoadingAnimated />
+            <LoadingAnimated className="size-5" />
           ) : (
             <GenerateAI className="size-5" />
           )}{' '}
@@ -397,7 +397,7 @@ export default function FormAddEditTest({
             disabled={isGenerating || isGenerating}
           >
             {isGenerating ? (
-              <LoadingAnimated />
+              <LoadingAnimated className="size-5" />
             ) : (
               <GenerateAI className="size-5" />
             )}{' '}
@@ -516,7 +516,7 @@ export default function FormAddEditTest({
         {/* AI Test Generate Button */}
         <Button type="button" onClick={handleAiGenerateTest}>
           {isGenerating ? (
-            <LoadingAnimated />
+            <LoadingAnimated className="size-5" />
           ) : (
             <GenerateAI className="size-5" />
           )}{' '}
@@ -742,7 +742,11 @@ export default function FormAddEditTest({
           disabled={isSaving || !formState.isDirty}
           className={clsx(isSaving && 'cursor-progress')}
         >
-          {isSaving ? <LoadingAnimated /> : <SaveAll className="opacity-50" />}{' '}
+          {isSaving ? (
+            <LoadingAnimated className="size-5" />
+          ) : (
+            <SaveAll className="opacity-50" />
+          )}{' '}
           Save Test
         </Button>
       </form>

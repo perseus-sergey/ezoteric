@@ -11,7 +11,7 @@ export const CodeBlock = ({
 }) => {
   return (
     <TooltipSimple content={children ? copyCode : undefined} asChild>
-      <div className="relative w-fit bg-muted rounded-md p-2 pr-12">
+      <div className="relative w-fit max-w-4xl bg-muted rounded-md p-2 pr-12">
         {children || (
           <pre className="text-sm overflow-x-auto">
             <code>{copyCode}</code>

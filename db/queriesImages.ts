@@ -60,10 +60,13 @@ export const getArticleByImage = async (imageName: string) => {
       .where(and(...articleFilters))
       .limit(1);
 
-    return {
-      pathName: `/${DEFAULT_LANG}/${ESegment.BLOG}/${articleRes[0].slug}`,
-      title: articleRes[0].title,
-    };
+    if (articleRes[0])
+      return {
+        pathName: `/${DEFAULT_LANG}/${ESegment.BLOG}/${articleRes[0].slug}`,
+        title: articleRes[0].title,
+      };
+
+    return null; // Не знайдено статті або тест з даним зображенням
   } catch (error) {
     throw new Error(
       `Get Article/Test By Image Source failed: ${(error as Error).message}`

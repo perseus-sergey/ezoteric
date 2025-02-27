@@ -18,6 +18,7 @@ import { Suspense } from 'react';
 
 // =================================================================
 // інформації. ... (імітація обчислень) ...
+// add link list of posts and tests to chat prompt
 // header dropdown tests categories (+ NUMEROLOGY_FORM_ID)
 // add similar articles and tests to main page
 // improve components/custom/Modals/ModalNumerologyResponse.tsx

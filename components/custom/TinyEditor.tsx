@@ -53,6 +53,9 @@ export const TinyEditor = ({
           'help',
           'wordcount',
         ],
+        relative_urls: false, // Вимикає перетворення на відносні URL
+        remove_script_host: false, // Зберігає повний шлях, включаючи домен
+        convert_urls: false, // Вимикає автоматичне змінення URL
         toolbar:
           'code | visualblocks | undo redo | blocks fontfamily fontsize | ' +
           'bold italic forecolor | alignleft aligncenter ' +

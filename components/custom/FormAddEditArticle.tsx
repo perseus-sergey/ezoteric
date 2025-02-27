@@ -304,7 +304,7 @@ export const FormAddEditArticle = ({
           disabled={isTranslating}
         >
           {isTranslating ? (
-            <LoadingAnimated />
+            <LoadingAnimated className="size-5" />
           ) : (
             <GenerateAI className="size-5" />
           )}{' '}
@@ -340,7 +340,7 @@ export const FormAddEditArticle = ({
             disabled={isTranslating || isMetaGenerating}
           >
             {isMetaGenerating ? (
-              <LoadingAnimated />
+              <LoadingAnimated className="size-5" />
             ) : (
               <GenerateAI className="size-5" />
             )}{' '}
@@ -518,8 +518,12 @@ export const FormAddEditArticle = ({
                 onClick={handleAiTags}
                 disabled={isTranslating}
               >
-                {isTranslating ? <LoadingAnimated /> : <GenerateAI />} Підібрати
-                Автоматично
+                {isTranslating ? (
+                  <LoadingAnimated className="size-5" />
+                ) : (
+                  <GenerateAI className="size-5" />
+                )}{' '}
+                Підібрати Автоматично
               </Button>
             </Fieldset>
           )}
@@ -634,7 +638,7 @@ export const FormAddEditArticle = ({
           disabled={isSaving || !formState.isDirty}
           className={clsx(isSaving && 'cursor-progress')}
         >
-          {isSaving && <LoadingAnimated />} Зберегти
+          {isSaving && <LoadingAnimated className="size-5" />} Зберегти
         </Button>
       </form>
     </Form>
