@@ -37,16 +37,12 @@ import {
   SaveAll,
 } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  IGenerateArticleMeta,
-  TTestFormValues,
-  testFormSchema,
-} from '@/models/editArticle.model';
+import { TTestFormValues, testFormSchema } from '@/models/editArticle.model';
 import {
   aiGenerateMeta,
   aiGenerateTest,
   aiTranslateArticle,
-} from '@/controllers/aiTranslateArticle.controller';
+} from '@/ai/aiTranslateArticle.controller';
 import { toast } from 'sonner';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { clsx } from 'clsx';
@@ -166,9 +162,9 @@ export default function FormAddEditTest({
     try {
       const aiResponse = await aiGenerateTest(rowText);
 
-      setJsonField(aiResponse);
+      setJsonField(JSON.stringify(aiResponse, null, 2));
 
-      generateTestFromJson(aiResponse);
+      generateTestFromJson(JSON.stringify(aiResponse, null, 2));
 
       toast.success('Текст успішно згенеровано.');
     } catch (error) {
@@ -272,10 +268,7 @@ export default function FormAddEditTest({
     setIsGenerating(true);
 
     try {
-      const generatedMeta: IGenerateArticleMeta = await aiGenerateMeta(
-        titleUa,
-        rowText
-      );
+      const generatedMeta = await aiGenerateMeta(titleUa, rowText);
 
       // Update the form fields with the generated values
       setValue('descriptionUa', generatedMeta.descriptionUa, dirtyValidate);
@@ -394,7 +387,7 @@ export default function FormAddEditTest({
           <Button
             type="button"
             onClick={handleMetaGenerate}
-            disabled={isGenerating || isGenerating}
+            disabled={isGenerating}
           >
             {isGenerating ? (
               <LoadingAnimated className="size-5" />
@@ -514,7 +507,11 @@ export default function FormAddEditTest({
         </Fieldset>
 
         {/* AI Test Generate Button */}
-        <Button type="button" onClick={handleAiGenerateTest}>
+        <Button
+          type="button"
+          onClick={handleAiGenerateTest}
+          disabled={isGenerating}
+        >
           {isGenerating ? (
             <LoadingAnimated className="size-5" />
           ) : (

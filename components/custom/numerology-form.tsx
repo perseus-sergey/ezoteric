@@ -27,7 +27,7 @@ import {
   TNumerologySchema,
 } from '@/models/meta/numerology.model';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { generateAiNumerology } from '@/controllers/numerology.controller';
+import { generateAiNumerology } from '@/ai/numerology.controller';
 import { cn } from '@/lib/utils/utils';
 import ButtonBorderGlowing from './ButtonBorderGlowing';
 import { Button } from '../ui/button';

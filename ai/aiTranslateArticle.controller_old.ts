@@ -2,11 +2,11 @@
 
 import { geminiFlashModel, geminiFlashThinking } from '@/ai';
 import { TTag } from '@/db/schema';
-import {
-  IAiTags,
-  IAiTranslatedHtml,
-  IGenerateArticleMeta,
-} from '@/models/editArticle.model';
+// import {
+//   IAiTags,
+//   IAiTranslatedHtml,
+//   IGenerateArticleMeta,
+// } from '@/models/editArticle.model';
 import { generateText } from 'ai';
 
 export const aiTranslateArticle = async (contentUa: string) => {
@@ -34,7 +34,8 @@ export const aiTranslateArticle = async (contentUa: string) => {
 
     const cleanResult = text.replace(/```json|```/g, '');
 
-    return (await JSON.parse(cleanResult)) as IAiTranslatedHtml;
+    return await JSON.parse(cleanResult);
+    // return (await JSON.parse(cleanResult)) as IAiTranslatedHtml;
   } catch (error) {
     throw new Error(`AI Translation Error: ${error}`);
   }
@@ -96,7 +97,8 @@ export const aiGenerateMeta = async (titleUa: string, contentUa: string) => {
 
     const cleanResult = text.replace(/```json|```/g, '');
 
-    return (await JSON.parse(cleanResult)) as IGenerateArticleMeta;
+    return await JSON.parse(cleanResult);
+    // return (await JSON.parse(cleanResult)) as IGenerateArticleMeta;
   } catch (error) {
     throw new Error(`AI Meta Generation Error: ${error}`);
   }
@@ -163,7 +165,7 @@ Where '<number[]>' is an array of relevant tag IDs from the list.
       // eslint-disable-next-line
       parsedResult.aiTags.every((tag: any) => typeof tag === 'number')
     ) {
-      return parsedResult as IAiTags;
+      return parsedResult;
     } else {
       throw new Error(
         `Invalid AI response format: ${JSON.stringify(parsedResult)}`

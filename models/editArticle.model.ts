@@ -100,29 +100,104 @@ export const newArticleDefaultValues = {
 
 export type TArticleFormValues = z.infer<typeof articleFormSchema>;
 
-export interface IGenerateArticleMeta {
-  titleEn: string;
-  descriptionEn: string;
-  keywordsEn: string;
-  descriptionUa: string;
-  keywordsUa: string;
-  h1Ua: string;
-  h1En: string;
-}
+// export interface IGenerateArticleMeta {
+//   titleEn: string;
+//   descriptionEn: string;
+//   keywordsEn: string;
+//   descriptionUa: string;
+//   keywordsUa: string;
+//   h1Ua: string;
+//   h1En: string;
+// }
 
-export interface IAiTranslatedHtml {
-  translatedHtml: string;
-}
+// export interface IAiTranslatedHtml {
+//   translatedHtml: string;
+// }
 
-export interface IAiTags {
-  aiTags: number[];
-}
+// export interface IAiTags {
+//   aiTags: number[];
+// }
 
 // =================================================================
 // TESTS
 // =================================================================
 
-export const testFormSchema = z.object({
+export const questAndConclusionSchema = z.object({
+  questions: z
+    .array(
+      z.object({
+        titleUa: z
+          .string()
+          .min(1, "Питання є обов'язковим")
+          .describe('Question in Ukrainian'),
+        titleEn: z
+          .string()
+          .min(1, 'Question is required')
+          .describe('Question in English'),
+        answers: z
+          .array(
+            z.object({
+              textUa: z
+                .string()
+                .min(1, "Відповідь є обов'язковою")
+                .describe('Answer in Ukrainian'),
+              textEn: z
+                .string()
+                .min(1, 'Answer is required')
+                .describe('Answer in English'),
+              rating: z.coerce
+                .number()
+                .min(0)
+                .max(50, 'Рейтинг від 0 до 50')
+                .describe('Rating for this answer (0-50)'),
+            })
+          )
+          .min(2, { message: 'Повинна бути хоча б 2 відповіді' })
+          .describe('At least 2 answers'),
+      })
+    )
+    .min(5, 'Повинно бути хоча б 5 запитань')
+    .describe('At least 5 questions'),
+
+  conclusions: z
+    .array(
+      z
+        .object({
+          minRank: z.coerce
+            .number()
+            .min(0, 'Мінімальний рейтинг має бути 0 або більше')
+            .describe('Minimum score for this conclusion')
+            .int(),
+          maxRank: z.coerce
+            .number()
+            .int()
+            .describe(
+              'Maximum score for this conclusion must be a number greater than or equal to "minRank"'
+            ),
+          descriptionUa: z
+            .string()
+            .describe(
+              'Detailed, extensive and well-reasoned conclusion description in Ukrainian'
+            )
+            .min(10, { message: 'Опис занадто короткий' }),
+          descriptionEn: z
+            .string()
+            .describe(
+              'Detailed, extensive and well-reasoned conclusion description in English'
+            )
+            .min(10, { message: 'Description is too short' }),
+        })
+        .refine((data) => data.minRank <= data.maxRank, {
+          message:
+            'Максимальний рейтинг має бути більшим або рівним мінімальному',
+          path: ['maxRank'], //вказуємо на поле з помилкою
+        })
+    )
+    .min(1, { message: 'Повинен бути хоча б один висновок' })
+    .describe('At least 3 conclusions'),
+});
+
+export const testFormSchema = questAndConclusionSchema.extend({
   slug: z.string().min(1, { message: 'Slug is required.' }),
   titleUa: z
     .string()
@@ -196,51 +271,6 @@ export const testFormSchema = z.object({
         message: 'Spotify ID must be a valid 22-character string',
       }
     ),
-
-  questions: z
-    .array(
-      z.object({
-        titleUa: z.string().min(1, "Питання є обов'язковим"),
-        titleEn: z.string().min(1, 'Question is required'),
-        answers: z
-          .array(
-            z.object({
-              textUa: z.string().min(1, "Відповідь є обов'язковою"),
-              textEn: z.string().min(1, 'Answer is required'),
-              rating: z.coerce
-                .number()
-                .min(0)
-                .max(1000, 'Рейтинг від 0 до 1000'),
-            })
-          )
-          .min(2, { message: 'Повинна бути хоча б одна відповідь' }),
-      })
-    )
-    .min(1, 'Повинно бути хоча б одне запитання'),
-
-  conclusions: z
-    .array(
-      z
-        .object({
-          minRank: z.coerce
-            .number()
-            .min(0, 'Мінімальний рейтинг має бути 0 або більше')
-            .int(),
-          maxRank: z.coerce.number().int(),
-          descriptionUa: z
-            .string()
-            .min(10, { message: 'Опис занадто короткий' }),
-          descriptionEn: z
-            .string()
-            .min(10, { message: 'Description is too short' }),
-        })
-        .refine((data) => data.minRank <= data.maxRank, {
-          message:
-            'Максимальний рейтинг має бути більшим або рівним мінімальному',
-          path: ['maxRank'], //вказуємо на поле з помилкою
-        })
-    )
-    .min(1, { message: 'Повинен бути хоча б один висновок' }),
 
   categoryId: z
     .number()

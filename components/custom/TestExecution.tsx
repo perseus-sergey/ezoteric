@@ -28,6 +28,7 @@ import {
 
 import { ArrowRight } from 'lucide-react';
 import { TESTS_EXECUTION } from '@/models/tests.model';
+import { Markdown } from './markdown';
 
 interface IProps {
   test: TTestRelationsLocalized;
@@ -180,7 +181,7 @@ function TestModalContent({
               variant={selectedAnswerId === answer.id ? 'default' : 'outline'}
               className="whitespace-normal h-fit py-2 shadow-md"
             >
-              {answer.text}
+              <Markdown>{answer.text}</Markdown>
             </Button>
           ))
         ) : (
@@ -188,7 +189,7 @@ function TestModalContent({
             legendText={fieldsetConclusionLegend[lang]}
             className="p-4 font-georgia"
           >
-            <p>{getConclusion().description}</p>
+            <Markdown>{getConclusion().description}</Markdown>
           </Fieldset>
         )}
       </AlertDialogHeader>

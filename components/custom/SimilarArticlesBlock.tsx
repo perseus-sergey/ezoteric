@@ -39,7 +39,7 @@ export default async function SimilarArticlesBlock({
   if (!similarArticles || similarArticles.length === 0) return null;
 
   return (
-    <nav className="mt-4 py-4 bg-tertiary/70 text-quaternary-foreground rounded-2xl">
+    <nav className="mt-4 py-4 bg-tertiary/30 rounded-2xl">
       <Title titleType="h2" className="text-tertiary-foreground">
         {tagIds ? SIMILAR_ARTICLES.title[lang] : SIMILAR_TESTS.title[lang]}
       </Title>

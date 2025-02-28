@@ -17,14 +17,14 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 import { Suspense } from 'react';
 
 // =================================================================
+// DEI
 // інформації. ... (імітація обчислень) ...
 // add link list of posts and tests to chat prompt
-// header dropdown tests categories (+ NUMEROLOGY_FORM_ID)
 // add similar articles and tests to main page
 // improve components/custom/Modals/ModalNumerologyResponse.tsx
 // - check jsonld main page
 // - check tests pagination & search
-// - db add completed tests amount
+// - db add completed tests amount (Discover Your Inner Compass)
 
 // installsat: remove from sitemap pages with schedules (ask ai how it is better to do)
 // installsat: remove redundant pages with pagination from sitemap

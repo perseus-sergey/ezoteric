@@ -19,7 +19,6 @@ import { Lock, LockOpen, RefreshCcw } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   articleFormSchema,
-  IGenerateArticleMeta,
   newArticleDefaultValues,
   TArticleFormValues,
 } from '@/models/editArticle.model';
@@ -27,7 +26,7 @@ import {
   aiAddTags,
   aiGenerateMeta,
   aiTranslateArticle,
-} from '@/controllers/aiTranslateArticle.controller';
+} from '@/ai/aiTranslateArticle.controller';
 import { toast } from 'sonner';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { clsx } from 'clsx';
@@ -174,10 +173,7 @@ export const FormAddEditArticle = ({
     setIsMetaGenerating(true);
 
     try {
-      const generatedMeta: IGenerateArticleMeta = await aiGenerateMeta(
-        titleUa,
-        rowText
-      );
+      const generatedMeta = await aiGenerateMeta(titleUa, rowText);
 
       // Update the form fields with the translated values
       setValue('descriptionUa', generatedMeta.descriptionUa, dirtyValidate);
