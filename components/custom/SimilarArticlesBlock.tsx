@@ -5,7 +5,7 @@ import { BLOG_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/blog.model';
 import { ESegment } from '@/models/url.model';
 import { getImageSrc } from '@/controllers/articles.controller';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
-import { Card, CardContent, CardFooter, CardTitle } from '../ui/card';
+import { Card, CardContent, CardTitle } from '../ui/card';
 import ValidImage from './ValidImage';
 import { IMG_PROPERTIES } from '@/models/image.model';
 import { ARTICLE_IMG, SIMILAR_ARTICLES } from '@/models/article.model';
@@ -45,7 +45,7 @@ export default async function SimilarArticlesBlock({
       </Title>
       <ul className="flex flex-wrap gap-4 justify-center">
         {similarArticles.map((similarArticle) => (
-          <li key={similarArticle.slug} className="rounded-sm overflow-hidden">
+          <li key={similarArticle.slug} className="overflow-hidden">
             <ArticleCard
               lang={lang}
               article={similarArticle}
@@ -71,8 +71,9 @@ const ArticleCard = ({
   const currDate = getFormattedDateStrYearFirst(article.updatedAt);
 
   return (
-    <Card className="relative size-72 rounded-none flex flex-col md:flex-row items-center justify-between gap-4 p-4">
+    <Card className="size-72 rounded-none">
       <SeoLink
+        className="relative size-full block"
         href={`/${lang}/${isTest ? TESTS : BLOG}/${article.slug}`}
         title={
           isTest
@@ -93,18 +94,16 @@ const ArticleCard = ({
           }
           fill
         />
+
+        <CardTitle className="absolute bottom-0 inset-x-0 font-georgia bg-gradient-to-t from-80% from-black/50 to-black/5 text-lg font-semibold text-white text-center p-2">
+          {article.title}
+        </CardTitle>
+
+        <CardContent className="absolute top-0 left-0 flex gap-2 items-center text-sm bg-gradient-to-b from-60% from-black/50 to-black/5 text-white p-2">
+          <CalendarCheck2 className="size-4" />
+          <time dateTime={currDate}>{currDate}</time>
+        </CardContent>
       </SeoLink>
-
-      <CardTitle className="absolute bottom-0 inset-x-0 font-georgia bg-gradient-to-t from-80% from-black/50 to-black/5 text-lg font-semibold text-white text-center p-2">
-        {article.title}
-      </CardTitle>
-
-      <CardContent className="absolute top-0 left-0 flex gap-2 items-center text-sm bg-gradient-to-b from-60% from-black/50 to-black/5 text-white p-2">
-        <CalendarCheck2 className="size-4" />
-        <time dateTime={currDate}>{currDate}</time>
-      </CardContent>
-
-      <CardFooter className="flex-col items-start gap-4"></CardFooter>
     </Card>
   );
 };

@@ -198,6 +198,7 @@ export default function NumerologyForm({ lang, className }: IProps) {
                 )}
               />
             </CardContent>
+
             <CardFooter className="w-full flex justify-center p-0 pt-8">
               <Button
                 asChild

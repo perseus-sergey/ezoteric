@@ -17,6 +17,7 @@ import {
   MODAL_NUMEROLOGY,
 } from '@/models/meta/numerology.model';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
+import { Markdown } from '../markdown';
 
 interface IProps {
   lang: ELanguage;
@@ -71,58 +72,48 @@ export default function ModalNumerologyResponse({
           <AlertDialogTitle className="text-center text-2xl">
             {modalCaption[lang]}
           </AlertDialogTitle>
-          <AlertDialogTitle>
+
+          <AlertDialogDescription>
             {`${modalDescription[lang]} "${formData.username}" (${getFormattedDateStrYearFirst(formData.birthdate)})`}
-          </AlertDialogTitle>
-          {numerologyResult ? (
-            <ul className="max-h-[40dvh] space-y-4 overflow-y-auto">
-              <li>
-                <AlertDialogDescription>
-                  <strong>{lifePathNumberCaption[lang]}:</strong>{' '}
-                  {lifePathNumber}{' '}
-                  {lifePathInvolvedNumbers.length > 0 &&
-                    `(${lifePathInvolvedNumbers.join(', ')})`}{' '}
-                  - {lifePathNumberInterpretation}
-                </AlertDialogDescription>
-              </li>
-              <li>
-                <AlertDialogDescription>
-                  <strong>{soulNumberCaption[lang]}:</strong> {soulNumber}{' '}
-                  {soulInvolvedNumbers.length > 0 &&
-                    `(${soulInvolvedNumbers.join(', ')})`}{' '}
-                  - {soulNumberInterpretation}
-                </AlertDialogDescription>
-              </li>
-              <li>
-                <AlertDialogDescription>
-                  <strong>{destinyNumberCaption[lang]}:</strong> {destinyNumber}{' '}
-                  {destinyInvolvedNumbers.length > 0 &&
-                    `(${destinyInvolvedNumbers.join(', ')})`}{' '}
-                  - {destinyNumberInterpretation}
-                </AlertDialogDescription>
-              </li>
-              <li>
-                <AlertDialogDescription>
-                  <strong>{personalityNumberCaption[lang]}:</strong>{' '}
-                  {personalityNumber}{' '}
-                  {personalityInvolvedNumbers.length > 0 &&
-                    `(${personalityInvolvedNumbers.join(', ')})`}{' '}
-                  - {personalityNumberInterpretation}
-                </AlertDialogDescription>
-              </li>
-              <li>
-                <AlertDialogDescription>
-                  <strong>{overallInterpretationCaption[lang]}:</strong>{' '}
-                  {overallInterpretation}
-                </AlertDialogDescription>
-              </li>
-            </ul>
-          ) : (
-            <AlertDialogDescription>
-              {modalResponseErrors[lang].join(' ')}
-            </AlertDialogDescription>
-          )}
+          </AlertDialogDescription>
         </AlertDialogHeader>
+
+        {numerologyResult ? (
+          <ul className="max-h-[50dvh] space-y-4 overflow-y-auto">
+            <li>
+              <strong>{lifePathNumberCaption[lang]}:</strong> {lifePathNumber}{' '}
+              {lifePathInvolvedNumbers.length > 0 &&
+                `(${lifePathInvolvedNumbers.join(', ')})`}
+              <Markdown>{lifePathNumberInterpretation}</Markdown>
+            </li>
+            <li>
+              <strong>{soulNumberCaption[lang]}:</strong> {soulNumber}{' '}
+              {soulInvolvedNumbers.length > 0 &&
+                `(${soulInvolvedNumbers.join(', ')})`}
+              <Markdown>{soulNumberInterpretation}</Markdown>
+            </li>
+            <li>
+              <strong>{destinyNumberCaption[lang]}:</strong> {destinyNumber}{' '}
+              {destinyInvolvedNumbers.length > 0 &&
+                `(${destinyInvolvedNumbers.join(', ')})`}
+              <Markdown>{destinyNumberInterpretation}</Markdown>
+            </li>
+            <li>
+              <strong>{personalityNumberCaption[lang]}:</strong>{' '}
+              {personalityNumber}{' '}
+              {personalityInvolvedNumbers.length > 0 &&
+                `(${personalityInvolvedNumbers.join(', ')})`}
+              <Markdown>{personalityNumberInterpretation}</Markdown>
+            </li>
+            <li>
+              <strong>{overallInterpretationCaption[lang]}:</strong>{' '}
+              <Markdown>{overallInterpretation}</Markdown>
+            </li>
+          </ul>
+        ) : (
+          modalResponseErrors[lang].join(' ')
+        )}
+
         <AlertDialogFooter>
           <AlertDialogCancel>{modalCloseBtn[lang]}</AlertDialogCancel>
         </AlertDialogFooter>
