@@ -18,6 +18,7 @@ import { Suspense } from 'react';
 
 // =================================================================
 // DEI
+// close dropdown menu when leave current page
 // інформації. ... (імітація обчислень) ...
 // add link list of posts and tests to chat prompt
 // add similar articles and tests to main page

@@ -2,18 +2,9 @@ import { ELanguage } from '@/models/language.model';
 import { NUMEROLOGY_FORM_ID } from '@/models/url.model';
 import { NumerologyPictogram } from '@/svg/NumerologyPictogram';
 import { Title } from './Title';
+import { HrWithIcon } from './HrWithIcon';
 
 const { UA } = ELanguage;
-
-const NumerologyHr = ({ lang }: { lang: ELanguage }) => (
-  <div className="inline-flex items-center justify-center w-full">
-    <hr className="w-64 h-px my-8 bg-foreground/20 border-0" />
-    <div className="absolute px-4 -translate-x-1/2 bg-tertiary left-1/2">
-      {/* <BasilLeaves lang={lang} className="size-8 text-foreground/80" /> */}
-      <NumerologyPictogram lang={lang} className="size-5 text-foreground/50" />
-    </div>
-  </div>
-);
 
 export const NumerologyHtml = ({ lang }: { lang: ELanguage }) => (
   <>
@@ -106,7 +97,7 @@ export const NumerologyHtml = ({ lang }: { lang: ELanguage }) => (
       )}
     </ul>
 
-    <NumerologyHr lang={lang} />
+    <HrWithIcon lang={lang} />
 
     <p className="mb-4">
       {lang === UA ? (
@@ -197,7 +188,7 @@ export const NumerologyHtml = ({ lang }: { lang: ELanguage }) => (
       )}
     </p>
 
-    <NumerologyHr lang={lang} />
+    <HrWithIcon lang={lang} />
 
     <h3 className="text-xl font-semibold mb-2">
       {lang === UA
@@ -254,7 +245,7 @@ export const NumerologyHtml = ({ lang }: { lang: ELanguage }) => (
       )}
     </ul>
 
-    <NumerologyHr lang={lang} />
+    <HrWithIcon lang={lang} />
 
     <p className="mb-4">
       {lang === UA

@@ -2,12 +2,7 @@ import { convertToCoreMessages, Message, streamText } from 'ai';
 import { z } from 'zod';
 
 import { geminiFlashModel } from '@/ai';
-import {
-  generateReservationPrice,
-  generateSampleFlightSearchResults,
-  generateSampleFlightStatus,
-  generateSampleSeatSelection,
-} from '@/ai/actions';
+import { generateReservationPrice } from '@/ai/actions';
 import {
   createReservation,
   deleteChatByEmail,
@@ -16,6 +11,7 @@ import {
 } from '@/db/queries';
 import { generateUUID } from '@/lib/utils/utils';
 import { auth } from '@/app/(auth)/auth';
+import { makeLinksForChat } from '@/db/queriesChat';
 
 const siteEmail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 
@@ -29,111 +25,42 @@ export async function POST(request: Request) {
     (message) => message.content.length > 0
   );
 
+  const links = await makeLinksForChat();
+  // console.log('🚀 ~ POST ~ links:', links);
+
+  const system = `
+You are our site assistant who is well-versed in esoteric topics, including tarot, psychology, human design, sacred geometry, numerology, astrology, angelology, Feng Shui, matrix of destiny, and other unconventional sciences.  
+You are very nice and kind in communication with our clients. After they ask you questions, you should answer them with patience.  
+Your goal is to provide helpful information and guide users toward a deeper understanding of these topics. Maintain a warm and welcoming tone, and always be polite and respectful.  
+
+- Detect the user's language and respond in the same language.  
+
+- Use **Markdown** to structure your responses for better readability.  
+- **If the user has already provided their birth time and name, use this information throughout the conversation and DO NOT ask for it again.**  
+- **To avoid conflicts with our esoteric consultants, smoothly guide the conversation toward suggesting a consultation with our specialists by writing to our email address ${siteEmail} for a more detailed and accurate answer.** Example:  
+- Today’s date is ${new Date().toLocaleDateString()}.  
+
+- Guide the user through the optimal conversation flow:  
+1. Getting to know the user.  
+2. Understanding their mood and desires.  
+3. Providing concise but polite answers.  
+4. Suggesting a consultation with our specialists.  
+
+- If a user asks a question related to an existing article or test on our website a list of which is given in the json object at the end of the instructions, provide a concise answer and suggest visiting the relevant page for more in-depth information.  
+- Always prioritize sharing relevant internal links over providing a lengthy explanation.  
+- Do NOT encourage the user to visit external resources. All suggestions should be limited to our website.  
+**Existing articles and tests on our website:**
+${JSON.stringify(links)}
+`;
+  // console.log('🚀 ~ POST ~ system:', system);
+
   const result = await streamText({
     model: geminiFlashModel,
-    system: `
-    Your name is Ezotera. You are a woman.
-    You are the assistant of our advisor, and you are the assistant who is well known in esoteric, tarot, psychology, human design, sacred geometry, numerology, astrology, angiology, Feng Shui, matrix of destiny and other unconventional sciences. You are very nice and kind in communication with our clients after they ask you questions, you should answer them with patience and like you are a real person. Your goal is to provide helpful information and guide users toward a deeper understanding of these topics. Maintain a warm and welcoming tone, and always be polite and respectful.
-
-- After they ask you questions, ask them their name, place, date, and time of birth, so you can check their natal chart, matrix of destiny, numerology, and human design, based on what they are asking to give them some information based on their birth info but don’t give them an open response.
-- If the user already gave you the information about their time of birth and name use this information further in chat, DO NOT ask that twice. 
-- If a person starts to ask about another person in their life ask about name and birth info about this person for more accurate information. By telling them which information from their chart you use, give small details from their matrix destiny, astrological birth chart, human design, and other tools. 
-- In order not to conflict with our existing specialists in esoteric consultations, smoothly lead the conversation to the point where the user turns to our consultants for a more detailed and accurate answer. For example: 
--- "Dear, my knowledge is quite extensive, but you can send a request for a consultation with our specialists to the email address ${siteEmail} ✍🏼 and get a more open answer .☺️"
--- "Dear, my knowledge is quite limited, but you can send your request to our consultant to the email address ${siteEmail} ✍🏼 to sign up for a consultation to get a more detailed answer.☺️"
-
-**Important Considerations:**
-
-**Avoid Making Predictions or Guarantees:** Refrain from making definitive predictions or guarantees about the future. Focus on providing information and guidance.
-**Respect User Beliefs:** Be respectful of the user's beliefs, even if they differ from your own.
-**Maintain Professionalism:** Avoid slang, jargon, or overly casual language. Maintain a professional and helpful demeanor.
-**Up-to-date Information:** Ensure the information you provide is current and accurate.
-
-**Multilingual Support:**
-
-1. Detect the user's language (e.g., through website settings) and respond in the same language (English or Ukrainian).
-2. Maintain a consistent persona and tone across both languages.
-
-- keep your responses limited to a few sentences.
-- today's date is ${new Date().toLocaleDateString()}.
-- after every tool call, pretend you're showing the result to the user and keep your response limited to a couple of phrases.
-- ask for any details you don't know, like name, etc.
-- ask follow up questions to nudge user into the optimal flow
-- here's the optimal flow
-  - getting to know the user
-  - finding out about his mood and desires
-  - concise but polite answers to questions
-  - offering to contact our specialist for advice
-
-**Initial Greeting:**
-
-Upon a user initiating the chat, greet them with a personalized and context-aware message. Examples:
-"Welcome to esoteric.net! 🌟 I'm here to help you explore the fascinating world of esoteric knowledge. What brings you here today?"
-"Welcome, dear, to esoteric.net!🤗 I'm here to help you find answers!☺️"
-"Welcome, dear, to esoteric.net! You can ask me any questions, dear! I'm here to help you explore the fascinating world of esoteric knowledge. Which part of your life bothers you now?"
-      `,
+    system,
 
     messages: coreMessages,
 
     tools: {
-      getWeather: {
-        description: 'Get the current weather at a location',
-        parameters: z.object({
-          latitude: z.number().describe('Latitude coordinate'),
-          longitude: z.number().describe('Longitude coordinate'),
-        }),
-        execute: async ({ latitude, longitude }) => {
-          const response = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`
-          );
-
-          const weatherData = await response.json();
-          return weatherData;
-        },
-      },
-
-      displayFlightStatus: {
-        description: 'Display the status of a flight',
-        parameters: z.object({
-          flightNumber: z.string().describe('Flight number'),
-          date: z.string().describe('Date of the flight'),
-        }),
-        execute: async ({ flightNumber, date }) => {
-          const flightStatus = await generateSampleFlightStatus({
-            flightNumber,
-            date,
-          });
-
-          return flightStatus;
-        },
-      },
-
-      searchFlights: {
-        description: 'Search for flights based on the given parameters',
-        parameters: z.object({
-          origin: z.string().describe('Origin airport or city'),
-          destination: z.string().describe('Destination airport or city'),
-        }),
-        execute: async ({ origin, destination }) => {
-          const results = await generateSampleFlightSearchResults({
-            origin,
-            destination,
-          });
-
-          return results;
-        },
-      },
-
-      selectSeats: {
-        description: 'Select seats for a flight',
-        parameters: z.object({
-          flightNumber: z.string().describe('Flight number'),
-        }),
-        execute: async ({ flightNumber }) => {
-          const seats = await generateSampleSeatSelection({ flightNumber });
-          return seats;
-        },
-      },
       createReservation: {
         description: 'Display pending reservation details',
         parameters: z.object({
@@ -189,6 +116,7 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
           return { reservationId };
         },
       },
+
       verifyPayment: {
         description: 'Verify payment status',
         parameters: z.object({
@@ -204,39 +132,6 @@ Upon a user initiating the chat, greet them with a personalized and context-awar
           } else {
             return { hasCompletedPayment: false };
           }
-        },
-      },
-
-      displayBoardingPass: {
-        description: 'Display a boarding pass',
-        parameters: z.object({
-          reservationId: z
-            .string()
-            .describe('Unique identifier for the reservation'),
-          passengerName: z
-            .string()
-            .describe('Name of the passenger, in title case'),
-          flightNumber: z.string().describe('Flight number'),
-          seat: z.string().describe('Seat number'),
-          departure: z.object({
-            cityName: z.string().describe('Name of the departure city'),
-            airportCode: z.string().describe('Code of the departure airport'),
-            airportName: z.string().describe('Name of the departure airport'),
-            timestamp: z.string().describe('ISO 8601 date of departure'),
-            terminal: z.string().describe('Departure terminal'),
-            gate: z.string().describe('Departure gate'),
-          }),
-          arrival: z.object({
-            cityName: z.string().describe('Name of the arrival city'),
-            airportCode: z.string().describe('Code of the arrival airport'),
-            airportName: z.string().describe('Name of the arrival airport'),
-            timestamp: z.string().describe('ISO 8601 date of arrival'),
-            terminal: z.string().describe('Arrival terminal'),
-            gate: z.string().describe('Arrival gate'),
-          }),
-        }),
-        execute: async (boardingPass) => {
-          return boardingPass;
         },
       },
     },

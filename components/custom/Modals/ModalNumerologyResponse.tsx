@@ -18,6 +18,7 @@ import {
 } from '@/models/meta/numerology.model';
 import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import { Markdown } from '../markdown';
+import { HrWithIcon } from '../HrWithIcon';
 
 interface IProps {
   lang: ELanguage;
@@ -86,18 +87,21 @@ export default function ModalNumerologyResponse({
                 `(${lifePathInvolvedNumbers.join(', ')})`}
               <Markdown>{lifePathNumberInterpretation}</Markdown>
             </li>
+            <HrWithIcon lang={lang} />
             <li>
               <strong>{soulNumberCaption[lang]}:</strong> {soulNumber}{' '}
               {soulInvolvedNumbers.length > 0 &&
                 `(${soulInvolvedNumbers.join(', ')})`}
               <Markdown>{soulNumberInterpretation}</Markdown>
             </li>
+            <HrWithIcon lang={lang} />
             <li>
               <strong>{destinyNumberCaption[lang]}:</strong> {destinyNumber}{' '}
               {destinyInvolvedNumbers.length > 0 &&
                 `(${destinyInvolvedNumbers.join(', ')})`}
               <Markdown>{destinyNumberInterpretation}</Markdown>
             </li>
+            <HrWithIcon lang={lang} />
             <li>
               <strong>{personalityNumberCaption[lang]}:</strong>{' '}
               {personalityNumber}{' '}
@@ -105,6 +109,7 @@ export default function ModalNumerologyResponse({
                 `(${personalityInvolvedNumbers.join(', ')})`}
               <Markdown>{personalityNumberInterpretation}</Markdown>
             </li>
+            <HrWithIcon lang={lang} />
             <li>
               <strong>{overallInterpretationCaption[lang]}:</strong>{' '}
               <Markdown>{overallInterpretation}</Markdown>

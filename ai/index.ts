@@ -9,7 +9,7 @@ export const geminiProModel = wrapLanguageModel({
 });
 
 export const geminiFlashModel = wrapLanguageModel({
-  model: google('gemini-1.5-flash'),
+  model: google('gemini-2.0-flash'),
   middleware: customMiddleware,
 });
 

@@ -21,7 +21,7 @@ import {
 } from '@/models/tests.model';
 import { getTestsChunk } from '@/db/queriesTests';
 
-const { TESTS, PAGE_ID, PAGE } = ESegment;
+const { TESTS, PAGE_TEST_ID, PAGE } = ESegment;
 const { UA, EN } = ELanguage;
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
@@ -37,7 +37,7 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const p = await params;
   const lang = getELangKey(p.lang);
-  const pageId = parseInt(p[PAGE_ID], 10);
+  const pageId = parseInt(p[PAGE_TEST_ID], 10);
 
   if (isNaN(pageId)) notFound();
 
@@ -67,9 +67,10 @@ export default async function Page({
   searchParams: TSearchParams;
 }) {
   const p = await params;
+  console.log('🚀 ~ p:', p);
   const sParams = await searchParams;
   const lang = getELangKey(p.lang);
-  const pageId = parseInt(p[PAGE_ID], 10);
+  const pageId = parseInt(p[PAGE_TEST_ID], 10);
 
   if (isNaN(pageId)) notFound();
 
