@@ -220,7 +220,7 @@ export default function NumerologyForm({ lang, className }: IProps) {
             </CardFooter>
 
             <NumerologyPictogram
-              className="shrink-0 size-16 absolute top-4 right-4 text-foreground/40"
+              className="shrink-0 size-8 sm:size-12 absolute top-4 right-4 text-foreground/40"
               lang={lang}
             />
           </Card>

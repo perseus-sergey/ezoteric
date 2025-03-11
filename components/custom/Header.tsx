@@ -11,6 +11,8 @@ import ThemeToggleWrapped from './ThemeToggle';
 import { Osaka } from '@/svg/Osaka';
 import SideBar from './SideBar';
 import TestsMenu from './TestsMenu';
+import MeetDialog from './MeetDialog';
+import { isAuthorized } from '@/lib/utils/loggedUser';
 
 const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
@@ -24,13 +26,20 @@ export const Header = async ({
   isAdmin: boolean;
   session?: Session;
 }) => {
+  const isAuthorizedUser = await isAuthorized(session);
+
   return (
     <header
       id="top"
       className="border-grid sticky z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center"
     >
       <div className="flex flex-row gap-3 items-center">
-        <SideBar isAdmin={isAdmin} session={session} lang={lang} />
+        <SideBar
+          isAdmin={isAdmin}
+          session={session}
+          lang={lang}
+          isAuthorizedUser={isAuthorizedUser}
+        />
 
         <SeoLink
           title={logo[lang]}
@@ -51,6 +60,8 @@ export const Header = async ({
           {links.blog.caption[lang]}
         </SeoLink>
 
+        {isAdmin && <MeetDialog lang={lang} isAuthorized={isAuthorizedUser} />}
+
         <LanguageSwitcher />
 
         <ThemeToggleWrapped lang={lang} />
@@ -58,9 +69,9 @@ export const Header = async ({
         {session ? (
           <UserMenu
             lang={lang}
-            userEmail={session?.user?.email}
-            userName={session?.user?.name}
-            userImgSrc={session?.user?.image}
+            userEmail={session.user?.email}
+            userName={session.user?.name}
+            userImgSrc={session.user?.image}
             isAdmin={isAdmin}
           />
         ) : (

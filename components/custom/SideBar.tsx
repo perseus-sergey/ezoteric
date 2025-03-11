@@ -15,7 +15,7 @@ import { Session } from 'next-auth';
 import SeoLink from './SeoLink';
 import { HEADER_MODEL, SIDEBAR } from '@/models/header.model';
 import LanguageSwitcher from './LanguageSwitcher';
-import { BookOpenText, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import UserMenu from './UserMenu';
 import LoginProviders from './LoginProviders';
 import ThemeToggleWrapped from './ThemeToggle';
@@ -23,6 +23,8 @@ import TestsMenu from './TestsMenu';
 import { Quest } from '@/svg/Quest';
 import { Separator } from '../ui/separator';
 import { Suspense } from 'react';
+import MeetDialog from './MeetDialog';
+import { BookEsoteric } from '@/svg/BookEsoteric';
 
 const { BLOG } = ESegment;
 const { sideBarOpenIcon, links } = HEADER_MODEL;
@@ -30,10 +32,12 @@ const { sideBarOpenIcon, links } = HEADER_MODEL;
 export default function SideBar({
   session,
   isAdmin,
+  isAuthorizedUser,
   lang,
 }: {
   session?: Session;
   isAdmin: boolean;
+  isAuthorizedUser: boolean;
   lang: ELanguage;
 }) {
   return (
@@ -61,7 +65,7 @@ export default function SideBar({
                 title={links.blog.ariaLabel[lang]}
                 href={`/${lang}/${BLOG}`}
               >
-                <BookOpenText className="size-6 text-muted-foreground" />
+                <BookEsoteric className="size-6" />
                 {links.blog.caption[lang]}
               </SeoLink>
             </SheetClose>
@@ -80,6 +84,17 @@ export default function SideBar({
             <ThemeToggleWrapped lang={lang} withCaption />
 
             <Separator />
+
+            {isAdmin && (
+              <SheetClose asChild>
+                <MeetDialog
+                  lang={lang}
+                  isAuthorized={isAuthorizedUser}
+                  className="flex items-center gap-4 px-4 py-2"
+                  withIcons
+                />
+              </SheetClose>
+            )}
 
             {session ? (
               <UserMenu

@@ -1,0 +1,200 @@
+import { TSchedule } from '@/db/schema';
+import { DEFAULT_LANG, ELanguage } from '@/models/language.model';
+import { DEFAULT_META_OG } from '@/models/root.model';
+import { ESegment, MAIN_URL } from '@/models/url.model';
+import { Column, Heading, Link, Row, Text } from '@react-email/components';
+import { format } from 'date-fns';
+import { uk, enUS } from 'date-fns/locale';
+import { ReactEmailLayout } from './ReactEmailLayout';
+
+interface MailMeetBookToUserProps {
+  subject: string;
+  meetData: TSchedule;
+  lang: ELanguage;
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
+const siteEmail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
+
+const { MASTER, SCHEDULE } = ESegment;
+
+const formatDate = (date: Date, lang: ELanguage) =>
+  format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
+const formatTime = (date: Date) => format(date, 'HH:mm');
+
+// const baseUrl = process.env.VERCEL_URL
+//   ? `https://${process.env.VERCEL_URL}`
+//   : '';
+
+export const MailMeetBookToUser = ({
+  meetData,
+  subject,
+  lang,
+}: MailMeetBookToUserProps) => {
+  const meetDateFormatted = formatDate(meetData.meetDate, lang);
+  const meetTimeFormatted = formatTime(meetData.meetDate);
+
+  return (
+    <ReactEmailLayout subject={subject}>
+      <Row style={{ ...boxInfos, paddingBottom: '0' }}>
+        <Column>
+          <Heading
+            style={{
+              fontSize: 32,
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          >
+            Hi {meetData.userName},
+          </Heading>
+          <Heading
+            as="h2"
+            style={{
+              fontSize: 26,
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          >
+            Ваш сеанс на {DEFAULT_META_OG.siteName} успішно заброньовано.
+          </Heading>
+
+          <Text style={paragraph}>
+            <b>Дата: </b>
+            {meetDateFormatted}
+          </Text>
+          <Text style={paragraph}>
+            <b>Час: </b>
+            {meetTimeFormatted}
+          </Text>
+          <Text style={{ ...paragraph, marginTop: -5 }}>
+            <b>Ваше питання: </b>
+            {meetData.question}
+          </Text>
+
+          <Text style={paragraph}>Цей лист було згенеровано автоматично.</Text>
+          <Text style={{ ...paragraph, marginTop: -5 }}>
+            Якщо у вас з`являться додаткові питання, напишіть нам на пошту{' '}
+            <Link
+              href={`mailto:${siteEmail}`}
+              className="text-blue-600 no-underline"
+            >
+              {siteEmail}
+            </Link>
+          </Text>
+
+          <Text
+            style={{
+              color: 'rgb(0,0,0, 0.5)',
+              fontSize: 14,
+              marginTop: -5,
+            }}
+          >
+            До зустрічі!
+          </Text>
+          <Text
+            style={{
+              color: 'rgb(0,0,0, 0.5)',
+              fontSize: 14,
+              marginTop: -5,
+            }}
+          >
+            З повагою,
+            <br />
+            Команда ezoteric.net
+          </Text>
+        </Column>
+      </Row>
+    </ReactEmailLayout>
+  );
+};
+
+export const MailMeetBookAdmin = ({
+  meetData,
+  lang,
+  subject,
+}: MailMeetBookToUserProps) => {
+  const meetDateFormatted = formatDate(meetData.meetDate, lang);
+  const meetTimeFormatted = formatTime(meetData.meetDate);
+
+  return (
+    <ReactEmailLayout subject={subject}>
+      <Row style={{ ...boxInfos, paddingBottom: '0' }}>
+        <Column>
+          <Heading
+            style={{
+              fontSize: 32,
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          >
+            Нове бронювання сеансу на {DEFAULT_META_OG.siteName},
+          </Heading>
+
+          <Text style={paragraph}>
+            <b>Ім`я користувача: </b>
+            {meetData.userName}
+          </Text>
+
+          <Text style={paragraph}>
+            <b>Email користувача: </b>
+            {meetData.email}
+          </Text>
+
+          <Text style={paragraph}>
+            <b>На дату: </b>
+            {meetDateFormatted}
+          </Text>
+          <Text style={paragraph}>
+            <b>Час: </b>
+            {meetTimeFormatted}
+          </Text>
+          <Text style={{ ...paragraph, marginTop: -5 }}>
+            <b>Питання користувача: </b>
+            {meetData.question}
+          </Text>
+          <Text style={{ ...paragraph, marginTop: -5 }}>
+            <b>Мова користувача: </b>
+            {lang}
+          </Text>
+
+          <Text style={paragraph}>
+            Перевірте{' '}
+            <Link
+              href={`${baseUrl}/${DEFAULT_LANG}/${MASTER}/${SCHEDULE}`}
+              className="text-blue-600 no-underline"
+            >
+              розклад адміністратора
+            </Link>{' '}
+            для деталей.
+          </Text>
+          <Text
+            style={{
+              color: 'rgb(0,0,0, 0.5)',
+              fontSize: 14,
+              marginTop: -5,
+            }}
+          >
+            Дата створення замовлення: {meetData.reservedAt?.toLocaleString()}
+            Дата створення замовлення:{' '}
+            {format(meetData.reservedAt || '', 'EEEE dd MMMM', {
+              locale: lang === ELanguage.UA ? uk : enUS,
+            })}
+          </Text>
+          <Text style={{ ...paragraph, marginTop: -5 }}>
+            З повагою,
+            <br />
+            Система сповіщень {DEFAULT_META_OG.siteName}
+          </Text>
+        </Column>
+      </Row>
+    </ReactEmailLayout>
+  );
+};
+
+const paragraph = {
+  fontSize: 16,
+};
+
+const boxInfos = {
+  padding: '20px',
+};

@@ -22,6 +22,7 @@ export const langSuffix = {
 export const TBL_USER = 'ezo_user';
 export const TBL_CHAT = 'ezo_chat';
 export const TBL_RESERVATION = 'ezo_reservation';
+export const TBL_SCHEDULE = 'ezo_schedule';
 export const TBL_IMAGES = 'ezo_images';
 export const TBL_ARTICLE = 'ezo_article';
 export const TBL_ARTICLE_VIEWS = 'ezo_article_views';
@@ -84,6 +85,23 @@ export const reservation = pgTable(TBL_RESERVATION, {
 });
 
 export type TReservation = InferSelectModel<typeof reservation>;
+
+// =================================================================
+// TBL_SCHEDULE
+// =================================================================
+
+export const appointmentSchedule = pgTable(TBL_SCHEDULE, {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  meetDate: timestamp('meetDate').notNull(),
+
+  reservedAt: timestamp('reservedAt'),
+  question: varchar('question', { length: 255 }),
+  hasCompletedPayment: boolean('hasCompletedPayment').default(false),
+  userName: varchar('userName', { length: 128 }),
+  email: varchar('email', { length: 64 }).references(() => user.email),
+});
+
+export type TSchedule = InferSelectModel<typeof appointmentSchedule>;
 
 // =================================================================
 // TBL_IMAGES

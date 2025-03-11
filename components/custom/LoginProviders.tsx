@@ -32,7 +32,7 @@ export default function LoginProviders({
         {...providerMap.map(
           (provider) =>
             provider.id !== 'credentials' && (
-              <DropdownMenuItem key={provider.id}>
+              <DropdownMenuItem key={provider.id} asChild>
                 <Button
                   variant="outline"
                   onClick={async () => {

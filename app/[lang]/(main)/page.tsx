@@ -83,7 +83,7 @@ export default async function Page({ params }: { params: TParams }) {
         </div>
       </section>
 
-      <section className="py-4 px-2 sm:px-12 rounded-lg bg-tertiary">
+      <section className="p-4 sm:px-12 rounded-lg bg-tertiary">
         {NUMEROLOGY_JSX[lang]}
 
         <NumerologyForm lang={lang} className="my-4" />

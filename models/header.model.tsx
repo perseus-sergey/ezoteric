@@ -211,3 +211,26 @@ export const FOOTER_MODEL = {
     },
   },
 };
+
+export const MEET_DIALOG = {
+  linkCaption: {
+    [UA]: 'Замовити Сеанс',
+    [EN]: 'Book a Session',
+  },
+  linkAriaLabel: {
+    [UA]: 'Перейти на сторінку замовлення сеансу зі спеціалістом',
+    [EN]: 'Go to the page to book a session with a specialist',
+  },
+  dialogTitle: {
+    [UA]: 'Потрібен вхід!',
+    [EN]: 'Login Required!',
+  },
+  dialogDescription: {
+    [UA]: 'Будь ласка, авторизуйтесь для замовлення сеансу зі спеціалістом.',
+    [EN]: 'Please, login to book a session with a specialist.',
+  },
+  providerCaption: {
+    [UA]: 'Авторизуватись через:',
+    [EN]: 'Login via:',
+  },
+};

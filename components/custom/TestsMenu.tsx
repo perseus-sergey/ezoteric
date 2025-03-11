@@ -74,7 +74,7 @@ export default async function TestsMenu({
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem asChild>
             <MenuLink
               isSideMenu={isSideMenu}
               href={`/${lang}/${TESTS}`}
@@ -102,7 +102,7 @@ export default async function TestsMenu({
             <DropdownMenuPortal>
               <DropdownMenuSubContent className="font-georgia">
                 {categoriesFromDb.map((cat) => (
-                  <DropdownMenuItem key={cat.slug}>
+                  <DropdownMenuItem asChild key={cat.slug}>
                     <MenuLink
                       isSideMenu={isSideMenu}
                       title={`${links.tests.dropdownMenu.testCategories.ariaLabel[lang]}${cat.name}`}
@@ -120,7 +120,7 @@ export default async function TestsMenu({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem>
+          <DropdownMenuItem asChild>
             <MenuLink
               isSideMenu={isSideMenu}
               title={links.tests.dropdownMenu.numerologyTest.ariaLabel[lang]}

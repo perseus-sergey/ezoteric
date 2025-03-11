@@ -136,67 +136,6 @@ export const getTestsChunk = cache(
           .limit(perPage)
           .offset(offset),
 
-        // Fetch tests with pagination
-        // db.query.tblTests.findMany({
-        //   limit: perPage,
-        //   offset,
-        //   where: (test, { and }) =>
-        //     and(
-        //       searchCondition,
-        //       isAdmin ? undefined : publishedCondition,
-        //       categorySlug
-        //         ? exists(
-        //             db
-        //               .select()
-        //               .from(tblTestCategories)
-        //               .where(
-        //                 and(
-        //                   eq(tblTestCategories.id, test.categoryId),
-        //                   eq(tblTestCategories.slug, categorySlug)
-        //                 )
-        //               )
-        //           )
-        //         : undefined
-        //     ),
-        //   orderBy: (tests, { desc }) => [desc(tests.updatedAt)],
-
-        //   columns: {
-        //     id: true,
-        //     updatedAt: true,
-        //     createdAt: true,
-        //     slug: true,
-        //     imageSrc: true,
-        //     published: true,
-        //     viewCount: true,
-        //   },
-        //   extras: {
-        //     title:
-        //       sql<string>`${tblTests[lang === EN ? 'titleEn' : 'titleUa']}`.as(
-        //         'title'
-        //       ),
-        //     description:
-        //       sql<string>`${tblTests[lang === EN ? 'descriptionEn' : 'descriptionUa']}`.as(
-        //         'description'
-        //       ),
-        //     text: sql<string>`${tblTests[lang === EN ? 'textEn' : 'textUa']}`.as(
-        //       'text'
-        //     ),
-        //   },
-        //   with: {
-        //     category: {
-        //       columns: {
-        //         id: true,
-        //         slug: true,
-        //       },
-        //       extras: {
-        //         name: sql<string>`${tblTestCategories[lang === EN ? 'nameEn' : 'nameUa']}`.as(
-        //           'name'
-        //         ),
-        //       },
-        //     },
-        //   },
-        // }),
-
         // Запит на отримання назви категорії
         categorySlug
           ? db

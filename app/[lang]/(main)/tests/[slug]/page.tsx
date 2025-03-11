@@ -161,7 +161,7 @@ export default async function Page({ params }: { params: TParams }) {
       )}
 
       {text && (
-        <div className="article-text relative py-8 sm:px-16 px-2 bg-tertiary rounded-2xl">
+        <div className="article-text relative py-8 sm:px-16 px-4 bg-tertiary rounded-2xl">
           {isAdmin && (
             <EditPostLink
               isPublished={published}
@@ -176,7 +176,7 @@ export default async function Page({ params }: { params: TParams }) {
             <TestExecution test={test} lang={lang} isAdmin={isAdmin} />
           </div>
 
-          <section className="flex items-center justify-end sm:justify-between gap-2 flex-wrap sm:flex-nowrap">
+          <section className="flex pt-6 sm:p-0 items-center justify-end sm:justify-between gap-2 flex-wrap sm:flex-nowrap">
             <motion.div
               className="list-none"
               initial={{ opacity: 0, x: -70 }}

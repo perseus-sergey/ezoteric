@@ -17,3 +17,11 @@ export const isAdminAuth = cache(async (session?: Session) => {
     ? true
     : false;
 });
+
+export const isAuthorized = cache(async (session?: Session | null) => {
+  const userSession = session === undefined ? await auth() : session;
+
+  return userSession && userSession.user && userSession.user.email
+    ? true
+    : false;
+});

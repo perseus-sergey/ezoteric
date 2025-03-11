@@ -11,7 +11,14 @@ import {
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
 import { HEADER_LOGIN } from '@/models/header.model';
-import { BadgeCheck, Eye, FilePlus, ImagesIcon, LogOut } from 'lucide-react';
+import {
+  BadgeCheck,
+  CalendarDays,
+  Eye,
+  FilePlus,
+  ImagesIcon,
+  LogOut,
+} from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '@/app/(auth)/actions';
 import { PersonCelebrateRounded } from '@/svg/PersonCelebrateRounded';
@@ -28,6 +35,7 @@ const {
   TAGS_EDIT,
   CATEGORIES_EDIT,
   TESTS,
+  SCHEDULE,
 } = ESegment;
 const { title, description, cancelBtn, confirmBtn } = LOGOUT_MODAL;
 
@@ -84,7 +92,16 @@ export default function UserMenu({
         <DropdownMenuContent align="end">
           {isAdmin ? (
             <>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/${lang}/${MASTER}/${SCHEDULE}`}
+                  className="flex items-center gap-2"
+                >
+                  <CalendarDays className="size-4 opacity-70" /> Schedule
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem asChild>
                 <Link
                   href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_ADD}`}
                   className="flex items-center gap-2"
@@ -93,7 +110,7 @@ export default function UserMenu({
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   href={`/${lang}/${MASTER}/${TESTS}/${ARTICLE_ADD}`}
                   className="flex items-center gap-2"
@@ -102,7 +119,7 @@ export default function UserMenu({
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   href={`/${lang}/${MASTER}/${BLOG}/${UPLOAD_IMAGE}`}
                   className="flex items-center gap-2"
@@ -111,7 +128,7 @@ export default function UserMenu({
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   href={`/${lang}/${MASTER}/${TAGS_EDIT}`}
                   className="flex items-center gap-2"
@@ -120,7 +137,7 @@ export default function UserMenu({
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   href={`/${lang}/${MASTER}/${CATEGORIES_EDIT}`}
                   className="flex items-center gap-2"
@@ -129,7 +146,7 @@ export default function UserMenu({
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   href={`/${lang}/${MASTER}/${CHAT_VIEWER}`}
                   className="flex items-center gap-2"
@@ -140,7 +157,7 @@ export default function UserMenu({
             </>
           ) : null}
 
-          <DropdownMenuItem className="p-1 z-50">
+          <DropdownMenuItem asChild className="p-1 z-50">
             <Button
               variant="destructive"
               className="py-2 px-4 w-full flex justify-evenly items-center"

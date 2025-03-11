@@ -18,23 +18,19 @@ import { Suspense } from 'react';
 
 // =================================================================
 // DEI
-// close dropdown menu when leave current page
-// інформації. ... (імітація обчислень) ...
-// add link list of posts and tests to chat prompt
+// Green card
+// - інформації. ... (імітація обчислень) ...
 // add similar articles and tests to main page
-// improve components/custom/Modals/ModalNumerologyResponse.tsx
+// - improve components/custom/Modals/ModalNumerologyResponse.tsx
 // - check jsonld main page
 // - check tests pagination & search
-// - db add completed tests amount (Discover Your Inner Compass)
 
 // installsat: remove from sitemap pages with schedules (ask ai how it is better to do)
 // installsat: remove redundant pages with pagination from sitemap
 
-// змінити промпт чату на віртуального помічника
 // можливо створити сторінки в соцмережах з взаємними посиланнями
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // chat: add message time
-// message: review all tools components/custom/message.tsx
 // JsonLd: add site logo
 
 // shadcn - combobox, popover, dialog,
@@ -109,13 +105,17 @@ export default async function Layout({ children, params }: TProps) {
             <Header isAdmin={isAdmin} session={session} lang={lang} />
           </Suspense>
 
-          <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 px-2 sm:px-4 flex flex-col">
+          <main className="max-w-5xl min-h-dvh flex-1 mx-auto pb-4 sm:px-4 flex flex-col">
             <Toaster position="top-center" richColors />
             {children}
           </main>
         </ThemeProvider>
 
-        <Footer lang={lang} />
+        <Footer
+          lang={lang}
+          isAuthorizedUser={!!session?.user}
+          isAdmin={isAdmin}
+        />
 
         <Analytics />
       </body>

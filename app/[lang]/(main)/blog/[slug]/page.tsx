@@ -161,7 +161,7 @@ export default async function Page({ params }: { params: TParams }) {
       )}
 
       {text && (
-        <div className="article-text relative py-8 sm:px-16 px-2 bg-tertiary rounded-2xl">
+        <div className="article-text relative py-8 sm:px-16 px-4 bg-tertiary rounded-2xl">
           {isAdmin && (
             <EditPostLink
               href={`/${lang}/${MASTER}/${BLOG}/${ARTICLE_EDIT}/${id}`}

@@ -46,7 +46,7 @@ export default async function SimilarArticlesBlock({
       <ul className="flex flex-wrap gap-4 justify-center">
         {similarArticles.map((similarArticle) => (
           <li key={similarArticle.slug} className="overflow-hidden">
-            <ArticleCard
+            <SimilarCard
               lang={lang}
               article={similarArticle}
               isTest={!tagIds}
@@ -58,7 +58,7 @@ export default async function SimilarArticlesBlock({
   );
 }
 
-const ArticleCard = ({
+const SimilarCard = ({
   lang,
   article,
   isTest,

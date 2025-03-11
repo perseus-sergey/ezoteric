@@ -14,7 +14,11 @@ export default async function NotFound() {
       <body>
         <Header isAdmin={isAdmin} session={session} lang={DEFAULT_LANG} />
         <NotFoundPage />
-        <Footer lang={DEFAULT_LANG} />
+        <Footer
+          lang={DEFAULT_LANG}
+          isAdmin={isAdmin}
+          isAuthorizedUser={!!session?.user}
+        />
       </body>
     </html>
   );

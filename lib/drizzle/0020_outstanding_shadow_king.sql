@@ -1,0 +1,1 @@
+ALTER TABLE "ezo_schedule" ADD COLUMN "userName" varchar(128);

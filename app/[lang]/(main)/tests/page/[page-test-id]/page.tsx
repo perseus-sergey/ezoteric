@@ -67,7 +67,6 @@ export default async function Page({
   searchParams: TSearchParams;
 }) {
   const p = await params;
-  console.log('🚀 ~ p:', p);
   const sParams = await searchParams;
   const lang = getELangKey(p.lang);
   const pageId = parseInt(p[PAGE_TEST_ID], 10);

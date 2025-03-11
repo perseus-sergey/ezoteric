@@ -26,6 +26,8 @@ export enum ESegment {
   SLUG = 'slug',
   TAG_SLUG = 'tag-slug',
   MASTER = 'master',
+  SCHEDULE = 'schedule',
+  APPOINTMENT = 'appointment',
   BLOG = 'blog',
   TESTS = 'tests',
   TEST_CAT_SLUG = 'test-cat-slug',
