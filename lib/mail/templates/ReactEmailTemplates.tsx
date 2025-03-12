@@ -36,7 +36,7 @@ export const MailMeetBookToUser = ({
   const meetTimeFormatted = formatTimeLocal(meetData.meetDate);
   console.log(
     '🚀 ~ meetData.meetDate ~ meetTimeFormatted:',
-    meetData.meetDate.toLocaleDateString(),
+    meetData.meetDate.toLocaleString(),
     meetTimeFormatted
   );
 
