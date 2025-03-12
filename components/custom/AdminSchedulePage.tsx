@@ -29,7 +29,7 @@ import { format } from 'date-fns';
 
 import { toast } from 'sonner';
 import { uk } from 'date-fns/locale';
-import { formatInTimeZone, toZonedTime } from 'date-fns-tz'; // Module '"date-fns-tz"' has no exported member 'toZonedTime'.ts(2305)
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'; // Module '"date-fns-tz"' has no exported member 'fromZonedTime'.ts(2305)
 import { IScheduleEntry } from '@/models/schedule.model';
 import {
   AlarmPlusIcon,
@@ -430,13 +430,16 @@ const AddTimeSlotPopover = ({
       const [newHours, newMinutes] = timeInput.split(':').map(Number);
       newTimeDateLocal.setHours(newHours, newMinutes, 0, 0);
 
-      const utcDate = toZonedTime(newTimeDateLocal, 'Europe/Kiev'); // Явно перетворюємо в UTC
+      const utcDateForValidation = fromZonedTime(
+        newTimeDateLocal,
+        'Europe/Kiev'
+      ); // Явно перетворюємо в UTC
 
       for (const existingSlot of existingTimeSlots) {
         const existingTimeDate = existingSlot.meetDate;
 
         const timeDifference = Math.abs(
-          utcDate.getTime() - existingTimeDate.getTime()
+          utcDateForValidation.getTime() - existingTimeDate.getTime()
         );
         const thirtyMinutes = 30 * 60 * 1000;
 
@@ -463,7 +466,7 @@ const AddTimeSlotPopover = ({
     );
 
     // **Перетворюємо локальний Date об'єкт в UTC Date об'єкт для відправки на сервер**
-    const utcDateForSubmit = toZonedTime(
+    const utcDateForSubmit = fromZonedTime(
       newTimeDateLocalForSubmit,
       'Europe/Kiev'
     );
