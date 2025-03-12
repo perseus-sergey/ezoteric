@@ -98,6 +98,11 @@ export const addTimeSlotAction = async (
     const meetDateTime = new Date(date); // Clone date to avoid mutation
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
+    console.log(
+      'addTimeSlotAction - meetDateTime (перед збереженням в БД):',
+      meetDateTime
+    );
+
     // Оптимізована перевірка, чи час прийому вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
       where: eq(appointmentSchedule.meetDate, meetDateTime),

@@ -187,6 +187,11 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
               daySchedule.times.map((timeSlot, index) => {
                 const formattedTime = formatTime(timeSlot.meetDate);
 
+                console.log(
+                  'AdminSchedulePage - timeSlot.meetDate (перед форматуванням):',
+                  timeSlot.meetDate
+                );
+
                 return (
                   <TableRow
                     key={timeSlot.id}
@@ -453,7 +458,6 @@ const AddTimeSlotPopover = ({
       }
     }
 
-    // onTimeSlotAdded(date, timeInput);
     const newTimeDateLocalForSubmit = new Date(date); // Створюємо Date об'єкт в локальному часовому поясі для відправки
     const [newHoursForSubmit, newMinutesForSubmit] = timeInput
       .split(':')
@@ -469,6 +473,11 @@ const AddTimeSlotPopover = ({
     const utcDateForSubmit = fromZonedTime(
       newTimeDateLocalForSubmit,
       'Europe/Kiev'
+    );
+
+    console.log(
+      'AddTimeSlotPopover - handleAddTimeSlot - newTimeDate (перед відправкою на сервер):',
+      utcDateForSubmit
     );
 
     onTimeSlotAdded(utcDateForSubmit, timeInput); // Відправляємо UTC Date об'єкт на сервер
