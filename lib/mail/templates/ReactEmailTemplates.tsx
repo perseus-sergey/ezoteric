@@ -34,8 +34,11 @@ export const MailMeetBookToUser = ({
 }: MailMeetBookToUserProps) => {
   const meetDateFormatted = formatDateLocal(meetData.meetDate, lang);
   const meetTimeFormatted = formatTimeLocal(meetData.meetDate);
-  console.log('🚀 ~ meetData.meetDate:', meetData.meetDate);
-  console.log('🚀 ~ meetTimeFormatted:', meetTimeFormatted);
+  console.log(
+    '🚀 ~ meetData.meetDate ~ meetTimeFormatted:',
+    meetData.meetDate.toLocaleDateString(),
+    meetTimeFormatted
+  );
 
   return (
     <ReactEmailLayout subject={subject}>
