@@ -28,7 +28,8 @@ import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 
 import { toast } from 'sonner';
-import { uk, enUS } from 'date-fns/locale';
+import { uk } from 'date-fns/locale';
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz'; // Module '"date-fns-tz"' has no exported member 'toZonedTime'.ts(2305)
 import { IScheduleEntry } from '@/models/schedule.model';
 import {
   AlarmPlusIcon,
@@ -47,21 +48,21 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils/utils';
-import { ELanguage } from '@/models/language.model';
 
 interface ScheduleAdminPageProps {
   initialSchedule: IScheduleEntry[];
-  lang: ELanguage;
 }
 
-const formatDate = (date: Date, lang: ELanguage) =>
-  format(date, 'EE dd MMM', { locale: lang === ELanguage.UA ? uk : enUS });
-const formatTime = (date: Date) => format(date, 'HH:mm');
+// const formatDate = (date: Date: ELanguage) =>
+//   format(date, 'EE dd MMM', { locale: lang === ELanguage.UA ? uk : enUS });
+// const formatTime = (date: Date) => format(date, 'HH:mm');
 
-const ScheduleAdminPage = ({
-  initialSchedule,
-  lang,
-}: ScheduleAdminPageProps) => {
+const formatTime = (date: Date) =>
+  formatInTimeZone(date, 'Europe/Kiev', 'HH:mm');
+const formatDate = (date: Date) =>
+  formatInTimeZone(date, 'Europe/Kiev', 'EEEE dd MMM', { locale: uk });
+
+const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [schedule, setSchedule] = useState<IScheduleEntry[]>(initialSchedule);
   const [isAddDateDialogOpen, setAddDateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +78,7 @@ const ScheduleAdminPage = ({
       );
     });
 
-    toast.success(`Дату ${formatDate(newDate, lang)} успішно додано.`);
+    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
     setAddDateDialogOpen(false);
   };
 
@@ -113,9 +114,7 @@ const ScheduleAdminPage = ({
             return daySchedule;
           });
         });
-        toast.success(
-          `Час ${time} для ${formatDate(date, lang)} успішно додано.`
-        );
+        toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
       } else {
         toast.error(
           result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
@@ -137,10 +136,7 @@ const ScheduleAdminPage = ({
         setSchedule((prevSchedule) => {
           const updatedSchedule = prevSchedule
             .map((daySchedule) => {
-              if (
-                formatDate(daySchedule.meetDate, lang) ===
-                formatDate(date, lang)
-              ) {
+              if (formatDate(daySchedule.meetDate) === formatDate(date)) {
                 const updatedTimeSlots = daySchedule.times.filter(
                   (ts) => formatTime(ts.meetDate) !== time // Compare time strings
                 );
@@ -152,7 +148,7 @@ const ScheduleAdminPage = ({
           return updatedSchedule;
         });
         toast.success('Час зустрічі видалено!', {
-          description: `Час ${time} для ${formatDate(date, lang)} успішно видалено.`,
+          description: `Час ${time} для ${formatDate(date)} успішно видалено.`,
         });
       } else {
         toast.error('Помилка видалення часу', {
@@ -185,7 +181,7 @@ const ScheduleAdminPage = ({
 
         <TableBody>
           {schedule.map((daySchedule) => {
-            const formattedDate = formatDate(daySchedule.meetDate, lang);
+            const formattedDate = formatDate(daySchedule.meetDate);
 
             return daySchedule.times.length > 0 ? (
               daySchedule.times.map((timeSlot, index) => {
@@ -416,7 +412,7 @@ const AddTimeSlotPopover = ({
 
   const onSubmit = (data: TimeSlotFormValues) => {
     const timeInput = data.timeInput;
-    clearErrors('timeInput'); // Очищаємо попередні помилки перед новою валідацією
+    clearErrors('timeInput');
 
     const isTimeSlotExists = existingTimeSlots.some(
       (slot) => formatTime(slot.meetDate) === timeInput
@@ -430,15 +426,17 @@ const AddTimeSlotPopover = ({
     }
 
     if (existingTimeSlots.length > 0) {
-      const newTimeDate = new Date(date);
+      const newTimeDateLocal = new Date(date);
       const [newHours, newMinutes] = timeInput.split(':').map(Number);
-      newTimeDate.setHours(newHours, newMinutes, 0, 0);
+      newTimeDateLocal.setHours(newHours, newMinutes, 0, 0);
+
+      const utcDate = toZonedTime(newTimeDateLocal, 'Europe/Kiev'); // Явно перетворюємо в UTC
 
       for (const existingSlot of existingTimeSlots) {
         const existingTimeDate = existingSlot.meetDate;
 
         const timeDifference = Math.abs(
-          newTimeDate.getTime() - existingTimeDate.getTime()
+          utcDate.getTime() - existingTimeDate.getTime()
         );
         const thirtyMinutes = 30 * 60 * 1000;
 
@@ -452,7 +450,25 @@ const AddTimeSlotPopover = ({
       }
     }
 
-    onTimeSlotAdded(date, timeInput);
+    // onTimeSlotAdded(date, timeInput);
+    const newTimeDateLocalForSubmit = new Date(date); // Створюємо Date об'єкт в локальному часовому поясі для відправки
+    const [newHoursForSubmit, newMinutesForSubmit] = timeInput
+      .split(':')
+      .map(Number);
+    newTimeDateLocalForSubmit.setHours(
+      newHoursForSubmit,
+      newMinutesForSubmit,
+      0,
+      0
+    );
+
+    // **Перетворюємо локальний Date об'єкт в UTC Date об'єкт для відправки на сервер**
+    const utcDateForSubmit = toZonedTime(
+      newTimeDateLocalForSubmit,
+      'Europe/Kiev'
+    );
+
+    onTimeSlotAdded(utcDateForSubmit, timeInput); // Відправляємо UTC Date об'єкт на сервер
     reset({ timeInput: '' }); // Очищаємо поле введення після успішного додавання
   };
 
