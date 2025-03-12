@@ -22,6 +22,7 @@ import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { CalendarPlus } from 'lucide-react';
 import { bookAppointmentAction } from '@/actions/schedule.actions';
 import { ELanguage } from '@/models/language.model';
+import { toZonedTime } from 'date-fns-tz'; // '"date-fns-tz"' has no exported member named 'utcToZonedTime'. Did you mean 'toZonedTime'?ts(2724)
 
 const {
   appointmentForm: {
@@ -47,9 +48,23 @@ interface AppointmentBookingFormProps {
   lang: ELanguage;
 }
 
-const formatDate = (date: Date, lang: ELanguage) =>
-  format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
-const formatTime = (date: Date) => format(date, 'HH:mm');
+// const formatDate = (date: Date, lang: ELanguage) =>
+//   format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
+// const formatTime = (date: Date) => format(date, 'HH:mm');
+
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const formatDateLocal = (date: Date, lang: ELanguage) => {
+  const zonedDate = toZonedTime(date, timeZone); // Конвертуємо в локальний час
+  return format(zonedDate, 'EEEE dd MMMM', {
+    locale: lang === ELanguage.UA ? uk : enUS,
+  });
+};
+
+const formatTimeLocal = (date: Date) => {
+  const zonedDate = toZonedTime(date, timeZone); // Конвертуємо в локальний час
+  return format(zonedDate, 'HH:mm');
+};
 
 const AppointmentBookingForm = ({
   initialSchedule,
@@ -92,6 +107,51 @@ const AppointmentBookingForm = ({
     }
   }, [selectedTimeSlot]);
 
+  // const onSubmit = async (data: TAppointmentFormValues) => {
+  //   setIsLoading(true);
+  //   try {
+  //     clearErrors();
+  //     const bookingResult = await bookAppointmentAction(data, lang);
+
+  //     if (bookingResult.success) {
+  //       toast.success(toastSuccessBooking.title[lang], {
+  //         description: `${toastSuccessBooking.description[lang]} ${formatTime(selectedTimeSlot!.meetDate)} ${formatDate(selectedTimeSlot!.meetDate, lang)}.`,
+  //       });
+  //       reset();
+  //       setSelectedTimeSlot(null);
+
+  //       setSchedule((prevSchedule) => {
+  //         return prevSchedule.map((daySchedule) => {
+  //           if (
+  //             formatDate(daySchedule.meetDate, lang) ===
+  //             formatDate(selectedTimeSlot!.meetDate, lang)
+  //           ) {
+  //             return {
+  //               ...daySchedule,
+  //               times: daySchedule.times.filter(
+  //                 (time) => time.id !== selectedTimeSlot!.id
+  //               ),
+  //             };
+  //           }
+  //           return daySchedule;
+  //         });
+  //       });
+  //     } else {
+  //       toast.error(toastBookingError.title[lang], {
+  //         description:
+  //           bookingResult.error || toastBookingError.description[lang],
+  //       });
+  //     }
+  //   } catch (error) {
+  //     toast.error(toastBookingCriticalError.title[lang], {
+  //       description: toastBookingCriticalError.description[lang],
+  //     });
+  //     console.error('Помилка при бронюванні сеансу:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (data: TAppointmentFormValues) => {
     setIsLoading(true);
     try {
@@ -100,16 +160,16 @@ const AppointmentBookingForm = ({
 
       if (bookingResult.success) {
         toast.success(toastSuccessBooking.title[lang], {
-          description: `${toastSuccessBooking.description[lang]} ${formatTime(selectedTimeSlot!.meetDate)} ${formatDate(selectedTimeSlot!.meetDate, lang)}.`,
+          description: `${toastSuccessBooking.description[lang]} ${formatTimeLocal(
+            selectedTimeSlot!.meetDate
+          )} ${formatDateLocal(selectedTimeSlot!.meetDate, lang)}.`,
         });
-        reset();
-        setSelectedTimeSlot(null);
 
-        setSchedule((prevSchedule) => {
-          return prevSchedule.map((daySchedule) => {
+        setSchedule((prevSchedule) =>
+          prevSchedule.map((daySchedule) => {
             if (
-              formatDate(daySchedule.meetDate, lang) ===
-              formatDate(selectedTimeSlot!.meetDate, lang)
+              formatDateLocal(daySchedule.meetDate, lang) ===
+              formatDateLocal(selectedTimeSlot!.meetDate, lang)
             ) {
               return {
                 ...daySchedule,
@@ -119,19 +179,21 @@ const AppointmentBookingForm = ({
               };
             }
             return daySchedule;
-          });
-        });
+          })
+        );
+
+        setSelectedTimeSlot(null);
+        reset();
       } else {
         toast.error(toastBookingError.title[lang], {
-          description:
-            bookingResult.error || toastBookingError.description[lang],
+          description: bookingResult.error,
         });
       }
     } catch (error) {
+      console.error('Помилка при бронюванні сеансу:', error);
       toast.error(toastBookingCriticalError.title[lang], {
         description: toastBookingCriticalError.description[lang],
       });
-      console.error('Помилка при бронюванні сеансу:', error);
     } finally {
       setIsLoading(false);
     }
@@ -149,32 +211,34 @@ const AppointmentBookingForm = ({
         <h2 className="text-xl font-semibold mb-2">Доступні часи сеансів:</h2>
         <ScrollArea className="h-[300px] w-full rounded-md border bg-tertiary">
           <div className="p-2 sm:p-6 space-y-4">
-            {schedule.map((daySchedule) => (
-              <div key={formatDate(daySchedule.meetDate, lang)}>
-                <h3 className="font-semibold">
-                  {formatDate(daySchedule.meetDate, lang)}
-                </h3>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {daySchedule.times.map((timeSlot) => (
-                    <Button
-                      type="button"
-                      key={timeSlot.id}
-                      variant="outline"
-                      size="sm"
-                      className={`justify-center ${selectedTimeSlot?.id === timeSlot.id ? 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground' : ''}`}
-                      onClick={() => handleTimeSlotSelect(timeSlot)}
-                    >
-                      {formatTime(timeSlot.meetDate)}
-                    </Button>
-                  ))}
-                  {daySchedule.times.length === 0 && (
-                    <p className="col-span-full text-sm italic text-muted-foreground">
-                      {emptyDateCaption[lang]}
-                    </p>
-                  )}
+            {schedule.map((daySchedule) => {
+              const formattedDate = formatDateLocal(daySchedule.meetDate, lang);
+
+              return (
+                <div key={formattedDate}>
+                  <h3 className="font-semibold">{formattedDate}</h3>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {daySchedule.times.map((timeSlot) => (
+                      <Button
+                        type="button"
+                        key={timeSlot.id}
+                        variant="outline"
+                        size="sm"
+                        className={`justify-center ${selectedTimeSlot?.id === timeSlot.id ? 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground' : ''}`}
+                        onClick={() => handleTimeSlotSelect(timeSlot)}
+                      >
+                        {formatTimeLocal(timeSlot.meetDate)}
+                      </Button>
+                    ))}
+                    {daySchedule.times.length === 0 && (
+                      <p className="col-span-full text-sm italic text-muted-foreground">
+                        {emptyDateCaption[lang]}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {schedule.length === 0 && (
               <p className="text-center italic text-muted-foreground">
                 {emptyTimesCaption[lang]}
@@ -245,8 +309,8 @@ const AppointmentBookingForm = ({
 
             <p className="text-sm text-muted-foreground">
               {confirmationTimeCaption[lang]}{' '}
-              {formatTime(selectedTimeSlot.meetDate)}{' '}
-              {formatDate(selectedTimeSlot.meetDate, lang)}
+              {formatTimeLocal(selectedTimeSlot.meetDate)}{' '}
+              {formatDateLocal(selectedTimeSlot.meetDate, lang)}
             </p>
 
             <Button type="submit" className="w-full md:w-fit">

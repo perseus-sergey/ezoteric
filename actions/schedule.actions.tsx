@@ -222,7 +222,7 @@ export const bookAppointmentAction = async (
 
     // Використовуємо транзакцію
     const transactionRes = await db.transaction(async (tx) => {
-      // 1. Find the time slot by ID (всередині транзакції)
+      // 1. Find the time slot by ID
       const timeSlotToBook = await tx.query.appointmentSchedule.findFirst({
         where: eq(appointmentSchedule.id, selectedTimeSlotId),
       });
@@ -231,12 +231,12 @@ export const bookAppointmentAction = async (
         return 'Обраний час прийому не знайдено.';
       }
 
-      // 2. Check if the time slot is already booked (всередині транзакції)
+      // 2. Check if the time slot is already booked
       if (timeSlotToBook.reservedAt) {
         return 'Обраний час прийому вже заброньовано.';
       }
 
-      // 3. Update the time slot with booking information (всередині транзакції)
+      // 3. Update the time slot with booking information
       const updatedTimeSlots = await tx
         .update(appointmentSchedule)
         .set({
