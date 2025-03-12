@@ -29,7 +29,6 @@ import { format } from 'date-fns';
 
 import { toast } from 'sonner';
 import { uk } from 'date-fns/locale';
-import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'; // Module '"date-fns-tz"' has no exported member 'fromZonedTime'.ts(2305)
 import { IScheduleEntry } from '@/models/schedule.model';
 import {
   AlarmPlusIcon,
@@ -53,14 +52,8 @@ interface ScheduleAdminPageProps {
   initialSchedule: IScheduleEntry[];
 }
 
-// const formatDate = (date: Date: ELanguage) =>
-//   format(date, 'EE dd MMM', { locale: lang === ELanguage.UA ? uk : enUS });
-// const formatTime = (date: Date) => format(date, 'HH:mm');
-
-const formatTime = (date: Date) =>
-  formatInTimeZone(date, 'Europe/Kiev', 'HH:mm');
-const formatDate = (date: Date) =>
-  formatInTimeZone(date, 'Europe/Kiev', 'EEEE dd MMM', { locale: uk });
+const formatDate = (date: Date) => format(date, 'EE dd MMM', { locale: uk });
+const formatTime = (date: Date) => format(date, 'HH:mm');
 
 const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [schedule, setSchedule] = useState<IScheduleEntry[]>(initialSchedule);
@@ -186,11 +179,6 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
             return daySchedule.times.length > 0 ? (
               daySchedule.times.map((timeSlot, index) => {
                 const formattedTime = formatTime(timeSlot.meetDate);
-
-                console.log(
-                  'AdminSchedulePage - timeSlot.meetDate (перед форматуванням):',
-                  timeSlot.meetDate
-                );
 
                 return (
                   <TableRow
@@ -431,20 +419,15 @@ const AddTimeSlotPopover = ({
     }
 
     if (existingTimeSlots.length > 0) {
-      const newTimeDateLocal = new Date(date);
+      const newTimeDate = new Date(date);
       const [newHours, newMinutes] = timeInput.split(':').map(Number);
-      newTimeDateLocal.setHours(newHours, newMinutes, 0, 0);
-
-      const utcDateForValidation = fromZonedTime(
-        newTimeDateLocal,
-        'Europe/Kiev'
-      ); // Явно перетворюємо в UTC
+      newTimeDate.setHours(newHours, newMinutes, 0, 0);
 
       for (const existingSlot of existingTimeSlots) {
         const existingTimeDate = existingSlot.meetDate;
 
         const timeDifference = Math.abs(
-          utcDateForValidation.getTime() - existingTimeDate.getTime()
+          newTimeDate.getTime() - existingTimeDate.getTime()
         );
         const thirtyMinutes = 30 * 60 * 1000;
 
@@ -458,29 +441,7 @@ const AddTimeSlotPopover = ({
       }
     }
 
-    const newTimeDateLocalForSubmit = new Date(date); // Створюємо Date об'єкт в локальному часовому поясі для відправки
-    const [newHoursForSubmit, newMinutesForSubmit] = timeInput
-      .split(':')
-      .map(Number);
-    newTimeDateLocalForSubmit.setHours(
-      newHoursForSubmit,
-      newMinutesForSubmit,
-      0,
-      0
-    );
-
-    // **Перетворюємо локальний Date об'єкт в UTC Date об'єкт для відправки на сервер**
-    const utcDateForSubmit = fromZonedTime(
-      newTimeDateLocalForSubmit,
-      'Europe/Kiev'
-    );
-
-    console.log(
-      'AddTimeSlotPopover - handleAddTimeSlot - newTimeDate (перед відправкою на сервер):',
-      utcDateForSubmit.toISOString()
-    );
-
-    onTimeSlotAdded(utcDateForSubmit, timeInput); // Відправляємо UTC Date об'єкт на сервер
+    onTimeSlotAdded(date, timeInput);
     reset({ timeInput: '' }); // Очищаємо поле введення після успішного додавання
   };
 

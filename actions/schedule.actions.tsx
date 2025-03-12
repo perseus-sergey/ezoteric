@@ -18,6 +18,7 @@ import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
 import { DEFAULT_META_OG } from '@/models/root.model';
+import { fromZonedTime } from 'date-fns-tz';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -86,26 +87,24 @@ export const getScheduleAction = async (
 
 export const addTimeSlotAction = async (
   date: Date, // Приймаємо Date об'єкт напряму
-  time: string
+  time: string,
+  timeZone: string = 'Europe/Kiev' // За замовчуванням 'Europe/Kiev', можна передати іншу часову зону
 ): Promise<{
   success: boolean;
   error?: string;
   data?: typeof appointmentSchedule.$inferSelect;
 }> => {
-  // Додаємо тип data до повернення
   try {
     const [hours, minutes] = time.split(':').map(Number);
-    const meetDateTime = date; // Clone date to avoid mutation
+    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
-    console.log(
-      'addTimeSlotAction - meetDateTime (перед збереженням в БД):',
-      meetDateTime.toISOString()
-    );
+    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+    const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
 
-    // Оптимізована перевірка, чи час прийому вже існує для цієї дати і часу
+    // Перевірка, чи час прийому вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-      where: eq(appointmentSchedule.meetDate, meetDateTime),
+      where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
     });
 
     if (existingTimeSlot) {
@@ -115,7 +114,7 @@ export const addTimeSlotAction = async (
     // Додавання часу прийому
     const insertedTimeSlots = await db
       .insert(appointmentSchedule)
-      .values({ meetDate: meetDateTime })
+      .values({ meetDate: utcMeetDateTime })
       .returning(); // Отримуємо вставлені дані
 
     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
@@ -135,20 +134,25 @@ export const addTimeSlotAction = async (
 
 export const deleteTimeSlotAction = async (
   date: Date,
-  time: string
+  time: string,
+  timeZone: string = 'Europe/Kiev' // За замовчуванням 'Europe/Kiev'
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    // Розділяємо час на години та хвилини
     const [hours, minutes] = time.split(':').map(Number);
-    const meetDateTime = new Date(date);
-    meetDateTime.setHours(hours, minutes, 0, 0);
+    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
+    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+    const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+
+    // Видалення часу прийому з бази даних
     const deletedRows = await db
       .delete(appointmentSchedule)
-      .where(eq(appointmentSchedule.meetDate, meetDateTime))
+      .where(eq(appointmentSchedule.meetDate, utcMeetDateTime))
       .returning();
 
     if (deletedRows.length === 0) {
-      // Перевіряємо довжину масиву deletedRows
       return {
         success: false,
         error: 'Час прийому не знайдено для видалення.',
