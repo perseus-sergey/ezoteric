@@ -3,8 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
-import { uk, enUS } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +20,7 @@ import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { CalendarPlus } from 'lucide-react';
 import { bookAppointmentAction } from '@/actions/schedule.actions';
 import { ELanguage } from '@/models/language.model';
-import { toZonedTime } from 'date-fns-tz'; // '"date-fns-tz"' has no exported member named 'utcToZonedTime'. Did you mean 'toZonedTime'?ts(2724)
+import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 
 const {
   appointmentForm: {
@@ -51,20 +49,6 @@ interface AppointmentBookingFormProps {
 // const formatDate = (date: Date, lang: ELanguage) =>
 //   format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
 // const formatTime = (date: Date) => format(date, 'HH:mm');
-
-const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-const formatDateLocal = (date: Date, lang: ELanguage) => {
-  const zonedDate = toZonedTime(date, timeZone); // Конвертуємо в локальний час
-  return format(zonedDate, 'EEEE dd MMMM', {
-    locale: lang === ELanguage.UA ? uk : enUS,
-  });
-};
-
-const formatTimeLocal = (date: Date) => {
-  const zonedDate = toZonedTime(date, timeZone); // Конвертуємо в локальний час
-  return format(zonedDate, 'HH:mm');
-};
 
 const AppointmentBookingForm = ({
   initialSchedule,

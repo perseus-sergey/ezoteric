@@ -6,6 +6,7 @@ import { Column, Heading, Link, Row, Text } from '@react-email/components';
 import { format } from 'date-fns';
 import { uk, enUS } from 'date-fns/locale';
 import { ReactEmailLayout } from './ReactEmailLayout';
+import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 
 interface MailMeetBookToUserProps {
   subject: string;
@@ -18,9 +19,9 @@ const siteEmail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 
 const { MASTER, SCHEDULE } = ESegment;
 
-const formatDate = (date: Date, lang: ELanguage) =>
-  format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
-const formatTime = (date: Date) => format(date, 'HH:mm');
+// const formatDate = (date: Date, lang: ELanguage) =>
+//   format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
+// const formatTime = (date: Date) => format(date, 'HH:mm');
 
 // const baseUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -31,8 +32,8 @@ export const MailMeetBookToUser = ({
   subject,
   lang,
 }: MailMeetBookToUserProps) => {
-  const meetDateFormatted = formatDate(meetData.meetDate, lang);
-  const meetTimeFormatted = formatTime(meetData.meetDate);
+  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang);
+  const meetTimeFormatted = formatTimeLocal(meetData.meetDate);
 
   return (
     <ReactEmailLayout subject={subject}>
@@ -113,8 +114,8 @@ export const MailMeetBookAdmin = ({
   lang,
   subject,
 }: MailMeetBookToUserProps) => {
-  const meetDateFormatted = formatDate(meetData.meetDate, lang);
-  const meetTimeFormatted = formatTime(meetData.meetDate);
+  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang);
+  const meetTimeFormatted = formatTimeLocal(meetData.meetDate);
 
   return (
     <ReactEmailLayout subject={subject}>
