@@ -23,6 +23,10 @@ import { fromZonedTime } from 'date-fns-tz';
 const db = getDB();
 const { MASTER } = ESegment;
 
+// =================================================================
+// TODO: Transaction
+// =================================================================
+
 const groupScheduleByDate = (scheduleData: TSchedule[]): IScheduleEntry[] => {
   const groupedScheduleMap: Map<string, IScheduleEntry> = new Map();
 
@@ -173,7 +177,8 @@ export const deleteTimeSlotAction = async (
 const sendBookingEmail = async (
   lang: ELanguage,
   meetData: TSchedule,
-  sendTo: 'admin' | 'user'
+  sendTo: 'admin' | 'user',
+  timeZone: string
 ) => {
   const adminEmail = process.env.ADMIN_EMAIL || '';
   const userEmail = meetData.email || '';
@@ -200,9 +205,19 @@ const sendBookingEmail = async (
 
   const body = await render(
     sendTo === 'user' ? (
-      <MailMeetBookToUser lang={lang} meetData={meetData} subject={subject} />
+      <MailMeetBookToUser
+        lang={lang}
+        meetData={meetData}
+        subject={subject}
+        timeZone={timeZone}
+      />
     ) : (
-      <MailMeetBookAdmin lang={lang} meetData={meetData} subject={subject} />
+      <MailMeetBookAdmin
+        lang={lang}
+        meetData={meetData}
+        subject={subject}
+        timeZone={timeZone}
+      />
     )
   );
 
@@ -215,7 +230,8 @@ const sendBookingEmail = async (
 
 export const bookAppointmentAction = async (
   formData: TAppointmentFormValues,
-  lang: ELanguage
+  lang: ELanguage,
+  timeZone: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
     const { name, email, question, selectedTimeSlotId } = formData;
@@ -263,7 +279,7 @@ export const bookAppointmentAction = async (
 
     // Відправляємо email підтвердження користувачу
     try {
-      await sendBookingEmail(lang, transactionRes, 'user');
+      await sendBookingEmail(lang, transactionRes, 'user', timeZone);
     } catch (emailError) {
       console.error(
         'Помилка відправлення email користувачу, але бронювання збережено:',
@@ -276,7 +292,7 @@ export const bookAppointmentAction = async (
 
     // Відправляємо email сповіщення адміністратору
     try {
-      await sendBookingEmail(lang, transactionRes, 'admin');
+      await sendBookingEmail(lang, transactionRes, 'admin', timeZone);
     } catch (adminEmailError) {
       console.error(
         'Помилка відправлення email адміністратору:',

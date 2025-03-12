@@ -46,9 +46,7 @@ interface AppointmentBookingFormProps {
   lang: ELanguage;
 }
 
-// const formatDate = (date: Date, lang: ELanguage) =>
-//   format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
-// const formatTime = (date: Date) => format(date, 'HH:mm');
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const AppointmentBookingForm = ({
   initialSchedule,
@@ -91,69 +89,25 @@ const AppointmentBookingForm = ({
     }
   }, [selectedTimeSlot]);
 
-  // const onSubmit = async (data: TAppointmentFormValues) => {
-  //   setIsLoading(true);
-  //   try {
-  //     clearErrors();
-  //     const bookingResult = await bookAppointmentAction(data, lang);
-
-  //     if (bookingResult.success) {
-  //       toast.success(toastSuccessBooking.title[lang], {
-  //         description: `${toastSuccessBooking.description[lang]} ${formatTime(selectedTimeSlot!.meetDate)} ${formatDate(selectedTimeSlot!.meetDate, lang)}.`,
-  //       });
-  //       reset();
-  //       setSelectedTimeSlot(null);
-
-  //       setSchedule((prevSchedule) => {
-  //         return prevSchedule.map((daySchedule) => {
-  //           if (
-  //             formatDate(daySchedule.meetDate, lang) ===
-  //             formatDate(selectedTimeSlot!.meetDate, lang)
-  //           ) {
-  //             return {
-  //               ...daySchedule,
-  //               times: daySchedule.times.filter(
-  //                 (time) => time.id !== selectedTimeSlot!.id
-  //               ),
-  //             };
-  //           }
-  //           return daySchedule;
-  //         });
-  //       });
-  //     } else {
-  //       toast.error(toastBookingError.title[lang], {
-  //         description:
-  //           bookingResult.error || toastBookingError.description[lang],
-  //       });
-  //     }
-  //   } catch (error) {
-  //     toast.error(toastBookingCriticalError.title[lang], {
-  //       description: toastBookingCriticalError.description[lang],
-  //     });
-  //     console.error('Помилка при бронюванні сеансу:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const onSubmit = async (data: TAppointmentFormValues) => {
     setIsLoading(true);
     try {
       clearErrors();
-      const bookingResult = await bookAppointmentAction(data, lang);
+      const bookingResult = await bookAppointmentAction(data, lang, timeZone);
 
       if (bookingResult.success) {
         toast.success(toastSuccessBooking.title[lang], {
           description: `${toastSuccessBooking.description[lang]} ${formatTimeLocal(
-            selectedTimeSlot!.meetDate
-          )} ${formatDateLocal(selectedTimeSlot!.meetDate, lang)}.`,
+            selectedTimeSlot!.meetDate,
+            timeZone
+          )} ${formatDateLocal(selectedTimeSlot!.meetDate, lang, timeZone)}.`,
         });
 
         setSchedule((prevSchedule) =>
           prevSchedule.map((daySchedule) => {
             if (
-              formatDateLocal(daySchedule.meetDate, lang) ===
-              formatDateLocal(selectedTimeSlot!.meetDate, lang)
+              formatDateLocal(daySchedule.meetDate, lang, timeZone) ===
+              formatDateLocal(selectedTimeSlot!.meetDate, lang, timeZone)
             ) {
               return {
                 ...daySchedule,
@@ -196,7 +150,11 @@ const AppointmentBookingForm = ({
         <ScrollArea className="h-[300px] w-full rounded-md border bg-tertiary">
           <div className="p-2 sm:p-6 space-y-4">
             {schedule.map((daySchedule) => {
-              const formattedDate = formatDateLocal(daySchedule.meetDate, lang);
+              const formattedDate = formatDateLocal(
+                daySchedule.meetDate,
+                lang,
+                timeZone
+              );
 
               return (
                 <div key={formattedDate}>
@@ -211,7 +169,7 @@ const AppointmentBookingForm = ({
                         className={`justify-center ${selectedTimeSlot?.id === timeSlot.id ? 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground' : ''}`}
                         onClick={() => handleTimeSlotSelect(timeSlot)}
                       >
-                        {formatTimeLocal(timeSlot.meetDate)}
+                        {formatTimeLocal(timeSlot.meetDate, timeZone)}
                       </Button>
                     ))}
                     {daySchedule.times.length === 0 && (
@@ -293,8 +251,8 @@ const AppointmentBookingForm = ({
 
             <p className="text-sm text-muted-foreground">
               {confirmationTimeCaption[lang]}{' '}
-              {formatTimeLocal(selectedTimeSlot.meetDate)}{' '}
-              {formatDateLocal(selectedTimeSlot.meetDate, lang)}
+              {formatTimeLocal(selectedTimeSlot.meetDate, timeZone)}{' '}
+              {formatDateLocal(selectedTimeSlot.meetDate, lang, timeZone)}
             </p>
 
             <Button type="submit" className="w-full md:w-fit">

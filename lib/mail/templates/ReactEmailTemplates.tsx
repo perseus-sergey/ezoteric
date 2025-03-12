@@ -12,6 +12,11 @@ interface MailMeetBookToUserProps {
   subject: string;
   meetData: TSchedule;
   lang: ELanguage;
+  timeZone: string;
+
+  // =================================================================
+  // TODO: Transaction
+  // =================================================================
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
@@ -19,21 +24,14 @@ const siteEmail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 
 const { MASTER, SCHEDULE } = ESegment;
 
-// const formatDate = (date: Date, lang: ELanguage) =>
-//   format(date, 'EEEE dd MMMM', { locale: lang === ELanguage.UA ? uk : enUS });
-// const formatTime = (date: Date) => format(date, 'HH:mm');
-
-// const baseUrl = process.env.VERCEL_URL
-//   ? `https://${process.env.VERCEL_URL}`
-//   : '';
-
 export const MailMeetBookToUser = ({
   meetData,
   subject,
   lang,
+  timeZone,
 }: MailMeetBookToUserProps) => {
-  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang);
-  const meetTimeFormatted = formatTimeLocal(meetData.meetDate);
+  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang, timeZone);
+  const meetTimeFormatted = formatTimeLocal(meetData.meetDate, timeZone);
 
   return (
     <ReactEmailLayout subject={subject}>
@@ -110,12 +108,13 @@ export const MailMeetBookToUser = ({
 };
 
 export const MailMeetBookAdmin = ({
+  subject,
   meetData,
   lang,
-  subject,
+  timeZone,
 }: MailMeetBookToUserProps) => {
-  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang);
-  const meetTimeFormatted = formatTimeLocal(meetData.meetDate);
+  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang, timeZone);
+  const meetTimeFormatted = formatTimeLocal(meetData.meetDate, timeZone);
 
   return (
     <ReactEmailLayout subject={subject}>

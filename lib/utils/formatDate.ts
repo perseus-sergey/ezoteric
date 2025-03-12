@@ -1,23 +1,20 @@
-import { ELanguage } from '@/models/language.model';
-import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import { enUS, uk } from 'date-fns/locale';
+import { format } from 'date-fns';
+import { uk, enUS } from 'date-fns/locale';
+import { ELanguage } from '@/models/language.model';
 
-const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-export const formatDateLocal = (date: Date, lang: ELanguage) => {
-  const zonedDate = toZonedTime(date, timeZone);
+export const formatDateLocal = (
+  date: Date,
+  lang: ELanguage,
+  timeZone: string
+) => {
+  const zonedDate = toZonedTime(date, timeZone); // Конвертуємо в локальний час
   return format(zonedDate, 'EEEE dd MMMM', {
     locale: lang === ELanguage.UA ? uk : enUS,
   });
 };
 
-export const formatTimeLocal = (date: Date) => {
-  const zonedDate = toZonedTime(date, timeZone);
-  const formatted = format(zonedDate, 'HH:mm');
-  console.log(
-    `🚀 ~ timeZone: ${timeZone} ~ date: ${date} ~ formatted: ${formatted}`
-  );
-
-  return formatted;
+export const formatTimeLocal = (date: Date, timeZone: string) => {
+  const zonedDate = toZonedTime(date, timeZone); // Конвертуємо в локальний час
+  return format(zonedDate, 'HH:mm');
 };
