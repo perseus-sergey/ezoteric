@@ -13,8 +13,13 @@ export interface IScheduleEntry {
 export const appointmentSchema = z.object({
   name: z.string().min(2, { message: "Ім'я має містити мінімум 2 символи" }),
   email: z.string().email({ message: 'Невірний формат email' }),
-  question: z.string().min(3, { message: 'Має містити мінімум 3 символи' }),
-  selectedTimeSlotId: z.string().min(1, { message: 'Виберіть час прийому' }), // ID обраного часу прийому
+  // question: z.string().min(3, { message: 'Має містити мінімум 3 символи' }),
+  question: z
+    .string({
+      required_error: 'Please select a question.',
+    })
+    .nonempty({ message: 'Please select a question.' }),
+  selectedTimeSlotId: z.string().min(1, { message: 'Виберіть час сеансу' }), // ID обраного часу сеансу
 });
 
 export type TAppointmentFormValues = z.infer<typeof appointmentSchema>;
@@ -25,6 +30,10 @@ export const SCHEDULE_PAGE = {
     [EN]: 'Book an appointment',
   },
   appointmentForm: {
+    availableSlotsCaption: {
+      [UA]: 'Доступні часи сеансів:',
+      [EN]: 'Available appointment times:',
+    },
     toastSuccessBooking: {
       title: {
         [UA]: 'Сеанс успішно заброньовано!',
@@ -59,6 +68,10 @@ export const SCHEDULE_PAGE = {
       [UA]: 'Ви обрали час сеансу:',
       [EN]: 'You selected the appointment time:',
     },
+    forEmail: {
+      [EN]: 'For',
+      [UA]: 'Для',
+    },
     emptyDateCaption: {
       [UA]: 'Немає доступних годин сеансів на цю дату.',
       [EN]: 'No available appointments on this date.',
@@ -87,9 +100,21 @@ export const SCHEDULE_PAGE = {
       [UA]: 'Кратко опишіть питання яке ви хотіли б обговорити...',
       [EN]: 'Briefly describe the question you want to discuss...',
     },
+    questionDropPlaceholder: {
+      [UA]: 'Оберіть питання',
+      [EN]: 'Select a question',
+    },
+    questionDropNotFound: {
+      [EN]: 'No question found.',
+      [UA]: 'Не знайдено жодного питання.',
+    },
     submitButton: {
       [UA]: 'Забронювати сеанс',
       [EN]: 'Book an appointment',
+    },
+    searchPlaceholder: {
+      [EN]: 'Search question...',
+      [UA]: 'Пошук питання...',
     },
     appointmentNotChosen: {
       [UA]: 'Виберіть доступний час сеансу, щоб продовжити бронювання.',
@@ -97,3 +122,8 @@ export const SCHEDULE_PAGE = {
     },
   },
 };
+
+export const DEFAULT_QUESTIONS = {
+  [UA]: ['Замовити сеанс Таро', 'Розрахувати число долі'],
+  [EN]: ['Order a Tarot session', 'Calculate your destiny number'],
+} as const;

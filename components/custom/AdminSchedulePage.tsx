@@ -389,12 +389,13 @@ const AddTimeSlotPopover = ({
   onTimeSlotAdded,
 }: AddTimeSlotPopoverProps) => {
   const {
-    register,
     handleSubmit,
     reset,
     formState: { errors },
     setError,
     clearErrors,
+    setValue,
+    watch,
   } = useForm<TimeSlotFormValues>({
     resolver: zodResolver(timeSlotSchema),
     defaultValues: {
@@ -402,6 +403,18 @@ const AddTimeSlotPopover = ({
     },
     mode: 'onSubmit', // Валідація при спробі відправки форми
   });
+
+  const timeInputValue = watch('timeInput');
+
+  const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ''); // Видаляємо всі нечислові символи
+
+    if (value.length >= 2) {
+      value = `${value.slice(0, 2)}:${value.slice(2, 4)}`; // Додаємо `:` після двох символів
+    }
+
+    setValue('timeInput', value); // Оновлюємо значення в формі
+  };
 
   const onSubmit = (data: TimeSlotFormValues) => {
     const timeInput = data.timeInput;
@@ -457,11 +470,17 @@ const AddTimeSlotPopover = ({
           <div className="space-y-2">
             <h4 className="font-medium leading-none">Додати час зустрічі</h4>
             <p className="text-sm text-muted-foreground">
-              Введіть час у форматі HH:mm (наприклад, 10:00)
+              Введіть час у форматі HH:mm (наприклад, 09:30)
             </p>
           </div>
           <div className="grid gap-2">
-            <Input type="text" placeholder="HH:mm" {...register('timeInput')} />
+            <Input
+              type="text"
+              placeholder="HH:mm"
+              value={timeInputValue}
+              maxLength={5}
+              onChange={handleTimeInputChange}
+            />
             {errors.timeInput && (
               <p className="text-red-500 text-sm">{errors.timeInput.message}</p>
             )}

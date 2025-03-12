@@ -10,3 +10,5 @@ export const BACKGROUND_IMG_ALT = {
   [ELanguage.EN]: 'Magical crystal landscape',
   [ELanguage.UA]: 'Чарівний кришталевий пейзаж',
 };
+
+export const SITE_DOMAIN = `${DEFAULT_META_OG.siteName}.net`;

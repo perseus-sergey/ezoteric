@@ -7,17 +7,27 @@ import { format } from 'date-fns';
 import { uk, enUS } from 'date-fns/locale';
 import { ReactEmailLayout } from './ReactEmailLayout';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
+import { SCHEDULE_EMAIL } from '@/models/scheduleEmail.model';
 
 interface MailMeetBookToUserProps {
   subject: string;
   meetData: TSchedule;
   lang: ELanguage;
   timeZone: string;
-
-  // =================================================================
-  // TODO: Transaction
-  // =================================================================
 }
+
+const {
+  getTitleDescription,
+  hello,
+  dateCaption,
+  team,
+  timeCaption,
+  questionCaption,
+  additionalQuestion,
+  autoGenerate,
+  seeYou,
+  sincerely,
+} = SCHEDULE_EMAIL;
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 const siteEmail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
@@ -44,7 +54,7 @@ export const MailMeetBookToUser = ({
               textAlign: 'center',
             }}
           >
-            Hi {meetData.userName},
+            {hello[lang]} {meetData.userName},
           </Heading>
           <Heading
             as="h2"
@@ -54,25 +64,25 @@ export const MailMeetBookToUser = ({
               textAlign: 'center',
             }}
           >
-            Ваш сеанс на {DEFAULT_META_OG.siteName} успішно заброньовано.
+            {getTitleDescription(DEFAULT_META_OG.siteName)[lang]}
           </Heading>
 
           <Text style={paragraph}>
-            <b>Дата: </b>
+            <b>{dateCaption[lang]}: </b>
             {meetDateFormatted}
           </Text>
           <Text style={paragraph}>
-            <b>Час: </b>
+            <b>{timeCaption[lang]}: </b>
             {meetTimeFormatted}
           </Text>
           <Text style={{ ...paragraph, marginTop: -5 }}>
-            <b>Ваше питання: </b>
+            <b>{questionCaption[lang]}: </b>
             {meetData.question}
           </Text>
 
-          <Text style={paragraph}>Цей лист було згенеровано автоматично.</Text>
+          <Text style={paragraph}>{autoGenerate[lang]}</Text>
           <Text style={{ ...paragraph, marginTop: -5 }}>
-            Якщо у вас з`являться додаткові питання, напишіть нам на пошту{' '}
+            {additionalQuestion[lang]}{' '}
             <Link
               href={`mailto:${siteEmail}`}
               className="text-blue-600 no-underline"
@@ -88,7 +98,7 @@ export const MailMeetBookToUser = ({
               marginTop: -5,
             }}
           >
-            До зустрічі!
+            {seeYou[lang]}
           </Text>
           <Text
             style={{
@@ -97,9 +107,9 @@ export const MailMeetBookToUser = ({
               marginTop: -5,
             }}
           >
-            З повагою,
+            {sincerely[lang]},
             <br />
-            Команда ezoteric.net
+            {team[lang]}
           </Text>
         </Column>
       </Row>

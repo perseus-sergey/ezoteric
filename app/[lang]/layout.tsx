@@ -18,7 +18,6 @@ import { Suspense } from 'react';
 
 // =================================================================
 // Green card
-// auto separator add to slot time (09:00)
 // - інформації. ... (імітація обчислень) ...
 // add similar articles and tests to main page
 // - improve components/custom/Modals/ModalNumerologyResponse.tsx

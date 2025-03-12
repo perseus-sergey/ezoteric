@@ -1,6 +1,7 @@
 import { NumerologyHtml } from '@/components/custom/NumerologyHtml';
 import { ELanguage } from '../language.model';
 import { ReactNode } from 'react';
+import { SITE_DOMAIN } from '../root.model';
 
 const { EN, UA } = ELanguage;
 
@@ -12,7 +13,7 @@ export const MAIN_TEXT = {
   startBlock: {
     [UA]: (
       <p>
-        <strong>Ezoteric.net</strong> – це ваш провідник у світ езотеричних
+        <strong>{SITE_DOMAIN}</strong> – це ваш провідник у світ езотеричних
         знань. Пориньте у стародавні мистецтва Фен-Шуй та Сакральної Геометрії,
         щоб гармонізувати своє оточення та узгодитися з природним потоком
         енергії. Дослідіть глибини своєї підсвідомості за допомогою Ансіології
@@ -21,7 +22,7 @@ export const MAIN_TEXT = {
     ),
     [EN]: (
       <p>
-        <strong>Ezoteric.net</strong> is your guide to the world of esoteric
+        <strong>{SITE_DOMAIN}</strong> is your guide to the world of esoteric
         knowledge. Delve into the ancient arts of Feng Shui and Sacred Geometry
         to harmonize your surroundings and align with the natural flow of
         energy. Explore the depths of your subconscious through Ansiology and

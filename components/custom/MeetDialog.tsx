@@ -12,8 +12,8 @@ import { providerMap } from '@/app/(auth)/auth';
 import { Button } from '../ui/button';
 import { restProviderLinksAction } from '@/app/(auth)/actions';
 import { AUTH_PROVIDER_LOGOS } from '@/models/auth.model';
-import { CalendarLotos } from '@/svg/CalendarLotos';
 import { MEET_DIALOG } from '@/models/header.model';
+import { Calendar } from 'lucide-react';
 
 interface MeetDialogProps extends React.HTMLAttributes<HTMLElement> {
   isAuthorized: boolean;
@@ -41,13 +41,13 @@ const MeetDialog = ({
       href={`/${lang}/${ESegment.APPOINTMENT}`}
       className={className}
     >
-      {withIcons && <CalendarLotos className="size-6 opacity-50" />}
+      {withIcons && <Calendar className="size-6 opacity-50" />}
       {linkCaption[lang]}
     </SeoLink>
   ) : (
     <Dialog>
       <DialogTrigger className={className}>
-        {withIcons && <CalendarLotos className="size-6 opacity-50" />}
+        {withIcons && <Calendar className="size-6 opacity-50" />}
         {linkCaption[lang]}
       </DialogTrigger>
       <DialogContent>

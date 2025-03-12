@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Bonsai } from '@/svg/Bonsai';
 import MeetDialog from './MeetDialog';
 import { MaskWaveTopSlow } from '@/svg/MaskWaveTop';
+import { SITE_DOMAIN } from '@/models/root.model';
 
 const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
 // const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
@@ -61,7 +62,7 @@ export default async function Footer({
         <div className="flex flex-col gap-2 w-full sm:w-fit mt-4 sm:m-0 items-center sm:absolute sm:top-1/2 sm:left-1/2 sm:-translate-y-1/2 sm:-translate-x-1/2">
           <Bonsai className="sm:size-12 size-10 opacity-40" />
 
-          <span className="text-sm">© 2024 | Ezoteric.net</span>
+          <span className="text-sm">© 2024 | {SITE_DOMAIN}</span>
         </div>
       </footer>
     </>

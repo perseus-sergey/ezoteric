@@ -17,15 +17,24 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { DEFAULT_META_OG } from '@/models/root.model';
 import { fromZonedTime } from 'date-fns-tz';
+import {
+  BOOK_APPOINTMENT_ACTION,
+  SCHEDULE_EMAIL,
+} from '@/models/scheduleEmail.model';
 
 const db = getDB();
 const { MASTER } = ESegment;
 
-// =================================================================
-// TODO: Transaction
-// =================================================================
+const {
+  timeBooked,
+  timeNotFound,
+  errorDbBooked,
+  errorSendMailToAdmin,
+  errorSendMailToUser,
+  bookingConsoleError,
+  bookingError,
+} = BOOK_APPOINTMENT_ACTION;
 
 const groupScheduleByDate = (scheduleData: TSchedule[]): IScheduleEntry[] => {
   const groupedScheduleMap: Map<string, IScheduleEntry> = new Map();
@@ -90,9 +99,9 @@ export const getScheduleAction = async (
 };
 
 export const addTimeSlotAction = async (
-  date: Date, // Приймаємо Date об'єкт напряму
+  date: Date,
   time: string,
-  timeZone: string = 'Europe/Kiev' // За замовчуванням 'Europe/Kiev', можна передати іншу часову зону
+  timeZone: string = 'Europe/Kiev'
 ): Promise<{
   success: boolean;
   error?: string;
@@ -106,16 +115,16 @@ export const addTimeSlotAction = async (
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
 
-    // Перевірка, чи час прийому вже існує для цієї дати і часу
+    // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
     });
 
     if (existingTimeSlot) {
-      return { success: false, error: 'Час прийому вже існує для цієї дати.' };
+      return { success: false, error: 'Час сеансу вже існує для цієї дати.' };
     }
 
-    // Додавання часу прийому
+    // Додавання часу сеансу
     const insertedTimeSlots = await db
       .insert(appointmentSchedule)
       .values({ meetDate: utcMeetDateTime })
@@ -124,25 +133,24 @@ export const addTimeSlotAction = async (
     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
       return {
         success: false,
-        error: 'Не вдалося додати час прийому до бази даних.',
+        error: 'Не вдалося додати час сеансу до бази даних.',
       };
     }
 
     revalidateTag(MASTER);
     return { success: true, data: insertedTimeSlots[0] }; // Повертаємо дані вставленого запису
   } catch (error) {
-    console.error('Помилка додавання часу прийому:', error);
-    return { success: false, error: 'Не вдалося додати час прийому.' };
+    console.error('Помилка додавання часу сеансу:', error);
+    return { success: false, error: 'Не вдалося додати час сеансу.' };
   }
 };
 
 export const deleteTimeSlotAction = async (
   date: Date,
   time: string,
-  timeZone: string = 'Europe/Kiev' // За замовчуванням 'Europe/Kiev'
+  timeZone: string = 'Europe/Kiev'
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    // Розділяємо час на години та хвилини
     const [hours, minutes] = time.split(':').map(Number);
     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
@@ -150,7 +158,7 @@ export const deleteTimeSlotAction = async (
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
 
-    // Видалення часу прийому з бази даних
+    // Видалення часу сеансу з бази даних
     const deletedRows = await db
       .delete(appointmentSchedule)
       .where(eq(appointmentSchedule.meetDate, utcMeetDateTime))
@@ -159,17 +167,17 @@ export const deleteTimeSlotAction = async (
     if (deletedRows.length === 0) {
       return {
         success: false,
-        error: 'Час прийому не знайдено для видалення.',
+        error: 'Час сеансу не знайдено для видалення.',
       };
     }
 
     revalidateTag(MASTER);
     return { success: true };
   } catch (error) {
-    console.error('Помилка видалення часу прийому:', error);
+    console.error('Помилка видалення часу сеансу:', error);
     return {
       success: false,
-      error: 'Не вдалося видалити час прийому з Бази Даних.',
+      error: 'Не вдалося видалити час сеансу з Бази Даних.',
     };
   }
 };
@@ -201,7 +209,7 @@ const sendBookingEmail = async (
     return;
   }
 
-  const subject = `Підтвердження бронювання сеансу на ${DEFAULT_META_OG.siteName}`;
+  const subject = SCHEDULE_EMAIL.subject[lang];
 
   const body = await render(
     sendTo === 'user' ? (
@@ -244,12 +252,12 @@ export const bookAppointmentAction = async (
       });
 
       if (!timeSlotToBook) {
-        return 'Обраний час прийому не знайдено.';
+        return timeNotFound[lang];
       }
 
       // 2. Check if the time slot is already booked
       if (timeSlotToBook.reservedAt) {
-        return 'Обраний час прийому вже заброньовано.';
+        return timeBooked[lang];
       }
 
       // 3. Update the time slot with booking information
@@ -265,7 +273,7 @@ export const bookAppointmentAction = async (
         .returning();
 
       if (!updatedTimeSlots || updatedTimeSlots.length === 0) {
-        return 'Не вдалося забронювати час прийому в базі даних.';
+        return errorDbBooked[lang];
       }
 
       return updatedTimeSlots[0];
@@ -281,10 +289,7 @@ export const bookAppointmentAction = async (
     try {
       await sendBookingEmail(lang, transactionRes, 'user', timeZone);
     } catch (emailError) {
-      console.error(
-        'Помилка відправлення email користувачу, але бронювання збережено:',
-        emailError
-      );
+      console.error(errorSendMailToUser[lang], emailError);
       // Важливо вирішити, чи хочете ви вважати бронювання успішним, навіть якщо email не вдалося відправити.
       // Наразі ми просто логуємо помилку і продовжуємо вважати бронювання успішним з точки зору користувача.
       // Можливо, потрібно розглянути інші стратегії обробки помилок email, наприклад, повторну спробу відправки.
@@ -294,10 +299,7 @@ export const bookAppointmentAction = async (
     try {
       await sendBookingEmail(lang, transactionRes, 'admin', timeZone);
     } catch (adminEmailError) {
-      console.error(
-        'Помилка відправлення email адміністратору:',
-        adminEmailError
-      );
+      console.error(errorSendMailToAdmin[lang], adminEmailError);
       // Тут можна розглянути різні стратегії обробки помилок, наприклад, спробувати відправити email пізніше або повідомити адміністратора іншим способом.
     }
 
@@ -305,10 +307,10 @@ export const bookAppointmentAction = async (
 
     return { success: true };
   } catch (error) {
-    console.error('Помилка бронювання сеансу:', error);
+    console.error(bookingConsoleError[lang], error);
     return {
       success: false,
-      error: 'Не вдалося забронювати сеанс. Спробуйте ще раз.',
+      error: bookingError[lang],
     };
   }
 };

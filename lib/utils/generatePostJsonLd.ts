@@ -2,6 +2,7 @@ import { ELanguage } from '@/models/language.model';
 import { ESegment, MAIN_URL } from '@/models/url.model';
 import { getImageSrc } from '@/controllers/articles.controller';
 import { TArticleLocalized } from '@/models/article.model';
+import { DEFAULT_META_OG } from '@/models/root.model';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
@@ -44,7 +45,7 @@ export const generatePostJsonLd = ({
 
     author: {
       '@type': 'Person',
-      name: 'Ezoteric',
+      name: DEFAULT_META_OG.siteName,
       url: `${BASE_URL}/${lang}`,
     },
 

@@ -1,4 +1,4 @@
-import { DEFAULT_META_OG } from '@/models/root.model';
+import { DEFAULT_META_OG, SITE_DOMAIN } from '@/models/root.model';
 import { MAIN_URL } from '@/models/url.model';
 import {
   Body,
@@ -63,7 +63,7 @@ export const ReactEmailLayout = ({
               color: 'rgb(0,0,0, 0.7)',
             }}
           >
-            © 2024 | www.ezoteric.net
+            © 2024 | www.{SITE_DOMAIN.toLowerCase()}
           </Text>
         </Container>
       </Body>

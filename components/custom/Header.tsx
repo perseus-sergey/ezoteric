@@ -13,6 +13,7 @@ import SideBar from './SideBar';
 import TestsMenu from './TestsMenu';
 import MeetDialog from './MeetDialog';
 import { isAuthorized } from '@/lib/utils/loggedUser';
+import { SITE_DOMAIN } from '@/models/root.model';
 
 const { BLOG } = ESegment;
 const { logo, links } = HEADER_MODEL;
@@ -47,7 +48,7 @@ export const Header = async ({
           className="flex flex-row gap-4 items-center dark:text-zinc-300 truncate w-28 md:w-fit font-georgia"
         >
           <Osaka className="size-8" />
-          Ezoteric.net
+          {SITE_DOMAIN}
         </SeoLink>
       </div>
 
