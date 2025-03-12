@@ -14,5 +14,10 @@ export const formatDateLocal = (date: Date, lang: ELanguage) => {
 
 export const formatTimeLocal = (date: Date) => {
   const zonedDate = toZonedTime(date, timeZone);
-  return format(zonedDate, 'HH:mm');
+  const formatted = format(zonedDate, 'HH:mm');
+  console.log(
+    `🚀 ~ timeZone: ${timeZone} ~ date: ${date} ~ formatted: ${formatted}`
+  );
+
+  return formatted;
 };
