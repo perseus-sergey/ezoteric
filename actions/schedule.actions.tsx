@@ -95,12 +95,12 @@ export const addTimeSlotAction = async (
   // Додаємо тип data до повернення
   try {
     const [hours, minutes] = time.split(':').map(Number);
-    const meetDateTime = new Date(date); // Clone date to avoid mutation
+    const meetDateTime = date; // Clone date to avoid mutation
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
     console.log(
       'addTimeSlotAction - meetDateTime (перед збереженням в БД):',
-      meetDateTime
+      meetDateTime.toISOString()
     );
 
     // Оптимізована перевірка, чи час прийому вже існує для цієї дати і часу

@@ -477,7 +477,7 @@ const AddTimeSlotPopover = ({
 
     console.log(
       'AddTimeSlotPopover - handleAddTimeSlot - newTimeDate (перед відправкою на сервер):',
-      utcDateForSubmit
+      utcDateForSubmit.toISOString()
     );
 
     onTimeSlotAdded(utcDateForSubmit, timeInput); // Відправляємо UTC Date об'єкт на сервер
