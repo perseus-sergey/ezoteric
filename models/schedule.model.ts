@@ -9,20 +9,39 @@ export interface IScheduleEntry {
   times: TSchedule[];
 }
 
+const zodErrors = {
+  name: {
+    [UA]: "Ім'я має містити мінімум 2 символи",
+    [EN]: 'Name must have at least 2 characters',
+  },
+  email: {
+    [UA]: 'Невірний формат email',
+    [EN]: 'Invalid email format',
+  },
+  question: {
+    [EN]: 'Please select a question.',
+    [UA]: 'Будь ласка, виберіть питання',
+  },
+  selectedTimeSlotId: {
+    [UA]: 'Будь ласка, виберіть час сеансу',
+    [EN]: 'Please select a time slot',
+  },
+};
 // Zod для валідації форми бронювання
-export const appointmentSchema = z.object({
-  name: z.string().min(2, { message: "Ім'я має містити мінімум 2 символи" }),
-  email: z.string().email({ message: 'Невірний формат email' }),
-  // question: z.string().min(3, { message: 'Має містити мінімум 3 символи' }),
-  question: z
-    .string({
-      required_error: 'Please select a question.',
-    })
-    .nonempty({ message: 'Please select a question.' }),
-  selectedTimeSlotId: z.string().min(1, { message: 'Виберіть час сеансу' }), // ID обраного часу сеансу
-});
+export const getAppointmentSchema = (lang: ELanguage) =>
+  z.object({
+    name: z.string().min(2, { message: zodErrors.name[lang] }),
+    email: z.string().email({ message: zodErrors.email[lang] }),
+    // question: z.string().min(3, { message: 'Має містити мінімум 3 символи' }),
+    question: z.string().nonempty({ message: zodErrors.question[lang] }),
+    selectedTimeSlotId: z
+      .string()
+      .min(1, { message: zodErrors.selectedTimeSlotId[lang] }), // ID обраного часу сеансу
+  });
 
-export type TAppointmentFormValues = z.infer<typeof appointmentSchema>;
+export type TAppointmentFormValues = z.infer<
+  ReturnType<typeof getAppointmentSchema>
+>;
 
 export const SCHEDULE_PAGE = {
   titleH1: {

@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { clsx } from 'clsx';
 import { Message } from 'ai';
 import { useChat } from 'ai/react';
-import { Overview } from './overview';
 import { PreviewMessage } from '@/components/custom/message';
 import { MultimodalInput } from './multimodal-input';
 import useWindowSize from './use-window-size';
@@ -21,8 +20,10 @@ import { removeChatFromDb, saveChatToDb } from '@/actions/chat.action';
 import { toast } from 'sonner';
 import { MessageIcon } from '@/svg/MessageIcon';
 import { DialogEyes } from '@/svg/DialogEyes';
+import { MaskWaveScatteredTopSimple } from '@/svg/MaskWaveScatteredTop';
+import { Osaka } from '@/svg/Osaka';
 
-const { chatTitle, chatBtn, closeBtn } = CHAT_MODEL;
+const { chatTitle, chatBtn, closeBtn, overviewText } = CHAT_MODEL;
 
 const parseMessages = (storedMessages: string | null): Message[] => {
   try {
@@ -160,7 +161,7 @@ const ChatClient = ({
     >
       {isOpen && (
         <>
-          <nav className="flex justify-between items-center px-4 sm:py-2 bg-primary">
+          <section className="relative flex justify-between items-center px-4 py-2 bg-primary">
             <div className="flex items-center gap-2">
               <MessageIcon className="size-4 opacity-50" />
               <span className="font-bold">{chatTitle[lang]}</span>
@@ -169,7 +170,9 @@ const ChatClient = ({
               <X className="scale-125" />
               <span className="sr-only">{closeBtn.ariaLabel[lang]}</span>
             </Button>
-          </nav>
+
+            <MaskWaveScatteredTopSimple className="w-full text-primary absolute left-0 top-full" />
+          </section>
 
           <section
             className={clsx(
@@ -180,7 +183,11 @@ const ChatClient = ({
             ref={messagesContainerRef}
           >
             {messages.length === 0 && height && height > 450 ? (
-              <Overview lang={lang} />
+              <div className="bg-tertiary text-sm w-full p-4 flex items-center gap-4">
+                <Osaka className="size-6" />
+
+                <p>{overviewText[lang]}</p>
+              </div>
             ) : (
               <>
                 <div

@@ -33,7 +33,7 @@ import {
 
 import {
   TAppointmentFormValues,
-  appointmentSchema,
+  getAppointmentSchema,
   IScheduleEntry,
   SCHEDULE_PAGE,
   DEFAULT_QUESTIONS,
@@ -92,7 +92,7 @@ const AppointmentBookingForm = ({
   ); // Стан для обраного часу сеансів
 
   const form = useForm<TAppointmentFormValues>({
-    resolver: zodResolver(appointmentSchema),
+    resolver: zodResolver(getAppointmentSchema(lang)),
     defaultValues: {
       name: '',
       email: userEmail,

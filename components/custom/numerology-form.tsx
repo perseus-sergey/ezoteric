@@ -31,9 +31,9 @@ import { generateAiNumerology } from '@/ai/numerology.controller';
 import { cn } from '@/lib/utils/utils';
 import ButtonBorderGlowing from './ButtonBorderGlowing';
 import { Button } from '../ui/button';
-import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { CheckCircle } from 'lucide-react';
 import { NumerologyPictogram } from '@/svg/NumerologyPictogram';
+import { LoaderAnimatedInfinity } from '@/svg/LoaderAnimatedInfinity';
 
 const ModalNumerologyResponse = dynamic(
   () => import('./Modals/ModalNumerologyResponse'),
@@ -211,7 +211,10 @@ export default function NumerologyForm({ lang, className }: IProps) {
                     ? numerologyForm.submit.pending[lang]
                     : numerologyForm.submit.title[lang]}
                   {isLoading ? (
-                    <LoadingAnimated />
+                    <LoaderAnimatedInfinity
+                      className="opacity-80 w-8 h-6"
+                      duration={3}
+                    />
                   ) : (
                     <CheckCircle className="opacity-80" />
                   )}
