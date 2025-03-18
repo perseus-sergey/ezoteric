@@ -14,9 +14,18 @@ Translate the Ukrainian content into English.
 Ensure that only the text content inside the tags and the relevant attribute values (e.g., alt, aria-label) are translated, leaving the tags and structure unchanged.
 
 Translate the text content while keeping all HTML tags and formatting as is. Translate any text inside alt attributes of images.
-If any internal links in the format "/uk/blog/article-name" or "/uk/tests/test-name" are found, replace "/uk" with "/en", so that the translated version points to the correct English URL, e.g.:  
-- "/uk/blog/article-name" → "/en/blog/article-name"  
+
+If any internal links in the format "/uk/blog/article-name" or "/uk/tests/test-name" are found, replace "/uk" with "/en", so that the translated version points to the correct English URL, e.g.:
+
+- "/uk/blog/article-name" → "/en/blog/article-name"
 - "/uk/tests/test-name" → "/en/tests/test-name"
+
+When translating, adapt the text to match the mentality, cultural background, and expectations of an English-speaking audience. This includes:
+
+Adjusting names and surnames to be more familiar to English-speaking users if appropriate.
+Adapting expressions, idioms, and cultural references to be more relatable to English speakers.
+Ensuring that the tone, style, and formality of the text align with natural English communication patterns.
+Maintain the essence and meaning of the original content while ensuring the translation feels natural and engaging to an English-speaking reader.
   `,
     schema: z.object({
       translatedHtml: z

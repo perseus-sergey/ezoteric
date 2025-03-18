@@ -1,7 +1,10 @@
-// import { Mail, PhoneCall } from 'lucide-react';
 import { getELangKey } from '@/lib/utils/getLanguage';
 import Image from 'next/image';
-import { MAIN_TEXT, NUMEROLOGY_JSX } from '@/models/meta/home.model';
+import {
+  MAIN_TEXT,
+  NUMEROLOGY_JSX,
+  SIMILAR_BLOCK,
+} from '@/models/meta/home.model';
 import { MAIN_DEV_URL, MAIN_URL, TParams } from '@/models/url.model';
 import { Title } from '@/components/custom/Title';
 
@@ -10,9 +13,8 @@ import main_h1_21 from '@/public/images/main_h1_21.jpg';
 import { TarotTwoCards } from '@/svg/TarotTwoCards';
 import { fetchJsonLd } from '@/lib/utils/utils';
 import NumerologyForm from '@/components/custom/numerology-form';
-
-// const siteMail = process.env.NEXT_PUBLIC_SITE_EMAIL || '';
-// const sitePhone = process.env.NEXT_PUBLIC_SITE_PHONE || '';
+import { Suspense } from 'react';
+import SimilarArticlesBlock from '@/components/custom/SimilarArticlesBlock';
 
 const BASE_URL =
   process.env.NODE_ENV !== 'production'
@@ -89,33 +91,23 @@ export default async function Page({ params }: { params: TParams }) {
         <NumerologyForm lang={lang} className="my-4" />
       </section>
 
-      {/* <Title titleType="h2">{FOOTER_MODEL.title[lang]}</Title>
-      <p className="text-center font-semibold text-xl pb-4 font-georgia">
-        {FOOTER_MODEL.description[lang]}
-      </p>
-      <ul className="flex flex-wrap items-center gap-4 justify-evenly">
-        <li className="flex items-center gap-2">
-          <Mail className="opacity-50" /> Email:{' '}
-          <Link
-            className="hover:opacity-75"
-            href={`mailto:${siteMail}`}
-            aria-label={FOOTER_MODEL.mail.ariaLabel[lang]}
-          >
-            {siteMail}
-          </Link>
-        </li>
-        <li className="flex items-center gap-2">
-          <PhoneCall className="opacity-50" />{' '}
-          {FOOTER_MODEL.phone.caption[lang]}:{' '}
-          <Link
-            className="hover:opacity-75"
-            href={`tel:${sitePhone.replace(/\s+/g, '')}`}
-            aria-label={FOOTER_MODEL.phone.ariaLabel[lang]}
-          >
-            {sitePhone}
-          </Link>
-        </li>
-      </ul> */}
+      <Suspense>
+        <SimilarArticlesBlock
+          type="articles"
+          lang={lang}
+          quantity={6}
+          title={SIMILAR_BLOCK.articles[lang]}
+        />
+      </Suspense>
+
+      <Suspense>
+        <SimilarArticlesBlock
+          type="tests"
+          lang={lang}
+          quantity={6}
+          title={SIMILAR_BLOCK.tests[lang]}
+        />
+      </Suspense>
 
       {jsonLD && (
         <script
@@ -126,11 +118,3 @@ export default async function Page({ params }: { params: TParams }) {
     </article>
   );
 }
-
-// img
-// 9
-// 11
-// 13
-// 17
-// 19
-// 20

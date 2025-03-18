@@ -112,3 +112,14 @@ export const NUMEROLOGY_JSX: Record<ELanguage, ReactNode> = {
   [UA]: <NumerologyHtml lang={UA} />,
   [EN]: <NumerologyHtml lang={EN} />,
 };
+
+export const SIMILAR_BLOCK = {
+  articles: {
+    [UA]: 'Нові статті',
+    [EN]: 'New Articles',
+  },
+  tests: {
+    [UA]: 'Останні тести',
+    [EN]: 'Latest Tests',
+  },
+};

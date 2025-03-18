@@ -1,5 +1,5 @@
 import { ELanguage } from '@/models/language.model';
-import { getSimilarArticlesByTags, ISimilarArticle } from '@/db/queriesArticle';
+import { getSimilarArticles, ISimilarArticle } from '@/db/queriesArticle';
 import SeoLink from './SeoLink';
 import { BLOG_CARD_IMAGE, getSeoCardLinkTitle } from '@/models/blog.model';
 import { ESegment } from '@/models/url.model';
@@ -8,40 +8,45 @@ import { getFormattedDateStrYearFirst } from '@/lib/utils/dates';
 import { Card, CardContent, CardTitle } from '../ui/card';
 import ValidImage from './ValidImage';
 import { IMG_PROPERTIES } from '@/models/image.model';
-import { ARTICLE_IMG, SIMILAR_ARTICLES } from '@/models/article.model';
+import { ARTICLE_IMG } from '@/models/article.model';
 import { CalendarCheck2 } from 'lucide-react';
-import { getSimilarTestsByCategory } from '@/db/queriesTests';
+import { getSimilarTests } from '@/db/queriesTests';
 import { Title } from './Title';
-import { SIMILAR_TESTS, TEST_IMG } from '@/models/test.model';
+import { TEST_IMG } from '@/models/test.model';
 import { getSeoTestLinkTitle } from '@/models/tests.model';
 
 interface IProps {
-  articleId: number;
+  lang: ELanguage;
+  title: string;
+  type: 'articles' | 'tests';
+  articleId?: number;
   tagIds?: number[];
   catId?: number;
-  lang: ELanguage;
+  quantity?: number;
 }
 
 const { BLOG, TESTS } = ESegment;
 
 export default async function SimilarArticlesBlock({
   articleId,
+  title,
+  type,
   tagIds,
   lang,
   catId,
+  quantity = 8,
 }: IProps) {
-  const similarArticles = tagIds
-    ? await getSimilarArticlesByTags(lang, articleId, tagIds)
-    : catId
-      ? await getSimilarTestsByCategory(lang, articleId, catId)
-      : null;
+  const similarArticles =
+    type === 'articles'
+      ? await getSimilarArticles(lang, articleId, tagIds, quantity)
+      : await getSimilarTests(lang, articleId, catId, quantity);
 
   if (!similarArticles || similarArticles.length === 0) return null;
 
   return (
     <nav className="mt-4 py-4 bg-tertiary/30 rounded-2xl">
       <Title titleType="h2" className="text-tertiary-foreground">
-        {tagIds ? SIMILAR_ARTICLES.title[lang] : SIMILAR_TESTS.title[lang]}
+        {title}
       </Title>
       <ul className="flex flex-wrap gap-4 justify-center">
         {similarArticles.map((similarArticle) => (
@@ -49,7 +54,7 @@ export default async function SimilarArticlesBlock({
             <SimilarCard
               lang={lang}
               article={similarArticle}
-              isTest={!tagIds}
+              isTest={type === 'tests'}
             />
           </li>
         ))}

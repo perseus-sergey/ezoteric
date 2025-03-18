@@ -3,10 +3,10 @@ import { SVGProps } from 'react';
 
 export function MaskWaveScatteredTopSimple(props: SVGProps<SVGSVGElement>) {
   return (
-    <SeoSVG {...props} viewBox="0 0 1000 45">
+    <SeoSVG {...props} viewBox="0 0 1000 20">
       <path
         fill="currentColor"
-        d="M1000 0H0v45C60 20 110 4 200 2c250 0 250 40 500 40 125 0 190-24 300-35V0Z"
+        d="M0 20V0H1000V0C1000 0 750 20 500 10C250 0 100 5 0 20Z"
       />
     </SeoSVG>
   );

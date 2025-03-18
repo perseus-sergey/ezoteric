@@ -241,31 +241,36 @@ export interface ISimilarArticle {
   title: string;
 }
 
-export async function getSimilarArticlesByTags(
+export async function getSimilarArticles(
   lang: ELanguage,
-  currentArticleId: number,
-  tagIds: number[],
+  currentArticleId?: number,
+  tagIds?: number[],
   limit: number = 8
 ): Promise<ISimilarArticle[] | null> {
   const publishedCondition = eq(tblArticle.published, true);
+  const currentArticleCondition = currentArticleId
+    ? not(eq(tblArticle.id, currentArticleId))
+    : undefined; // Exclude the current article
 
   try {
     const similarArticles = await db.query.tblArticle.findMany({
       where: (article, { and, exists }) =>
         and(
-          not(eq(article.id, currentArticleId)), // Exclude the current article
+          currentArticleCondition,
           publishedCondition,
-          exists(
-            db
-              .select()
-              .from(tblArticleTag)
-              .where(
-                and(
-                  eq(tblArticleTag.articleId, article.id),
-                  inArray(tblArticleTag.tagId, tagIds) // At least one tag in common
-                )
+          tagIds && tagIds.length > 0
+            ? exists(
+                db
+                  .select()
+                  .from(tblArticleTag)
+                  .where(
+                    and(
+                      eq(tblArticleTag.articleId, article.id),
+                      inArray(tblArticleTag.tagId, tagIds) // At least one tag in common
+                    )
+                  )
               )
-          )
+            : undefined
         ),
       orderBy: (articles, { desc }) => [desc(articles.updatedAt)],
       limit: limit,

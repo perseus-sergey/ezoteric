@@ -12,7 +12,7 @@ import { notFound } from 'next/navigation';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import BrCrumb from '@/components/custom/BrCrumb';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
-import { TEST_IMG, NOT_PUBLISHED } from '@/models/test.model';
+import { TEST_IMG, NOT_PUBLISHED, SIMILAR_TESTS } from '@/models/test.model';
 import { Metadata } from 'next';
 import { DEFAULT_META_OG } from '@/models/root.model';
 import { ELanguage } from '@/models/language.model';
@@ -218,7 +218,13 @@ export default async function Page({ params }: { params: TParams }) {
       )}
 
       <React.Suspense>
-        <SimilarArticlesBlock lang={lang} articleId={id} catId={category.id} />
+        <SimilarArticlesBlock
+          title={SIMILAR_TESTS.title[lang]}
+          lang={lang}
+          articleId={id}
+          catId={category.id}
+          type="tests"
+        />
       </React.Suspense>
 
       <script

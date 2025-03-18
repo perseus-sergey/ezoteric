@@ -253,22 +253,23 @@ export const getTestBySlug = cache(async (slug: string, lang: ELanguage) => {
 
 export type TTestRelationsLocalized = Awaited<ReturnType<typeof getTestBySlug>>;
 
-export async function getSimilarTestsByCategory(
+export async function getSimilarTests(
   lang: ELanguage,
-  currentTestId: number,
-  categoryId: number,
+  currentTestId?: number,
+  categoryId?: number,
   limit: number = 8
 ) {
   const publishedCondition = eq(tblTests.published, true);
+  const categoryCondition = categoryId
+    ? eq(tblTests.categoryId, categoryId)
+    : undefined; // Must be in the same category
+  const currentTestCondition = currentTestId
+    ? not(eq(tblTests.id, currentTestId))
+    : undefined; // Exclude the current test
 
   try {
     const similarTests = await db.query.tblTests.findMany({
-      where: (test, { and, eq }) =>
-        and(
-          not(eq(test.id, currentTestId)), // Exclude the current test
-          publishedCondition,
-          eq(test.categoryId, categoryId) // Must be in the same category
-        ),
+      where: and(currentTestCondition, publishedCondition, categoryCondition),
       orderBy: (tests, { desc }) => [desc(tests.updatedAt)],
       limit: limit,
       columns: {

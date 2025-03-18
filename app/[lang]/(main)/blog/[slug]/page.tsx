@@ -12,7 +12,11 @@ import { notFound } from 'next/navigation';
 import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
 import BrCrumb from '@/components/custom/BrCrumb';
 import { isAdminAuth } from '@/lib/utils/loggedUser';
-import { ARTICLE_IMG, NOT_PUBLISHED } from '@/models/article.model';
+import {
+  ARTICLE_IMG,
+  NOT_PUBLISHED,
+  SIMILAR_ARTICLES,
+} from '@/models/article.model';
 import { BLOG_CARD_IMAGE, BLOG_H1 } from '@/models/blog.model';
 import { Metadata } from 'next';
 import { DEFAULT_META_OG } from '@/models/root.model';
@@ -197,9 +201,11 @@ export default async function Page({ params }: { params: TParams }) {
       {tagIds && tagIds.length > 0 ? (
         <Suspense>
           <SimilarArticlesBlock
+            title={SIMILAR_ARTICLES.title[lang]}
             lang={lang}
             articleId={article.id}
             tagIds={tagIds}
+            type="articles"
           />
         </Suspense>
       ) : null}
