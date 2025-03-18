@@ -38,7 +38,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'ezoteric.net',
+        hostname: 'www.ezoteric.net',
       },
       {
         protocol: 'https',

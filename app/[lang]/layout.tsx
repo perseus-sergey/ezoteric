@@ -17,7 +17,6 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 import { Suspense } from 'react';
 
 // =================================================================
-// Green card
 // - інформації. ... (імітація обчислень) ...
 // add similar articles and tests to main page
 // - improve components/custom/Modals/ModalNumerologyResponse.tsx
