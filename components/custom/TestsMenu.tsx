@@ -60,7 +60,7 @@ export default async function TestsMenu({
       <DropdownMenuTrigger className="font-georgia" asChild>
         <button
           className={cn(
-            'font-georgia text-base outline-none px-6 py-3',
+            'font-georgia text-base outline-none px-4 py-2',
             className
           )}
         >

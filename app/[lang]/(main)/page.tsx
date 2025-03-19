@@ -45,6 +45,7 @@ export default async function Page({ params }: { params: TParams }) {
         <Image
           src={main_h1_21}
           alt={startBlockImgAlt[lang]}
+          priority
           placeholder="blur"
           className="rounded-md hidden sm:block"
         />

@@ -32,7 +32,7 @@ export const Header = async ({
   return (
     <header
       id="top"
-      className="border-grid sticky z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center"
+      className="border-grid sticky z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 top-0 left-0 w-dvw h-14 py-2 px-3 justify-between flex flex-row items-center"
     >
       <div className="flex flex-row gap-3 items-center">
         <SideBar
