@@ -17,7 +17,7 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
@@ -96,7 +96,7 @@ export const getScheduleAction = async (
             allAppointments.map((appointment) => {
               return {
                 ...appointment,
-                meetDate: fromZonedTime(appointment.meetDate, ADMIN_TIME_ZONE),
+                meetDate: toZonedTime(appointment.meetDate, ADMIN_TIME_ZONE),
               };
             })
           ),
