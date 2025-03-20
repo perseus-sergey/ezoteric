@@ -12,3 +12,5 @@ export const BACKGROUND_IMG_ALT = {
 };
 
 export const SITE_DOMAIN = `${DEFAULT_META_OG.siteName}.net`;
+
+export const ADMIN_TIME_ZONE = 'Europe/Kiev';

@@ -22,6 +22,7 @@ import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
+import { ADMIN_TIME_ZONE } from '@/models/root.model';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -101,7 +102,7 @@ export const getScheduleAction = async (
 export const addTimeSlotAction = async (
   date: Date,
   time: string,
-  timeZone: string = 'Europe/Kiev'
+  timeZone: string = ADMIN_TIME_ZONE
 ): Promise<{
   success: boolean;
   error?: string;
