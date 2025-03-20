@@ -47,8 +47,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils/utils';
-import { ADMIN_TIME_ZONE } from '@/models/root.model';
-import { fromZonedTime } from 'date-fns-tz';
 
 interface ScheduleAdminPageProps {
   initialSchedule: IScheduleEntry[];
@@ -63,20 +61,17 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDateAdded = async (newDate: Date) => {
-    const meetDateTime = new Date(newDate);
-    const utcMeetDateTime = fromZonedTime(meetDateTime, ADMIN_TIME_ZONE);
-
     setSchedule((prevSchedule) => {
       const updatedSchedule = [
         ...prevSchedule,
-        { meetDate: utcMeetDateTime, times: [] },
+        { meetDate: newDate, times: [] },
       ];
       return updatedSchedule.sort(
         (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
       );
     });
 
-    toast.success(`Дату ${formatDate(utcMeetDateTime)} успішно додано.`);
+    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
     setAddDateDialogOpen(false);
   };
 

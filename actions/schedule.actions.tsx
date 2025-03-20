@@ -89,7 +89,19 @@ export const getScheduleAction = async (
       .from(appointmentSchedule)
       .where(reservedCondition);
 
-    return { success: true, data: groupScheduleByDate(allAppointments) };
+    return withReserved
+      ? {
+          success: true,
+          data: groupScheduleByDate(
+            allAppointments.map((appointment) => {
+              return {
+                ...appointment,
+                meetDate: fromZonedTime(appointment.meetDate, ADMIN_TIME_ZONE),
+              };
+            })
+          ),
+        }
+      : { success: true, data: groupScheduleByDate(allAppointments) };
   } catch (error) {
     console.error('Помилка отримання графіку:', error);
     return {
