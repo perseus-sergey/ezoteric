@@ -59,6 +59,10 @@ interface ScheduleAdminPageProps {
 //   initialSchedule: IScheduleEntry[];
 // }
 
+const formatDate = (date: Date) =>
+  formatDateLocal(date, ELanguage.UA, timeZone);
+const formatTime = (date: Date) => formatTimeLocal(date, timeZone);
+
 // const formatDate = (date: Date) => format(date, 'EE dd MMM', { locale: uk });
 // const formatTime = (date: Date) => format(date, 'HH:mm');
 
@@ -89,9 +93,7 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       );
     });
 
-    toast.success(
-      `Дату ${formatDateLocal(newDate, ELanguage.UA, timeZone)} успішно додано.`
-    );
+    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
     setAddDateDialogOpen(false);
   };
 
@@ -127,9 +129,7 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
             return daySchedule;
           });
         });
-        toast.success(
-          `Час ${time} для ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно додано.`
-        );
+        toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
       } else {
         toast.error(
           result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
@@ -158,15 +158,9 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
         setSchedule((prevSchedule) => {
           const updatedSchedule = prevSchedule
             .map((daySchedule) => {
-              if (
-                formatDateLocal(
-                  daySchedule.meetDate,
-                  ELanguage.UA,
-                  timeZone
-                ) === formatDateLocal(date, ELanguage.UA, timeZone)
-              ) {
+              if (formatDate(daySchedule.meetDate) === formatDate(date)) {
                 const updatedTimeSlots = daySchedule.times.filter(
-                  (ts) => formatTimeLocal(ts.meetDate, timeZone) !== time // Compare time strings
+                  (ts) => formatTime(ts.meetDate) !== time // Compare time strings
                 );
                 return { ...daySchedule, times: updatedTimeSlots };
               }
@@ -176,7 +170,7 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
           return updatedSchedule;
         });
         toast.success('Час зустрічі видалено!', {
-          description: `Час ${time} для ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно видалено.`,
+          description: `Час ${time} для ${formatDate(date)} успішно видалено.`,
         });
       } else {
         toast.error('Помилка видалення часу', {
@@ -209,18 +203,11 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
 
         <TableBody>
           {schedule.map((daySchedule) => {
-            const formattedDate = formatDateLocal(
-              daySchedule.meetDate,
-              ELanguage.UA,
-              timeZone
-            );
+            const formattedDate = formatDate(daySchedule.meetDate);
 
             return daySchedule.times.length > 0 ? (
               daySchedule.times.map((timeSlot, index) => {
-                const formattedTime = formatTimeLocal(
-                  timeSlot.meetDate,
-                  timeZone
-                );
+                const formattedTime = formatTime(timeSlot.meetDate);
 
                 return (
                   <TableRow
@@ -463,7 +450,7 @@ const AddTimeSlotPopover = ({
     clearErrors('timeInput');
 
     const isTimeSlotExists = existingTimeSlots.some(
-      (slot) => formatTimeLocal(slot.meetDate, timeZone) === timeInput
+      (slot) => formatTime(slot.meetDate) === timeInput
     );
     if (isTimeSlotExists) {
       setError('timeInput', {
@@ -489,7 +476,7 @@ const AddTimeSlotPopover = ({
         if (timeDifference < thirtyMinutes) {
           setError('timeInput', {
             type: 'manual',
-            message: `Час повинен бути мінімум 30 хвилин від ${formatTimeLocal(existingTimeDate, timeZone)}.`,
+            message: `Час повинен бути мінімум 30 хвилин від ${formatTime(existingTimeDate)}.`,
           });
           return;
         }
@@ -560,12 +547,12 @@ const DeleteTimeSlotButton = ({
     if (timeSlot.email) {
       setIsConfirmationOpen(true); // Open confirmation if email exists
     } else {
-      onDelete(date, formatTimeLocal(timeSlot.meetDate, timeZone)); // Directly delete if no email
+      onDelete(date, formatTime(timeSlot.meetDate)); // Directly delete if no email
     }
   };
 
   const handleConfirmDelete = () => {
-    onDelete(date, formatTimeLocal(timeSlot.meetDate, timeZone)); // Delete after confirmation
+    onDelete(date, formatTime(timeSlot.meetDate)); // Delete after confirmation
     setIsConfirmationOpen(false);
   };
 

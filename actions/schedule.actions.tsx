@@ -13,12 +13,12 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime, toDate, toZonedTime } from 'date-fns-tz';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -129,16 +129,13 @@ export const addTimeSlotAction = async (
   data?: typeof appointmentSchedule.$inferSelect;
 }> => {
   try {
-    // const [hours, minutes] = time.split(':').map(Number);
-
-    // Створюємо рядок дати і часу у форматі ISO без вказівки часового поясу в рядку
     const dateTimeString = `${format(date, 'yyyy-MM-dd')}T${time}:00`;
-
-    // Парсимо рядок дати і часу, вказуючи часовий пояс користувача за допомогою toDate
-    const zonedDate = toDate(dateTimeString, { timeZone: timeZone }); // Використовуємо toDate з date-fns-tz
-
-    // Конвертуємо zonedDate в UTC
-    const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
+    const parsedDateInLocalTz = parse(
+      dateTimeString,
+      "yyyy-MM-dd'T'HH:mm:ss",
+      new Date()
+    ); // Парсимо рядок як локальний час
+    const utcMeetDateTime = fromZonedTime(parsedDateInLocalTz, timeZone);
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
@@ -153,7 +150,7 @@ export const addTimeSlotAction = async (
     const insertedTimeSlots = await db
       .insert(appointmentSchedule)
       .values({ meetDate: utcMeetDateTime })
-      .returning(); // Отримуємо вставлені дані
+      .returning();
 
     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
       return {
@@ -179,6 +176,7 @@ export const addTimeSlotAction = async (
     return { success: false, error: 'Не вдалося додати час сеансу.' };
   }
 };
+
 export const deleteTimeSlotAction = async (
   date: Date,
   time: string,
