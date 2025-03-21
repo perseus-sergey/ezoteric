@@ -356,6 +356,13 @@ const AddDateDialog = ({
       return;
     }
 
+    // **Додаємо console.log для перевірки формату дати**
+    console.log('Date object from Datepicker:', date);
+    console.log('Date toISOString():', date.toISOString());
+    console.log('Date toString():', date.toString());
+    console.log('Date toUTCString():', date.toUTCString());
+    console.log('Date getTimezoneOffset():', date.getTimezoneOffset());
+
     onDateAdded(date);
     onOpenChange(false);
     setError(null);
