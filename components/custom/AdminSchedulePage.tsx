@@ -84,32 +84,50 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDateAdded = async (newDate: Date) => {
-    // **Додаємо console.log для перевірки формату дати**
-    console.log('Date object from Datepicker:', newDate);
-    console.log('Date toISOString():', newDate.toISOString());
-    console.log('Date toString():', newDate.toString());
-    console.log('Date toUTCString():', newDate.toUTCString());
-    console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
-
-    // **Коректно створюємо UTC дату, відштовхуючись від дати з datepicker в часовому поясі користувача**
-    const startOfDayInTimeZone = startOfDay(newDate); // Переконуємося, що це початок дня в локальному часовому поясі
-    const utcDate = fromZonedTime(startOfDayInTimeZone, timeZone); // Конвертуємо в UTC
-
-    console.log('Corrected UTC Date toISOString():', utcDate.toISOString());
+    // Конвертуємо newDate (локальний час) в UTC початок дня
+    const dayStartUTC = startOfDay(fromZonedTime(newDate, timeZone));
 
     setSchedule((prevSchedule) => {
       const updatedSchedule = [
         ...prevSchedule,
-        { meetDate: utcDate, times: [] }, // Використовуємо utcDate тут
+        { meetDate: dayStartUTC, times: [] }, // Зберігаємо UTC дату
       ];
       return updatedSchedule.sort(
         (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
       );
     });
 
-    toast.success(`Дату ${formatDate(new Date(utcDate))} успішно додано.`); // Відображаємо форматовану дату в локальному часі
+    toast.success(`Дату ${formatDate(new Date(dayStartUTC))} успішно додано.`); // Відображаємо локалізовану дату
     setAddDateDialogOpen(false);
   };
+
+  // const handleDateAdded = async (newDate: Date) => {
+  //   // **Додаємо console.log для перевірки формату дати**
+  //   console.log('Date object from Datepicker:', newDate);
+  //   console.log('Date toISOString():', newDate.toISOString());
+  //   console.log('Date toString():', newDate.toString());
+  //   console.log('Date toUTCString():', newDate.toUTCString());
+  //   console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
+
+  //   // **Коректно створюємо UTC дату, відштовхуючись від дати з datepicker в часовому поясі користувача**
+  //   const startOfDayInTimeZone = startOfDay(newDate); // Переконуємося, що це початок дня в локальному часовому поясі
+  //   const utcDate = fromZonedTime(startOfDayInTimeZone, timeZone); // Конвертуємо в UTC
+
+  //   console.log('Corrected UTC Date toISOString():', utcDate.toISOString());
+
+  //   setSchedule((prevSchedule) => {
+  //     const updatedSchedule = [
+  //       ...prevSchedule,
+  //       { meetDate: utcDate, times: [] }, // Використовуємо utcDate тут
+  //     ];
+  //     return updatedSchedule.sort(
+  //       (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
+  //     );
+  //   });
+
+  //   toast.success(`Дату ${formatDate(new Date(utcDate))} успішно додано.`); // Відображаємо форматовану дату в локальному часі
+  //   setAddDateDialogOpen(false);
+  // };
 
   // const handleDateAdded = async (newDate: Date) => {
   //   // **Додаємо console.log для перевірки формату дати**
