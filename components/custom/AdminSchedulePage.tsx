@@ -50,7 +50,7 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
-import { fromZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 interface ScheduleAdminPageProps {
   initialSchedule: TSchedule[];
@@ -84,100 +84,53 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDateAdded = async (newDate: Date) => {
-    // Конвертуємо newDate (локальний час) в UTC початок дня
-    const dayStartUTC = startOfDay(fromZonedTime(newDate, timeZone));
+    // **Додаємо console.log для перевірки формату дати**
+    console.log('Date object from Datepicker:', newDate);
+    console.log('Date toISOString():', newDate.toISOString());
+    console.log('Date toString():', newDate.toString());
+    console.log('Date toUTCString():', newDate.toUTCString());
+    console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
 
     setSchedule((prevSchedule) => {
       const updatedSchedule = [
         ...prevSchedule,
-        { meetDate: dayStartUTC, times: [] }, // Зберігаємо UTC дату
+        { meetDate: newDate, times: [] },
       ];
       return updatedSchedule.sort(
         (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
       );
     });
 
-    toast.success(`Дату ${formatDate(new Date(dayStartUTC))} успішно додано.`); // Відображаємо локалізовану дату
+    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
     setAddDateDialogOpen(false);
   };
-
-  // const handleDateAdded = async (newDate: Date) => {
-  //   // **Додаємо console.log для перевірки формату дати**
-  //   console.log('Date object from Datepicker:', newDate);
-  //   console.log('Date toISOString():', newDate.toISOString());
-  //   console.log('Date toString():', newDate.toString());
-  //   console.log('Date toUTCString():', newDate.toUTCString());
-  //   console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
-
-  //   // **Коректно створюємо UTC дату, відштовхуючись від дати з datepicker в часовому поясі користувача**
-  //   const startOfDayInTimeZone = startOfDay(newDate); // Переконуємося, що це початок дня в локальному часовому поясі
-  //   const utcDate = fromZonedTime(startOfDayInTimeZone, timeZone); // Конвертуємо в UTC
-
-  //   console.log('Corrected UTC Date toISOString():', utcDate.toISOString());
-
-  //   setSchedule((prevSchedule) => {
-  //     const updatedSchedule = [
-  //       ...prevSchedule,
-  //       { meetDate: utcDate, times: [] }, // Використовуємо utcDate тут
-  //     ];
-  //     return updatedSchedule.sort(
-  //       (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
-  //     );
-  //   });
-
-  //   toast.success(`Дату ${formatDate(new Date(utcDate))} успішно додано.`); // Відображаємо форматовану дату в локальному часі
-  //   setAddDateDialogOpen(false);
-  // };
-
-  // const handleDateAdded = async (newDate: Date) => {
-  //   // **Додаємо console.log для перевірки формату дати**
-  //   console.log('Date object from Datepicker:', newDate);
-  //   console.log('Date toISOString():', newDate.toISOString());
-  //   console.log('Date toString():', newDate.toString());
-  //   console.log('Date toUTCString():', newDate.toUTCString());
-  //   console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
-
-  //   setSchedule((prevSchedule) => {
-  //     const updatedSchedule = [
-  //       ...prevSchedule,
-  //       { meetDate: newDate, times: [] },
-  //     ];
-  //     return updatedSchedule.sort(
-  //       (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
-  //     );
-  //   });
-
-  //   toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
-  //   setAddDateDialogOpen(false);
-  // };
 
   const handleTimeSlotAdded = async (date: Date, time: string) => {
     setIsLoading(true);
     try {
-      const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
+      const result = await addTimeSlotAction(date, time, timeZone);
 
       if (result.success && result.data) {
         setSchedule((prevSchedule) => {
           return prevSchedule.map((daySchedule) => {
-            if (
-              format(daySchedule.meetDate, 'yyyy-MM-dd') ===
-              format(date, 'yyyy-MM-dd')
-            ) {
+            // Отримуємо початок дня для daySchedule.meetDate в UTC
+            const dayScheduleUTCDate = startOfDay(daySchedule.meetDate);
+            // Отримуємо початок дня для date, яку користувач вибрав, в UTC
+            const inputUTCDate = startOfDay(toZonedTime(date, timeZone)); // Convert date to user's timezone first then get start of day
+            // Порівнюємо timestamp-и дат, приведених до початку дня в UTC
+            if (dayScheduleUTCDate.getTime() === inputUTCDate.getTime()) {
               const newTimesArray: TSchedule[] = [];
               if (result.data) {
                 newTimesArray.push(result.data);
               }
               const combinedTimes = newTimesArray.concat(daySchedule.times);
-              const sortedTimes = combinedTimes.sort(
-                // Sort the combined array
-                (a, b) => {
-                  if (!a || !b) return 0;
-                  return a.meetDate.getTime() - b.meetDate.getTime();
-                }
-              );
+              const sortedTimes = combinedTimes.sort((a, b) => {
+                if (!a || !b) return 0;
+                return a.meetDate.getTime() - b.meetDate.getTime();
+              });
               return {
                 ...daySchedule,
-                times: sortedTimes, // Assign the newly created and sorted array
+                times: sortedTimes,
               };
             }
             return daySchedule;
@@ -195,6 +148,51 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       setIsLoading(false);
     }
   };
+
+  // const handleTimeSlotAdded = async (date: Date, time: string) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
+
+  //     if (result.success && result.data) {
+  //       setSchedule((prevSchedule) => {
+  //         return prevSchedule.map((daySchedule) => {
+  //           if (
+  //             format(daySchedule.meetDate, 'yyyy-MM-dd') ===
+  //             format(date, 'yyyy-MM-dd')
+  //           ) {
+  //             const newTimesArray: TSchedule[] = [];
+  //             if (result.data) {
+  //               newTimesArray.push(result.data);
+  //             }
+  //             const combinedTimes = newTimesArray.concat(daySchedule.times);
+  //             const sortedTimes = combinedTimes.sort(
+  //               // Sort the combined array
+  //               (a, b) => {
+  //                 if (!a || !b) return 0;
+  //                 return a.meetDate.getTime() - b.meetDate.getTime();
+  //               }
+  //             );
+  //             return {
+  //               ...daySchedule,
+  //               times: sortedTimes, // Assign the newly created and sorted array
+  //             };
+  //           }
+  //           return daySchedule;
+  //         });
+  //       });
+  //       toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
+  //     } else {
+  //       toast.error(
+  //         result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
+  //       );
+  //     }
+  //   } catch (error) {
+  //     toast.error(`Помилка при додаванні часу зустрічі: ${error}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     console.log(
