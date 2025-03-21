@@ -47,16 +47,26 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils/utils';
+import { getUserTimeZone } from '@/lib/utils/clientDate';
+import { groupScheduleByDate } from '@/lib/utils/groupDate';
 
 interface ScheduleAdminPageProps {
-  initialSchedule: IScheduleEntry[];
+  initialSchedule: TSchedule[];
 }
+
+// interface ScheduleAdminPageProps {
+//   initialSchedule: IScheduleEntry[];
+// }
 
 const formatDate = (date: Date) => format(date, 'EE dd MMM', { locale: uk });
 const formatTime = (date: Date) => format(date, 'HH:mm');
 
+const timeZone = getUserTimeZone();
+
 const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
-  const [schedule, setSchedule] = useState<IScheduleEntry[]>(initialSchedule);
+  const [schedule, setSchedule] = useState<IScheduleEntry[]>(
+    groupScheduleByDate(initialSchedule, timeZone)
+  );
   const [isAddDateDialogOpen, setAddDateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -78,7 +88,7 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const handleTimeSlotAdded = async (date: Date, time: string) => {
     setIsLoading(true);
     try {
-      const result = await addTimeSlotAction(date, time); // Pass Date object directly
+      const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
 
       if (result.success && result.data) {
         setSchedule((prevSchedule) => {

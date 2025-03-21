@@ -2,11 +2,7 @@
 
 import { appointmentSchedule, TSchedule } from '@/db/schema'; // Шлях до вашої схеми appointmentSchedule
 import { revalidateTag } from 'next/cache';
-import { format, startOfDay } from 'date-fns';
-import {
-  IScheduleEntry,
-  TAppointmentFormValues,
-} from '@/models/schedule.model';
+import { TAppointmentFormValues } from '@/models/schedule.model';
 import { eq, isNull } from 'drizzle-orm';
 import { getDB } from '@/db/root';
 import { ESegment } from '@/models/url.model';
@@ -22,7 +18,6 @@ import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
-import { ADMIN_TIME_ZONE } from '@/models/root.model';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -37,46 +32,11 @@ const {
   bookingError,
 } = BOOK_APPOINTMENT_ACTION;
 
-const groupScheduleByDate = (scheduleData: TSchedule[]): IScheduleEntry[] => {
-  const groupedScheduleMap: Map<string, IScheduleEntry> = new Map();
-
-  for (const scheduleItem of scheduleData) {
-    const meetDate = scheduleItem.meetDate;
-    const dayStart = startOfDay(meetDate);
-
-    const dateKey = format(dayStart, 'yyyy-MM-dd');
-
-    if (groupedScheduleMap.has(dateKey)) {
-      groupedScheduleMap.get(dateKey)?.times.push(scheduleItem);
-    } else {
-      groupedScheduleMap.set(dateKey, {
-        meetDate: dayStart,
-        times: [scheduleItem],
-      });
-    }
-  }
-
-  const groupedScheduleArray: IScheduleEntry[] = Array.from(
-    groupedScheduleMap.values()
-  );
-
-  groupedScheduleArray.sort(
-    (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
-  );
-  groupedScheduleArray.forEach((entry) => {
-    entry.times.sort(
-      (timeA, timeB) => timeA.meetDate.getTime() - timeB.meetDate.getTime()
-    );
-  });
-
-  return groupedScheduleArray;
-};
-
 export const getScheduleAction = async (
   withReserved = true
 ): Promise<{
   success: boolean;
-  data?: IScheduleEntry[];
+  data?: TSchedule[];
   error?: string;
 }> => {
   const reservedCondition = withReserved
@@ -89,19 +49,7 @@ export const getScheduleAction = async (
       .from(appointmentSchedule)
       .where(reservedCondition);
 
-    return withReserved
-      ? {
-          success: true,
-          data: groupScheduleByDate(
-            allAppointments.map((appointment) => {
-              return {
-                ...appointment,
-                meetDate: toZonedTime(appointment.meetDate, ADMIN_TIME_ZONE),
-              };
-            })
-          ),
-        }
-      : { success: true, data: groupScheduleByDate(allAppointments) };
+    return { success: true, data: allAppointments };
   } catch (error) {
     console.error('Помилка отримання графіку:', error);
     return {
@@ -114,7 +62,7 @@ export const getScheduleAction = async (
 export const addTimeSlotAction = async (
   date: Date,
   time: string,
-  timeZone: string = ADMIN_TIME_ZONE
+  timeZone: string
 ): Promise<{
   success: boolean;
   error?: string;
@@ -151,7 +99,13 @@ export const addTimeSlotAction = async (
     }
 
     revalidateTag(MASTER);
-    return { success: true, data: insertedTimeSlots[0] }; // Повертаємо дані вставленого запису
+    return {
+      success: true,
+      data: {
+        ...insertedTimeSlots[0],
+        meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
+      },
+    }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
   } catch (error) {
     console.error('Помилка додавання часу сеансу:', error);
     return { success: false, error: 'Не вдалося додати час сеансу.' };

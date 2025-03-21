@@ -45,6 +45,8 @@ import { bookAppointmentAction } from '@/actions/schedule.actions';
 import { ELanguage } from '@/models/language.model';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { cn } from '@/lib/utils/utils';
+import { getUserTimeZone } from '@/lib/utils/clientDate';
+import { groupScheduleByDate } from '@/lib/utils/groupDate';
 
 const {
   appointmentForm: {
@@ -69,12 +71,12 @@ const {
 } = SCHEDULE_PAGE;
 
 interface AppointmentBookingFormProps {
-  initialSchedule: IScheduleEntry[];
+  initialSchedule: TSchedule[];
   userEmail: string;
   lang: ELanguage;
 }
 
-const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const timeZone = getUserTimeZone();
 
 const dirtyValidate = {
   shouldDirty: true,
@@ -86,7 +88,9 @@ const AppointmentBookingForm = ({
   userEmail,
   lang,
 }: AppointmentBookingFormProps) => {
-  const [schedule, setSchedule] = useState<IScheduleEntry[]>(initialSchedule);
+  const [schedule, setSchedule] = useState<IScheduleEntry[]>(
+    groupScheduleByDate(initialSchedule, timeZone)
+  );
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TSchedule | null>(
     null
   ); // Стан для обраного часу сеансів
