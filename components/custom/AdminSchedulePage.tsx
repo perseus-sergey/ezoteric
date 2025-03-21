@@ -25,7 +25,7 @@ import {
   PopoverContent,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
-import { format, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
 
 import { toast } from 'sonner';
 import { IScheduleEntry } from '@/models/schedule.model';
@@ -40,6 +40,7 @@ import { TSchedule } from '@/db/schema';
 import {
   addTimeSlotAction,
   deleteTimeSlotAction,
+  getScheduleAction,
 } from '@/actions/schedule.actions';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { z } from 'zod';
@@ -50,7 +51,6 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
-import { toZonedTime } from 'date-fns-tz';
 
 interface ScheduleAdminPageProps {
   initialSchedule: TSchedule[];
@@ -111,31 +111,21 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       const result = await addTimeSlotAction(date, time, timeZone);
 
       if (result.success && result.data) {
-        setSchedule((prevSchedule) => {
-          return prevSchedule.map((daySchedule) => {
-            // Отримуємо початок дня для daySchedule.meetDate в UTC
-            const dayScheduleUTCDate = startOfDay(daySchedule.meetDate);
-            // Отримуємо початок дня для date, яку користувач вибрав, в UTC
-            const inputUTCDate = startOfDay(toZonedTime(date, timeZone)); // Convert date to user's timezone first then get start of day
-            // Порівнюємо timestamp-и дат, приведених до початку дня в UTC
-            if (dayScheduleUTCDate.getTime() === inputUTCDate.getTime()) {
-              const newTimesArray: TSchedule[] = [];
-              if (result.data) {
-                newTimesArray.push(result.data);
-              }
-              const combinedTimes = newTimesArray.concat(daySchedule.times);
-              const sortedTimes = combinedTimes.sort((a, b) => {
-                if (!a || !b) return 0;
-                return a.meetDate.getTime() - b.meetDate.getTime();
-              });
-              return {
-                ...daySchedule,
-                times: sortedTimes,
-              };
-            }
-            return daySchedule;
-          });
-        });
+        // Після успішного додавання часу, отримуємо оновлений розклад з сервера
+        const updatedScheduleData = await getScheduleAction(); // Отримуємо оновлені дані з сервера
+
+        if (updatedScheduleData.success && updatedScheduleData.data) {
+          // Оновлюємо весь стан schedule, використовуючи оновлені дані з сервера та groupScheduleByDate
+          setSchedule(groupScheduleByDate(updatedScheduleData.data, timeZone));
+        } else {
+          console.error(
+            'Не вдалося оновити дані розкладу після додавання часу.'
+          );
+          toast.error(
+            'Не вдалося оновити розклад. Можливо, виникла проблема з отриманням даних з сервера.'
+          );
+        }
+
         toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
       } else {
         toast.error(
