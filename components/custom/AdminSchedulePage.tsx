@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableHeader,
@@ -64,9 +64,16 @@ const formatTime = (date: Date) => format(date, 'HH:mm');
 const timeZone = getUserTimeZone();
 
 const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
-  const [schedule, setSchedule] = useState<IScheduleEntry[]>(
-    groupScheduleByDate(initialSchedule, timeZone)
-  );
+  const [schedule, setSchedule] = useState<IScheduleEntry[]>(() => {
+    const initScheduleZoned = groupScheduleByDate(initialSchedule, timeZone);
+    console.log('🚀 ~ ScheduleAdminPage ~ timeZone:', timeZone);
+    console.log(
+      '🚀 ~ ScheduleAdminPage ~ initScheduleZoned:',
+      JSON.stringify(initScheduleZoned, null, 2)
+    );
+
+    return initScheduleZoned;
+  });
   const [isAddDateDialogOpen, setAddDateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -91,32 +98,32 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
 
       if (result.success && result.data) {
-        // setSchedule((prevSchedule) => {
-        //   return prevSchedule.map((daySchedule) => {
-        //     if (
-        //       format(daySchedule.meetDate, 'yyyy-MM-dd') ===
-        //       format(date, 'yyyy-MM-dd')
-        //     ) {
-        //       const newTimesArray: TSchedule[] = [];
-        //       if (result.data) {
-        //         newTimesArray.push(result.data);
-        //       }
-        //       const combinedTimes = newTimesArray.concat(daySchedule.times);
-        //       const sortedTimes = combinedTimes.sort(
-        //         // Sort the combined array
-        //         (a, b) => {
-        //           if (!a || !b) return 0;
-        //           return a.meetDate.getTime() - b.meetDate.getTime();
-        //         }
-        //       );
-        //       return {
-        //         ...daySchedule,
-        //         times: sortedTimes, // Assign the newly created and sorted array
-        //       };
-        //     }
-        //     return daySchedule;
-        //   });
-        // });
+        setSchedule((prevSchedule) => {
+          return prevSchedule.map((daySchedule) => {
+            if (
+              format(daySchedule.meetDate, 'yyyy-MM-dd') ===
+              format(date, 'yyyy-MM-dd')
+            ) {
+              const newTimesArray: TSchedule[] = [];
+              if (result.data) {
+                newTimesArray.push(result.data);
+              }
+              const combinedTimes = newTimesArray.concat(daySchedule.times);
+              const sortedTimes = combinedTimes.sort(
+                // Sort the combined array
+                (a, b) => {
+                  if (!a || !b) return 0;
+                  return a.meetDate.getTime() - b.meetDate.getTime();
+                }
+              );
+              return {
+                ...daySchedule,
+                times: sortedTimes, // Assign the newly created and sorted array
+              };
+            }
+            return daySchedule;
+          });
+        });
         toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
       } else {
         toast.error(
@@ -129,6 +136,13 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log(
+      '🚀 ~ ScheduleAdminPage ~ schedule:',
+      JSON.stringify(schedule, null, 2)
+    );
+  }, [schedule]);
 
   const handleTimeSlotDeleted = async (date: Date, time: string) => {
     setIsLoading(true);

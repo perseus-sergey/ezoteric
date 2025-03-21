@@ -13,7 +13,7 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
@@ -48,6 +48,8 @@ export const getScheduleAction = async (
       .select()
       .from(appointmentSchedule)
       .where(reservedCondition);
+
+    console.log('🚀 ~ getScheduleAction ~ allAppointments:', allAppointments);
 
     return { success: true, data: allAppointments };
   } catch (error) {
@@ -100,17 +102,16 @@ export const addTimeSlotAction = async (
 
     revalidateTag(MASTER);
 
+    const data = {
+      ...insertedTimeSlots[0],
+      meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
+    };
+    console.log('🚀 ~ addTimeSlotAction ~ data:', data);
+
     return {
       success: true,
-      data: insertedTimeSlots[0],
+      data,
     }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
-    // return {
-    //   success: true,
-    //   data: {
-    //     ...insertedTimeSlots[0],
-    //     meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
-    //   },
-    // }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
   } catch (error) {
     console.error('Помилка додавання часу сеансу:', error);
     return { success: false, error: 'Не вдалося додати час сеансу.' };
