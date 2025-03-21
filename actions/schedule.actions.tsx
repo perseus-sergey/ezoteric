@@ -13,12 +13,11 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
-import { format, parse } from 'date-fns';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -129,13 +128,16 @@ export const addTimeSlotAction = async (
   data?: typeof appointmentSchedule.$inferSelect;
 }> => {
   try {
-    const dateTimeString = `${format(date, 'yyyy-MM-dd')}T${time}:00`;
-    const parsedDateInLocalTz = parse(
-      dateTimeString,
-      "yyyy-MM-dd'T'HH:mm:ss",
-      new Date()
-    ); // Парсимо рядок як локальний час
-    const utcMeetDateTime = fromZonedTime(parsedDateInLocalTz, timeZone);
+    const zonedDate = new Date(date);
+    zonedDate.setHours(
+      parseInt(time.split(':')[0], 10),
+      parseInt(time.split(':')[1], 10),
+      0,
+      0
+    );
+
+    // Конвертуємо в UTC для зберігання в базі даних
+    const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
@@ -161,15 +163,14 @@ export const addTimeSlotAction = async (
 
     revalidateTag(MASTER);
 
-    const data = {
-      ...insertedTimeSlots[0],
-      meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone), // Конвертуємо назад для відповіді
-    };
-    console.log('🚀 ~ addTimeSlotAction ~ data:', data);
+    console.log(
+      '🚀 ~ addTimeSlotAction ~ insertedTimeSlots[0] after db:',
+      insertedTimeSlots[0]
+    );
 
     return {
       success: true,
-      data,
+      data: insertedTimeSlots[0],
     };
   } catch (error) {
     console.error('Помилка додавання часу сеансу:', error);
