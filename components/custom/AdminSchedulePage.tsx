@@ -91,32 +91,32 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
 
       if (result.success && result.data) {
-        setSchedule((prevSchedule) => {
-          return prevSchedule.map((daySchedule) => {
-            if (
-              format(daySchedule.meetDate, 'yyyy-MM-dd') ===
-              format(date, 'yyyy-MM-dd')
-            ) {
-              const newTimesArray: TSchedule[] = [];
-              if (result.data) {
-                newTimesArray.push(result.data);
-              }
-              const combinedTimes = newTimesArray.concat(daySchedule.times);
-              const sortedTimes = combinedTimes.sort(
-                // Sort the combined array
-                (a, b) => {
-                  if (!a || !b) return 0;
-                  return a.meetDate.getTime() - b.meetDate.getTime();
-                }
-              );
-              return {
-                ...daySchedule,
-                times: sortedTimes, // Assign the newly created and sorted array
-              };
-            }
-            return daySchedule;
-          });
-        });
+        // setSchedule((prevSchedule) => {
+        //   return prevSchedule.map((daySchedule) => {
+        //     if (
+        //       format(daySchedule.meetDate, 'yyyy-MM-dd') ===
+        //       format(date, 'yyyy-MM-dd')
+        //     ) {
+        //       const newTimesArray: TSchedule[] = [];
+        //       if (result.data) {
+        //         newTimesArray.push(result.data);
+        //       }
+        //       const combinedTimes = newTimesArray.concat(daySchedule.times);
+        //       const sortedTimes = combinedTimes.sort(
+        //         // Sort the combined array
+        //         (a, b) => {
+        //           if (!a || !b) return 0;
+        //           return a.meetDate.getTime() - b.meetDate.getTime();
+        //         }
+        //       );
+        //       return {
+        //         ...daySchedule,
+        //         times: sortedTimes, // Assign the newly created and sorted array
+        //       };
+        //     }
+        //     return daySchedule;
+        //   });
+        // });
         toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
       } else {
         toast.error(

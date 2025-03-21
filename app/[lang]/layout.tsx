@@ -17,6 +17,11 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 import { Suspense } from 'react';
 
 // =================================================================
+// select quest - additional question during the session
+// date not correct
+// delene expirede empty dates from db
+// not to show expired date in schedule
+
 // - інформації. ... (імітація обчислень) ...
 // add similar articles and tests to main page
 // - improve components/custom/Modals/ModalNumerologyResponse.tsx
