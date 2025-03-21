@@ -25,7 +25,7 @@ import {
   PopoverContent,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 
 import { toast } from 'sonner';
 import { IScheduleEntry } from '@/models/schedule.model';
@@ -50,6 +50,7 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
+import { fromZonedTime } from 'date-fns-tz';
 
 interface ScheduleAdminPageProps {
   initialSchedule: TSchedule[];
@@ -90,19 +91,47 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
     console.log('Date toUTCString():', newDate.toUTCString());
     console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
 
+    // **Коректно створюємо UTC дату, відштовхуючись від дати з datepicker в часовому поясі користувача**
+    const startOfDayInTimeZone = startOfDay(newDate); // Переконуємося, що це початок дня в локальному часовому поясі
+    const utcDate = fromZonedTime(startOfDayInTimeZone, timeZone); // Конвертуємо в UTC
+
+    console.log('Corrected UTC Date toISOString():', utcDate.toISOString());
+
     setSchedule((prevSchedule) => {
       const updatedSchedule = [
         ...prevSchedule,
-        { meetDate: newDate, times: [] },
+        { meetDate: utcDate, times: [] }, // Використовуємо utcDate тут
       ];
       return updatedSchedule.sort(
         (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
       );
     });
 
-    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
+    toast.success(`Дату ${formatDate(new Date(utcDate))} успішно додано.`); // Відображаємо форматовану дату в локальному часі
     setAddDateDialogOpen(false);
   };
+
+  // const handleDateAdded = async (newDate: Date) => {
+  //   // **Додаємо console.log для перевірки формату дати**
+  //   console.log('Date object from Datepicker:', newDate);
+  //   console.log('Date toISOString():', newDate.toISOString());
+  //   console.log('Date toString():', newDate.toString());
+  //   console.log('Date toUTCString():', newDate.toUTCString());
+  //   console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
+
+  //   setSchedule((prevSchedule) => {
+  //     const updatedSchedule = [
+  //       ...prevSchedule,
+  //       { meetDate: newDate, times: [] },
+  //     ];
+  //     return updatedSchedule.sort(
+  //       (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
+  //     );
+  //   });
+
+  //   toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
+  //   setAddDateDialogOpen(false);
+  // };
 
   const handleTimeSlotAdded = async (date: Date, time: string) => {
     setIsLoading(true);
