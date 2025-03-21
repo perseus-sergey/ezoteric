@@ -13,11 +13,12 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import { fromZonedTime, toDate, toZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
+import { format } from 'date-fns';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -61,6 +62,63 @@ export const getScheduleAction = async (
   }
 };
 
+// export const addTimeSlotAction = async (
+//   date: Date,
+//   time: string,
+//   timeZone: string
+// ): Promise<{
+//   success: boolean;
+//   error?: string;
+//   data?: typeof appointmentSchedule.$inferSelect;
+// }> => {
+//   try {
+//     const [hours, minutes] = time.split(':').map(Number);
+//     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+//     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
+
+//     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+//     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+
+//     // Перевірка, чи час сеансу вже існує для цієї дати і часу
+//     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
+//       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
+//     });
+
+//     if (existingTimeSlot) {
+//       return { success: false, error: 'Час сеансу вже існує для цієї дати.' };
+//     }
+
+//     // Додавання часу сеансу
+//     const insertedTimeSlots = await db
+//       .insert(appointmentSchedule)
+//       .values({ meetDate: utcMeetDateTime })
+//       .returning(); // Отримуємо вставлені дані
+
+//     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
+//       return {
+//         success: false,
+//         error: 'Не вдалося додати час сеансу до бази даних.',
+//       };
+//     }
+
+//     revalidateTag(MASTER);
+
+//     const data = {
+//       ...insertedTimeSlots[0],
+//       meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
+//     };
+//     console.log('🚀 ~ addTimeSlotAction ~ data:', data);
+
+//     return {
+//       success: true,
+//       data,
+//     }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
+//   } catch (error) {
+//     console.error('Помилка додавання часу сеансу:', error);
+//     return { success: false, error: 'Не вдалося додати час сеансу.' };
+//   }
+// };
+
 export const addTimeSlotAction = async (
   date: Date,
   time: string,
@@ -71,14 +129,18 @@ export const addTimeSlotAction = async (
   data?: typeof appointmentSchedule.$inferSelect;
 }> => {
   try {
-    const [hours, minutes] = time.split(':').map(Number);
-    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
+    // const [hours, minutes] = time.split(':').map(Number);
 
-    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
-    const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    // Створюємо рядок дати і часу у форматі ISO без вказівки часового поясу в рядку
+    const dateTimeString = `${format(date, 'yyyy-MM-dd')}T${time}:00`;
 
-    // Перевірка, чи час сеансу вже існує для цієї дати і часу
+    // Парсимо рядок дати і часу, вказуючи часовий пояс користувача за допомогою toDate
+    const zonedDate = toDate(dateTimeString, { timeZone: timeZone }); // Використовуємо toDate з date-fns-tz
+
+    // Конвертуємо zonedDate в UTC
+    const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
+
+    // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
     });
@@ -104,20 +166,19 @@ export const addTimeSlotAction = async (
 
     const data = {
       ...insertedTimeSlots[0],
-      meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
+      meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone), // Конвертуємо назад для відповіді
     };
     console.log('🚀 ~ addTimeSlotAction ~ data:', data);
 
     return {
       success: true,
       data,
-    }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
+    };
   } catch (error) {
     console.error('Помилка додавання часу сеансу:', error);
     return { success: false, error: 'Не вдалося додати час сеансу.' };
   }
 };
-
 export const deleteTimeSlotAction = async (
   date: Date,
   time: string,
