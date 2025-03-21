@@ -13,12 +13,11 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime, toDate } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
-import { format } from 'date-fns';
 
 const db = getDB();
 const { MASTER } = ESegment;
@@ -129,38 +128,16 @@ export const addTimeSlotAction = async (
   data?: typeof appointmentSchedule.$inferSelect;
 }> => {
   try {
-    // const zonedDate = new Date(date);
-    // zonedDate.setHours(
-    //   parseInt(time.split(':')[0], 10),
-    //   parseInt(time.split(':')[1], 10),
-    //   0,
-    //   0
-    // );
-
-    // // Конвертуємо в UTC для зберігання в базі даних
-    // const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
-
-    // Format the date part of the Date object to yyyy-MM-dd in local time
-    const datePart = format(date, 'yyyy-MM-dd');
-    const dateTimeString = `${datePart}T${time}:00`; // Combine date and time strings
-
-    console.log(
-      '🚀 ~ addTimeSlotAction ~ dateTimeString (local):',
-      dateTimeString
+    const zonedDate = new Date(date);
+    zonedDate.setHours(
+      parseInt(time.split(':')[0], 10),
+      parseInt(time.split(':')[1], 10),
+      0,
+      0
     );
 
-    // Parse the combined date-time string in the user's timezone using toDate from date-fns-tz
-    const zonedDate = toDate(dateTimeString, { timeZone: timeZone });
+    // Конвертуємо в UTC для зберігання в базі даних
     const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
-
-    console.log(
-      '🚀 ~ addTimeSlotAction ~ zonedDate (local Date object):',
-      zonedDate
-    );
-    console.log(
-      '🚀 ~ addTimeSlotAction ~ zonedDate.toISOString() (UTC representation of zonedDate):',
-      zonedDate.toISOString()
-    );
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({

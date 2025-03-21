@@ -83,6 +83,13 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDateAdded = async (newDate: Date) => {
+    // **Додаємо console.log для перевірки формату дати**
+    console.log('Date object from Datepicker:', newDate);
+    console.log('Date toISOString():', newDate.toISOString());
+    console.log('Date toString():', newDate.toString());
+    console.log('Date toUTCString():', newDate.toUTCString());
+    console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
+
     setSchedule((prevSchedule) => {
       const updatedSchedule = [
         ...prevSchedule,
@@ -355,13 +362,6 @@ const AddDateDialog = ({
       setError('Ця дата вже існує в графіку.');
       return;
     }
-
-    // **Додаємо console.log для перевірки формату дати**
-    console.log('Date object from Datepicker:', date);
-    console.log('Date toISOString():', date.toISOString());
-    console.log('Date toString():', date.toString());
-    console.log('Date toUTCString():', date.toUTCString());
-    console.log('Date getTimezoneOffset():', date.getTimezoneOffset());
 
     onDateAdded(date);
     onOpenChange(false);
