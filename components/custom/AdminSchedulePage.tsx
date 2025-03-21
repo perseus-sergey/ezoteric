@@ -28,7 +28,6 @@ import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 
 import { toast } from 'sonner';
-import { uk } from 'date-fns/locale';
 import { IScheduleEntry } from '@/models/schedule.model';
 import {
   AlarmPlusIcon,
@@ -49,6 +48,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils/utils';
 import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
+import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
+import { ELanguage } from '@/models/language.model';
 
 interface ScheduleAdminPageProps {
   initialSchedule: TSchedule[];
@@ -58,8 +59,8 @@ interface ScheduleAdminPageProps {
 //   initialSchedule: IScheduleEntry[];
 // }
 
-const formatDate = (date: Date) => format(date, 'EE dd MMM', { locale: uk });
-const formatTime = (date: Date) => format(date, 'HH:mm');
+// const formatDate = (date: Date) => format(date, 'EE dd MMM', { locale: uk });
+// const formatTime = (date: Date) => format(date, 'HH:mm');
 
 const timeZone = getUserTimeZone();
 
@@ -88,7 +89,9 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       );
     });
 
-    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
+    toast.success(
+      `Дату ${formatDateLocal(newDate, ELanguage.UA, timeZone)} успішно додано.`
+    );
     setAddDateDialogOpen(false);
   };
 
@@ -124,7 +127,9 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
             return daySchedule;
           });
         });
-        toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
+        toast.success(
+          `Час ${time} для ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно додано.`
+        );
       } else {
         toast.error(
           result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
@@ -153,9 +158,15 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
         setSchedule((prevSchedule) => {
           const updatedSchedule = prevSchedule
             .map((daySchedule) => {
-              if (formatDate(daySchedule.meetDate) === formatDate(date)) {
+              if (
+                formatDateLocal(
+                  daySchedule.meetDate,
+                  ELanguage.UA,
+                  timeZone
+                ) === formatDateLocal(date, ELanguage.UA, timeZone)
+              ) {
                 const updatedTimeSlots = daySchedule.times.filter(
-                  (ts) => formatTime(ts.meetDate) !== time // Compare time strings
+                  (ts) => formatTimeLocal(ts.meetDate, timeZone) !== time // Compare time strings
                 );
                 return { ...daySchedule, times: updatedTimeSlots };
               }
@@ -165,7 +176,7 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
           return updatedSchedule;
         });
         toast.success('Час зустрічі видалено!', {
-          description: `Час ${time} для ${formatDate(date)} успішно видалено.`,
+          description: `Час ${time} для ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно видалено.`,
         });
       } else {
         toast.error('Помилка видалення часу', {
@@ -198,11 +209,18 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
 
         <TableBody>
           {schedule.map((daySchedule) => {
-            const formattedDate = formatDate(daySchedule.meetDate);
+            const formattedDate = formatDateLocal(
+              daySchedule.meetDate,
+              ELanguage.UA,
+              timeZone
+            );
 
             return daySchedule.times.length > 0 ? (
               daySchedule.times.map((timeSlot, index) => {
-                const formattedTime = formatTime(timeSlot.meetDate);
+                const formattedTime = formatTimeLocal(
+                  timeSlot.meetDate,
+                  timeZone
+                );
 
                 return (
                   <TableRow
@@ -445,7 +463,7 @@ const AddTimeSlotPopover = ({
     clearErrors('timeInput');
 
     const isTimeSlotExists = existingTimeSlots.some(
-      (slot) => formatTime(slot.meetDate) === timeInput
+      (slot) => formatTimeLocal(slot.meetDate, timeZone) === timeInput
     );
     if (isTimeSlotExists) {
       setError('timeInput', {
@@ -471,7 +489,7 @@ const AddTimeSlotPopover = ({
         if (timeDifference < thirtyMinutes) {
           setError('timeInput', {
             type: 'manual',
-            message: `Час повинен бути мінімум 30 хвилин від ${formatTime(existingTimeDate)}.`,
+            message: `Час повинен бути мінімум 30 хвилин від ${formatTimeLocal(existingTimeDate, timeZone)}.`,
           });
           return;
         }
@@ -542,12 +560,12 @@ const DeleteTimeSlotButton = ({
     if (timeSlot.email) {
       setIsConfirmationOpen(true); // Open confirmation if email exists
     } else {
-      onDelete(date, formatTime(timeSlot.meetDate)); // Directly delete if no email
+      onDelete(date, formatTimeLocal(timeSlot.meetDate, timeZone)); // Directly delete if no email
     }
   };
 
   const handleConfirmDelete = () => {
-    onDelete(date, formatTime(timeSlot.meetDate)); // Delete after confirmation
+    onDelete(date, formatTimeLocal(timeSlot.meetDate, timeZone)); // Delete after confirmation
     setIsConfirmationOpen(false);
   };
 
