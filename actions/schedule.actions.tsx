@@ -66,7 +66,7 @@ export const addTimeSlotAction = async (
   time: string,
   timeZone: string
 ) => {
-  console.log('🚀 ~ timeZone:', timeZone);
+  console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
   try {
     const [hours, minutes] = time.split(':').map(Number);
     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
