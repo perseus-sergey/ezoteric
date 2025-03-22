@@ -62,9 +62,12 @@ export const ScheduleAdminTable = ({
 }: {
   initialSchedule: TSchedule[];
 }) => {
-  console.log('🚀 ~ initialSchedule:', initialSchedule);
+  console.log(
+    '🚀 ~ initialSchedule:',
+    JSON.stringify(initialSchedule, null, 2)
+  );
   const schedule = groupScheduleByDate(initialSchedule, timeZone);
-  console.log('🚀 ~ schedule:', schedule);
+  console.log('🚀 ~ schedule:', JSON.stringify(schedule, null, 2));
 
   return (
     <>
@@ -179,9 +182,6 @@ export const ScheduleAdminTable = ({
         <TableFooter>
           <TableRow>
             <TableCell colSpan={4} className="text-center">
-              {/* <Button onClick={() => setAddDateDialogOpen(true)}>
-                Додати Дату
-              </Button> */}
               <AddDateDialog
                 existingDates={schedule.map((day) => day.meetDate)}
               />
