@@ -40,7 +40,6 @@ import { TSchedule } from '@/db/schema';
 import {
   addTimeSlotAction,
   deleteTimeSlotAction,
-  getScheduleAction,
 } from '@/actions/schedule.actions';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { z } from 'zod';
@@ -60,12 +59,15 @@ interface ScheduleAdminPageProps {
 //   initialSchedule: IScheduleEntry[];
 // }
 
+const fixDateTimezone = (date: Date) => {
+  const newDate = new Date(date);
+  newDate.setHours(12, 0, 0, 0);
+  return newDate;
+};
+
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
 const formatTime = (date: Date) => formatTimeLocal(date, timeZone);
-
-// const formatDate = (date: Date) => format(date, 'EE dd MMM', { locale: uk });
-// const formatTime = (date: Date) => format(date, 'HH:mm');
 
 const timeZone = getUserTimeZone();
 
@@ -84,48 +86,54 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDateAdded = async (newDate: Date) => {
-    // **Додаємо console.log для перевірки формату дати**
-    console.log('Date object from Datepicker:', newDate);
-    console.log('Date toISOString():', newDate.toISOString());
-    console.log('Date toString():', newDate.toString());
-    console.log('Date toUTCString():', newDate.toUTCString());
-    console.log('Date getTimezoneOffset():', newDate.getTimezoneOffset());
+    const meetDateFixed = fixDateTimezone(newDate);
 
     setSchedule((prevSchedule) => {
       const updatedSchedule = [
         ...prevSchedule,
-        { meetDate: newDate, times: [] },
+        { meetDate: meetDateFixed, times: [] },
       ];
       return updatedSchedule.sort(
         (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
       );
     });
 
-    toast.success(`Дату ${formatDate(newDate)} успішно додано.`);
+    toast.success(`Дату ${formatDate(meetDateFixed)} успішно додано.`);
     setAddDateDialogOpen(false);
   };
 
   const handleTimeSlotAdded = async (date: Date, time: string) => {
     setIsLoading(true);
     try {
-      const result = await addTimeSlotAction(date, time, timeZone);
+      const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
 
       if (result.success && result.data) {
-        // Після успішного додавання часу, отримуємо оновлений розклад з сервера
-        const updatedScheduleData = await getScheduleAction(); // Отримуємо оновлені дані з сервера
-
-        if (updatedScheduleData.success && updatedScheduleData.data) {
-          // Оновлюємо весь стан schedule, використовуючи оновлені дані з сервера та groupScheduleByDate
-          setSchedule(groupScheduleByDate(updatedScheduleData.data, timeZone));
-        } else {
-          console.error(
-            'Не вдалося оновити дані розкладу після додавання часу.'
-          );
-          toast.error(
-            'Не вдалося оновити розклад. Можливо, виникла проблема з отриманням даних з сервера.'
-          );
-        }
-
+        setSchedule((prevSchedule) => {
+          return prevSchedule.map((daySchedule) => {
+            if (
+              format(daySchedule.meetDate, 'yyyy-MM-dd') ===
+              format(date, 'yyyy-MM-dd')
+            ) {
+              const newTimesArray: TSchedule[] = [];
+              if (result.data) {
+                newTimesArray.push(result.data);
+              }
+              const combinedTimes = newTimesArray.concat(daySchedule.times);
+              const sortedTimes = combinedTimes.sort(
+                // Sort the combined array
+                (a, b) => {
+                  if (!a || !b) return 0;
+                  return a.meetDate.getTime() - b.meetDate.getTime();
+                }
+              );
+              return {
+                ...daySchedule,
+                times: sortedTimes, // Assign the newly created and sorted array
+              };
+            }
+            return daySchedule;
+          });
+        });
         toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
       } else {
         toast.error(
@@ -138,51 +146,6 @@ const ScheduleAdminPage = ({ initialSchedule }: ScheduleAdminPageProps) => {
       setIsLoading(false);
     }
   };
-
-  // const handleTimeSlotAdded = async (date: Date, time: string) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const result = await addTimeSlotAction(date, time, timeZone); // Pass Date object directly
-
-  //     if (result.success && result.data) {
-  //       setSchedule((prevSchedule) => {
-  //         return prevSchedule.map((daySchedule) => {
-  //           if (
-  //             format(daySchedule.meetDate, 'yyyy-MM-dd') ===
-  //             format(date, 'yyyy-MM-dd')
-  //           ) {
-  //             const newTimesArray: TSchedule[] = [];
-  //             if (result.data) {
-  //               newTimesArray.push(result.data);
-  //             }
-  //             const combinedTimes = newTimesArray.concat(daySchedule.times);
-  //             const sortedTimes = combinedTimes.sort(
-  //               // Sort the combined array
-  //               (a, b) => {
-  //                 if (!a || !b) return 0;
-  //                 return a.meetDate.getTime() - b.meetDate.getTime();
-  //               }
-  //             );
-  //             return {
-  //               ...daySchedule,
-  //               times: sortedTimes, // Assign the newly created and sorted array
-  //             };
-  //           }
-  //           return daySchedule;
-  //         });
-  //       });
-  //       toast.success(`Час ${time} для ${formatDate(date)} успішно додано.`);
-  //     } else {
-  //       toast.error(
-  //         result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
-  //       );
-  //     }
-  //   } catch (error) {
-  //     toast.error(`Помилка при додаванні часу зустрічі: ${error}`);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   useEffect(() => {
     console.log(
