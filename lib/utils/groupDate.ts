@@ -5,7 +5,7 @@ import { toZonedTime } from 'date-fns-tz';
 
 export const groupScheduleByDate = (
   scheduleData: TSchedule[],
-  timeZone: string // Add timeZone as an argument
+  timeZone: string
 ): IScheduleEntry[] => {
   const groupedScheduleMap: Map<string, IScheduleEntry> = new Map();
 

@@ -1,7 +1,6 @@
 import { Title } from '@/components/custom/Title';
 import EmptyData from '@/components/custom/EmptyData';
 import { DEFAULT_LANG } from '@/models/language.model';
-// import ScheduleAdminPage from '@/components/custom/AdminSchedulePage';
 import { getScheduleAction } from '@/actions/schedule.actions';
 import { ScheduleAdminTable } from '@/components/custom/AdminSchedulePageClient';
 
@@ -14,7 +13,6 @@ const Page = async () => {
   return (
     <article className="bg-tertiary/90 grow p-4 rounded-lg">
       <Title titleType="h2">Schedule</Title>
-      {/* <ScheduleAdminPage initialSchedule={scheduleData.data} /> */}
       <ScheduleAdminTable initialSchedule={scheduleData.data} />
     </article>
   );

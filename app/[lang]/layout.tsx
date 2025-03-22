@@ -21,6 +21,7 @@ import { Suspense } from 'react';
 // date not correct
 // delene expirede empty dates from db
 // not to show expired date in schedule
+// change gemini-1.5 to 2.0 on installsat and 1plus2
 
 // - інформації. ... (імітація обчислень) ...
 // add similar articles and tests to main page

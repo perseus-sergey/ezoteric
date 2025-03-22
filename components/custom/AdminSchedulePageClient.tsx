@@ -62,7 +62,9 @@ export const ScheduleAdminTable = ({
 }: {
   initialSchedule: TSchedule[];
 }) => {
+  console.log('🚀 ~ initialSchedule:', initialSchedule);
   const schedule = groupScheduleByDate(initialSchedule, timeZone);
+  console.log('🚀 ~ schedule:', schedule);
 
   return (
     <>
@@ -434,7 +436,6 @@ export const DeleteTimeSlotButton = ({
       setIsConfirmationOpen(true); // Open confirmation if email exists
     } else {
       await handleConfirmDelete();
-      // onDelete(date, formatTime(timeSlot.meetDate)); // Directly delete if no email
     }
   };
 
@@ -442,7 +443,7 @@ export const DeleteTimeSlotButton = ({
     const time = formatTime(timeSlot.meetDate);
     try {
       setIsLoading(true);
-      const result = await deleteTimeSlotAction(date, time); // Pass Date object directly
+      const result = await deleteTimeSlotAction(date, time);
 
       if (result && result.success) {
         toast.success('Час зустрічі видалено!', {
@@ -461,13 +462,13 @@ export const DeleteTimeSlotButton = ({
       });
       console.error('Помилка при видаленні часу зустрічі:', error);
     } finally {
-      setIsLoading(false);
       setIsConfirmationOpen(false);
+      setIsLoading(false);
     }
   };
 
   const handleCancelDelete = () => {
-    setIsConfirmationOpen(false); // Close confirmation dialog
+    setIsConfirmationOpen(false);
   };
 
   return (
