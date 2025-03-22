@@ -72,7 +72,16 @@ export const addTimeSlotAction = async (
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    console.log(
+      'addTimeSlotAction - meetDateTime (before fromZonedTime):',
+      meetDateTime.toISOString()
+    ); // Логуємо meetDateTime
     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    console.log(
+      'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
+      utcMeetDateTime.toISOString()
+    );
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
@@ -164,16 +173,7 @@ export const deleteTimeSlotAction = async (
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
-    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-    console.log(
-      'addTimeSlotAction - meetDateTime (before fromZonedTime):',
-      meetDateTime.toISOString()
-    ); // Логуємо meetDateTime
     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-    console.log(
-      'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
-      utcMeetDateTime.toISOString()
-    );
 
     // Видалення часу сеансу з бази даних
     const deletedRows = await db
