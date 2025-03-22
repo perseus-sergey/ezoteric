@@ -71,6 +71,7 @@ export const ScheduleAdminTable = ({
 
   return (
     <>
+      timeZone: {timeZone}
       <Table>
         <TableHeader>
           <TableRow>
