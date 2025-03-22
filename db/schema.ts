@@ -92,9 +92,9 @@ export type TReservation = InferSelectModel<typeof reservation>;
 
 export const appointmentSchedule = pgTable(TBL_SCHEDULE, {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
-  meetDate: timestamp('meetDate').notNull(),
+  meetDate: timestamp('meetDate', { withTimezone: true }).notNull(),
 
-  reservedAt: timestamp('reservedAt'),
+  reservedAt: timestamp('reservedAt', { withTimezone: true }),
   question: varchar('question', { length: 255 }),
   hasCompletedPayment: boolean('hasCompletedPayment').default(false),
   userName: varchar('userName', { length: 128 }),

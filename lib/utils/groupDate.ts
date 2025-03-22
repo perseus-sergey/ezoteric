@@ -30,9 +30,12 @@ export const groupScheduleByDate = (
     groupedScheduleMap.values()
   );
 
+  // Сортуємо дати
   groupedScheduleArray.sort(
     (a, b) => a.meetDate.getTime() - b.meetDate.getTime()
   );
+
+  // Сортуємо часи всередині дня
   groupedScheduleArray.forEach((entry) => {
     entry.times.sort((timeA, timeB) => {
       // Convert timeA.meetDate and timeB.meetDate to the specified timeZone for comparison

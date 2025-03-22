@@ -148,6 +148,13 @@
       "when": 1740978703949,
       "tag": "0020_outstanding_shadow_king",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1742656492558,
+      "tag": "0021_hesitant_wind_dancer",
+      "breakpoints": true
     }
   ]
 }

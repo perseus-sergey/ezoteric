@@ -219,24 +219,18 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
 
     setIsLoading(true);
 
-    try {
-      const result = await addTimeSlotAction(date, '12:00', timeZone); // Pass Date object directly
+    const result = await addTimeSlotAction(date, '12:00', timeZone); // Pass Date object directly
 
-      if (result.success && result.data) {
-        toast.success(`Дату ${formatDate(date)} успішно додано.`);
-      } else {
-        toast.error(
-          result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
-        );
-      }
-    } catch (error) {
-      toast.error(`Помилка при додаванні часу зустрічі: ${error}`);
-    } finally {
-      setOpen(false);
-      setError(null);
-      setDate(undefined);
-      setIsLoading(false);
+    if (typeof result === 'string') {
+      toast.error(result);
+    } else {
+      toast.success(`Дату ${formatDate(date)} успішно додано.`);
     }
+
+    setOpen(false);
+    setError(null);
+    setDate(undefined);
+    setIsLoading(false);
   };
 
   return (
@@ -354,24 +348,18 @@ export const AddTimeSlotPopover = ({
 
     setIsLoading(true);
 
-    try {
-      const result = await addTimeSlotAction(date, timeInput, timeZone); // Pass Date object directly
+    const result = await addTimeSlotAction(date, timeInput, timeZone); // Pass Date object directly
 
-      if (result.success && result.data) {
-        toast.success(
-          `Час ${timeInput} для ${formatDate(date)} успішно додано.`
-        );
-      } else {
-        toast.error(
-          result?.error || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
-        );
-      }
-    } catch (error) {
-      toast.error(`Помилка при додаванні часу зустрічі: ${error}`);
-    } finally {
-      setIsLoading(false);
-      reset({ timeInput: '' }); // Очищаємо поле введення після успішного додавання
+    if (typeof result === 'string') {
+      toast.error(
+        result || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
+      );
+    } else {
+      toast.success(`Час ${timeInput} для ${formatDate(date)} успішно додано.`);
     }
+
+    setIsLoading(false);
+    reset({ timeInput: '' }); // Очищаємо поле введення після успішного додавання
   };
 
   return (

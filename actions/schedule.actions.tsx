@@ -65,11 +65,7 @@ export const addTimeSlotAction = async (
   date: Date,
   time: string,
   timeZone: string
-): Promise<{
-  success: boolean;
-  error?: string;
-  data?: typeof appointmentSchedule.$inferSelect;
-}> => {
+) => {
   try {
     const [hours, minutes] = time.split(':').map(Number);
     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
@@ -83,40 +79,17 @@ export const addTimeSlotAction = async (
       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
     });
 
-    if (existingTimeSlot) {
-      return { success: false, error: 'Час сеансу вже існує для цієї дати.' };
-    }
+    if (existingTimeSlot) return 'Час сеансу вже існує для цієї дати.';
 
     // Додавання часу сеансу
-    const insertedTimeSlots = await db
-      .insert(appointmentSchedule)
-      .values({ meetDate: utcMeetDateTime })
-      .returning(); // Отримуємо вставлені дані
-
-    if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
-      return {
-        success: false,
-        error: 'Не вдалося додати час сеансу до бази даних.',
-      };
-    }
+    await db.insert(appointmentSchedule).values({ meetDate: utcMeetDateTime });
 
     revalidateTag(MASTER);
 
-    const data = insertedTimeSlots[0];
-
-    // const data = {
-    //   ...insertedTimeSlots[0],
-    //   meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
-    // };
-    console.log('🚀 ~ addTimeSlotAction ~ data:', data);
-
-    return {
-      success: true,
-      data,
-    }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
+    return null;
   } catch (error) {
     console.error('Помилка додавання часу сеансу:', error);
-    return { success: false, error: 'Не вдалося додати час сеансу.' };
+    return 'Не вдалося додати час сеансу.';
   }
 };
 
