@@ -61,63 +61,6 @@ export const getScheduleAction = async (
   }
 };
 
-// export const addTimeSlotAction = async (
-//   date: Date,
-//   time: string,
-//   timeZone: string
-// ): Promise<{
-//   success: boolean;
-//   error?: string;
-//   data?: typeof appointmentSchedule.$inferSelect;
-// }> => {
-//   try {
-//     const [hours, minutes] = time.split(':').map(Number);
-//     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-//     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
-
-//     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
-//     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-
-//     // Перевірка, чи час сеансу вже існує для цієї дати і часу
-//     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-//       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
-//     });
-
-//     if (existingTimeSlot) {
-//       return { success: false, error: 'Час сеансу вже існує для цієї дати.' };
-//     }
-
-//     // Додавання часу сеансу
-//     const insertedTimeSlots = await db
-//       .insert(appointmentSchedule)
-//       .values({ meetDate: utcMeetDateTime })
-//       .returning(); // Отримуємо вставлені дані
-
-//     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
-//       return {
-//         success: false,
-//         error: 'Не вдалося додати час сеансу до бази даних.',
-//       };
-//     }
-
-//     revalidateTag(MASTER);
-
-//     const data = {
-//       ...insertedTimeSlots[0],
-//       meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
-//     };
-//     console.log('🚀 ~ addTimeSlotAction ~ data:', data);
-
-//     return {
-//       success: true,
-//       data,
-//     }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
-//   } catch (error) {
-//     console.error('Помилка додавання часу сеансу:', error);
-//     return { success: false, error: 'Не вдалося додати час сеансу.' };
-//   }
-// };
-
 export const addTimeSlotAction = async (
   date: Date,
   time: string,
@@ -128,18 +71,14 @@ export const addTimeSlotAction = async (
   data?: typeof appointmentSchedule.$inferSelect;
 }> => {
   try {
-    const zonedDate = new Date(date);
-    zonedDate.setHours(
-      parseInt(time.split(':')[0], 10),
-      parseInt(time.split(':')[1], 10),
-      0,
-      0
-    );
+    const [hours, minutes] = time.split(':').map(Number);
+    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
-    // Конвертуємо в UTC для зберігання в базі даних
-    const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
+    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+    const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
 
-    // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
+    // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
     });
@@ -152,7 +91,7 @@ export const addTimeSlotAction = async (
     const insertedTimeSlots = await db
       .insert(appointmentSchedule)
       .values({ meetDate: utcMeetDateTime })
-      .returning();
+      .returning(); // Отримуємо вставлені дані
 
     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
       return {
@@ -163,20 +102,83 @@ export const addTimeSlotAction = async (
 
     revalidateTag(MASTER);
 
-    console.log(
-      '🚀 ~ addTimeSlotAction ~ insertedTimeSlots[0] after db:',
-      insertedTimeSlots[0]
-    );
+    const data = insertedTimeSlots[0];
+
+    // const data = {
+    //   ...insertedTimeSlots[0],
+    //   meetDate: toZonedTime(insertedTimeSlots[0].meetDate, timeZone),
+    // };
+    console.log('🚀 ~ addTimeSlotAction ~ data:', data);
 
     return {
       success: true,
-      data: insertedTimeSlots[0],
-    };
+      data,
+    }; // Повертаємо дані вставленого запису з урахуванням timeZone користувача
   } catch (error) {
     console.error('Помилка додавання часу сеансу:', error);
     return { success: false, error: 'Не вдалося додати час сеансу.' };
   }
 };
+
+// export const addTimeSlotAction = async (
+//   date: Date,
+//   time: string,
+//   timeZone: string
+// ): Promise<{
+//   success: boolean;
+//   error?: string;
+//   data?: typeof appointmentSchedule.$inferSelect;
+// }> => {
+//   try {
+//     const zonedDate = new Date(date);
+//     zonedDate.setHours(
+//       parseInt(time.split(':')[0], 10),
+//       parseInt(time.split(':')[1], 10),
+//       0,
+//       0
+//     );
+
+//     // Конвертуємо в UTC для зберігання в базі даних
+//     const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
+
+//     // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
+//     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
+//       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
+//     });
+
+//     if (existingTimeSlot) {
+//       return { success: false, error: 'Час сеансу вже існує для цієї дати.' };
+//     }
+
+//     // Додавання часу сеансу
+//     const insertedTimeSlots = await db
+//       .insert(appointmentSchedule)
+//       .values({ meetDate: utcMeetDateTime })
+//       .returning();
+
+//     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
+//       return {
+//         success: false,
+//         error: 'Не вдалося додати час сеансу до бази даних.',
+//       };
+//     }
+
+//     revalidateTag(MASTER);
+
+//     console.log(
+//       '🚀 ~ addTimeSlotAction ~ insertedTimeSlots[0] after db:',
+//       insertedTimeSlots[0]
+//     );
+
+//     return {
+//       success: true,
+//       data: insertedTimeSlots[0],
+//     };
+//   } catch (error) {
+//     console.error('Помилка додавання часу сеансу:', error);
+//     return { success: false, error: 'Не вдалося додати час сеансу.' };
+//   }
+// };
 
 export const deleteTimeSlotAction = async (
   date: Date,
