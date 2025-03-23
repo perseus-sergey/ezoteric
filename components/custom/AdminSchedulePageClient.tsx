@@ -33,7 +33,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 
@@ -199,21 +198,25 @@ interface AddDateDialogProps {
 }
 
 export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
-  const [date, setDate] = useState<Date>();
+  const [dateString, setDateString] = useState<string>(''); // Змінено стан на string для Input type="date"
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
-    if (!date) {
+    setError(null);
+
+    if (!dateString) {
       setError('Будь ласка, виберіть дату.');
       return;
     }
 
+    // Перетворюємо рядок дати в об'єкт Date перед відправкою в action
+    const date = new Date(dateString);
     console.log(
-      '🚀 ~ AddDateDialog ~ date after selection:',
+      'AddDateDialog - date before action (from dateString):',
       date.toISOString()
-    );
+    ); // Додаємо лог для перевірки
 
     const isDateExists = existingDates.some(
       (existingDate) =>
@@ -226,18 +229,24 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
 
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(date, '12:00', timeZone); // Pass Date object directly
+    const result = await addTimeSlotAction(date, '12:00', timeZone); // Передаємо об'єкт Date
 
     if (typeof result === 'string') {
       toast.error(result);
     } else {
-      toast.success(`Дату ${formatDate(date)} успішно додано.`);
+      toast.success(
+        `Дату ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно додано.`
+      );
     }
 
     setOpen(false);
     setError(null);
-    setDate(undefined);
+    setDateString(''); // Очищаємо рядок дати
     setIsLoading(false);
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDateString(e.target.value); // Зберігаємо значення Input type="date" як рядок
   };
 
   return (
@@ -247,11 +256,11 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
         <DialogHeader>
           <DialogTitle>Виберіть Дату</DialogTitle>
         </DialogHeader>
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          showOutsideDays={false}
+        {/* Замінено Calendar на Input type="date" */}
+        <Input
+          type="date"
+          value={dateString}
+          onChange={handleDateChange}
           className="rounded-md border"
         />
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
@@ -264,6 +273,73 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
     </Dialog>
   );
 };
+
+// export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
+//   const [date, setDate] = useState<Date>();
+//   const [error, setError] = useState<string | null>(null);
+//   const [open, setOpen] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleConfirm = async () => {
+//     if (!date) {
+//       setError('Будь ласка, виберіть дату.');
+//       return;
+//     }
+
+//     console.log(
+//       '🚀 ~ AddDateDialog ~ date after selection:',
+//       date.toISOString()
+//     );
+
+//     const isDateExists = existingDates.some(
+//       (existingDate) =>
+//         format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+//     );
+//     if (isDateExists) {
+//       setError('Ця дата вже існує в графіку.');
+//       return;
+//     }
+
+//     setIsLoading(true);
+
+//     const result = await addTimeSlotAction(date, '12:00', timeZone); // Pass Date object directly
+
+//     if (typeof result === 'string') {
+//       toast.error(result);
+//     } else {
+//       toast.success(`Дату ${formatDate(date)} успішно додано.`);
+//     }
+
+//     setOpen(false);
+//     setError(null);
+//     setDate(undefined);
+//     setIsLoading(false);
+//   };
+
+//   return (
+//     <Dialog open={open} onOpenChange={setOpen}>
+//       <DialogTrigger>Додати Дату</DialogTrigger>
+//       <DialogContent className="w-fit sm:max-w-[425px]">
+//         <DialogHeader>
+//           <DialogTitle>Виберіть Дату</DialogTitle>
+//         </DialogHeader>
+//         <Calendar
+//           mode="single"
+//           selected={date}
+//           onSelect={setDate}
+//           showOutsideDays={false}
+//           className="rounded-md border"
+//         />
+//         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+//         <DialogFooter>
+//           <Button type="button" onClick={handleConfirm} disabled={isLoading}>
+//             Підтвердити
+//           </Button>
+//         </DialogFooter>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// };
 
 const timeSlotSchema = z.object({
   timeInput: z
