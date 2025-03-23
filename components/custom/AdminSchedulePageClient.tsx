@@ -209,6 +209,12 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
       setError('Будь ласка, виберіть дату.');
       return;
     }
+
+    console.log(
+      '🚀 ~ AddDateDialog ~ date after selection:',
+      date.toISOString()
+    );
+
     const isDateExists = existingDates.some(
       (existingDate) =>
         format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
