@@ -406,11 +406,11 @@ export const AddTimeSlotPopover = ({
       return;
     }
 
-    if (existingTimeSlots.length > 0) {
-      const newTimeDate = new Date(date);
-      const [newHours, newMinutes] = timeInput.split(':').map(Number);
-      newTimeDate.setHours(newHours, newMinutes, 0, 0);
+    const newTimeDate = new Date(date); // Клонуємо дату, щоб уникнути мутації
+    const [newHours, newMinutes] = timeInput.split(':').map(Number);
+    newTimeDate.setHours(newHours, newMinutes, 0, 0);
 
+    if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
         const existingTimeDate = existingSlot.meetDate;
 
@@ -422,7 +422,9 @@ export const AddTimeSlotPopover = ({
         if (timeDifference < thirtyMinutes) {
           setError('timeInput', {
             type: 'manual',
-            message: `Час повинен бути мінімум 30 хвилин від ${formatTime(existingTimeDate)}.`,
+            message: `Час повинен бути мінімум 30 хвилин від ${formatTime(
+              existingTimeDate
+            )}.`,
           });
           return;
         }
@@ -431,7 +433,13 @@ export const AddTimeSlotPopover = ({
 
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(date, timeInput, timeZone); // Pass Date object directly
+    console.log(
+      'AddTimeSlotPopover - newTimeDate (before action):',
+      newTimeDate.toISOString()
+    ); // Додано логування для newTimeDate
+
+    // ✅ Виправлено: передаємо newTimeDate замість date
+    const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
 
     if (typeof result === 'string') {
       toast.error(
