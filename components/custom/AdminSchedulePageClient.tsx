@@ -229,7 +229,7 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
 
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(date, '12:00', timeZone); // Передаємо об'єкт Date
+    const result = await addTimeSlotAction(date, timeZone, '12:00'); // Передаємо об'єкт Date
 
     if (typeof result === 'string') {
       toast.error(result);
@@ -447,7 +447,7 @@ export const AddTimeSlotPopover = ({
     );
 
     // Pass the newTimeDate to addTimeSlotAction
-    const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
+    const result = await addTimeSlotAction(newTimeDate, timeZone);
 
     if (typeof result === 'string') {
       toast.error(

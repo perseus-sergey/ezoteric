@@ -63,21 +63,24 @@ export const getScheduleAction = async (
 
 export const addTimeSlotAction = async (
   date: Date,
-  time: string,
-  timeZone: string
+  timeZone: string,
+  time?: string
 ) => {
   console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
   try {
-    const [hours, minutes] = time.split(':').map(Number);
-    const addedMinutes = hours * 60 + minutes;
-
-    // const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-    console.log(
-      '🚀 ~ meetDateTime - before setHours:',
-      meetDateTime.toISOString()
-    );
-    meetDateTime.setMinutes(meetDateTime.getMinutes() + addedMinutes);
+
+    if (time) {
+      const [hours, minutes] = time.split(':').map(Number);
+      const addedMinutes = hours * 60 + minutes;
+
+      // const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+      console.log(
+        '🚀 ~ meetDateTime - before setHours:',
+        meetDateTime.toISOString()
+      );
+      meetDateTime.setMinutes(meetDateTime.getMinutes() + addedMinutes);
+    }
 
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
     // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
