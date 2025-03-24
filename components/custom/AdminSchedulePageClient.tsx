@@ -49,6 +49,7 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
 import { useState } from 'react';
+import { Calendar } from '../ui/calendar';
 
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
@@ -198,7 +199,7 @@ interface AddDateDialogProps {
 }
 
 export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
-  const [dateString, setDateString] = useState<string>(''); // Змінено стан на string для Input type="date"
+  const [date, setDate] = useState<Date>();
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -206,17 +207,10 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
   const handleConfirm = async () => {
     setError(null);
 
-    if (!dateString) {
+    if (!date) {
       setError('Будь ласка, виберіть дату.');
       return;
     }
-
-    // Перетворюємо рядок дати в об'єкт Date перед відправкою в action
-    const date = new Date(dateString);
-    console.log(
-      'AddDateDialog - date before action (from dateString):',
-      date.toISOString()
-    ); // Додаємо лог для перевірки
 
     const isDateExists = existingDates.some(
       (existingDate) =>
@@ -227,26 +221,23 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
       return;
     }
 
+    const newTimeDate = new Date(date);
+    newTimeDate.setHours(newTimeDate.getHours() + 12);
+
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(date, timeZone, '12:00'); // Передаємо об'єкт Date
+    const result = await addTimeSlotAction(newTimeDate, timeZone);
 
     if (typeof result === 'string') {
       toast.error(result);
     } else {
-      toast.success(
-        `Дату ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно додано.`
-      );
+      toast.success(toast.success(`Дату ${formatDate(date)} успішно додано.`));
     }
 
     setOpen(false);
     setError(null);
-    setDateString(''); // Очищаємо рядок дати
+    setDate(undefined);
     setIsLoading(false);
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDateString(e.target.value); // Зберігаємо значення Input type="date" як рядок
   };
 
   return (
@@ -256,11 +247,11 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
         <DialogHeader>
           <DialogTitle>Виберіть Дату</DialogTitle>
         </DialogHeader>
-        {/* Замінено Calendar на Input type="date" */}
-        <Input
-          type="date"
-          value={dateString}
-          onChange={handleDateChange}
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          showOutsideDays={false}
           className="rounded-md border"
         />
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
@@ -273,73 +264,6 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
     </Dialog>
   );
 };
-
-// export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
-//   const [date, setDate] = useState<Date>();
-//   const [error, setError] = useState<string | null>(null);
-//   const [open, setOpen] = useState(false);
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const handleConfirm = async () => {
-//     if (!date) {
-//       setError('Будь ласка, виберіть дату.');
-//       return;
-//     }
-
-//     console.log(
-//       '🚀 ~ AddDateDialog ~ date after selection:',
-//       date.toISOString()
-//     );
-
-//     const isDateExists = existingDates.some(
-//       (existingDate) =>
-//         format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-//     );
-//     if (isDateExists) {
-//       setError('Ця дата вже існує в графіку.');
-//       return;
-//     }
-
-//     setIsLoading(true);
-
-//     const result = await addTimeSlotAction(date, '12:00', timeZone); // Pass Date object directly
-
-//     if (typeof result === 'string') {
-//       toast.error(result);
-//     } else {
-//       toast.success(`Дату ${formatDate(date)} успішно додано.`);
-//     }
-
-//     setOpen(false);
-//     setError(null);
-//     setDate(undefined);
-//     setIsLoading(false);
-//   };
-
-//   return (
-//     <Dialog open={open} onOpenChange={setOpen}>
-//       <DialogTrigger>Додати Дату</DialogTrigger>
-//       <DialogContent className="w-fit sm:max-w-[425px]">
-//         <DialogHeader>
-//           <DialogTitle>Виберіть Дату</DialogTitle>
-//         </DialogHeader>
-//         <Calendar
-//           mode="single"
-//           selected={date}
-//           onSelect={setDate}
-//           showOutsideDays={false}
-//           className="rounded-md border"
-//         />
-//         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-//         <DialogFooter>
-//           <Button type="button" onClick={handleConfirm} disabled={isLoading}>
-//             Підтвердити
-//           </Button>
-//         </DialogFooter>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// };
 
 const timeSlotSchema = z.object({
   timeInput: z
@@ -391,6 +315,10 @@ export const AddTimeSlotPopover = ({
     setValue('timeInput', value); // Оновлюємо значення в формі
   };
 
+  // =================================================================
+  // =================================================================
+  // =================================================================
+
   const onSubmit = async (data: TimeSlotFormValues) => {
     const timeInput = data.timeInput;
     clearErrors('timeInput');
@@ -409,7 +337,6 @@ export const AddTimeSlotPopover = ({
     const [newHours, newMinutes] = timeInput.split(':').map(Number);
     const minutes = newHours * 60 + newMinutes;
 
-    console.log('🚀 ~ onSubmit ~ date:', date.toISOString());
     const newTimeDate = new Date(date);
     console.log('🚀 ~ onSubmit ~ newTimeDate:', newTimeDate.toISOString());
     newTimeDate.setMinutes(newTimeDate.getMinutes() + minutes);
@@ -441,12 +368,6 @@ export const AddTimeSlotPopover = ({
 
     setIsLoading(true);
 
-    console.log(
-      'AddTimeSlotPopover - newTimeDate (before action):',
-      newTimeDate.toISOString()
-    );
-
-    // Pass the newTimeDate to addTimeSlotAction
     const result = await addTimeSlotAction(newTimeDate, timeZone);
 
     if (typeof result === 'string') {
@@ -460,76 +381,6 @@ export const AddTimeSlotPopover = ({
     setIsLoading(false);
     reset({ timeInput: '' });
   };
-
-  // const onSubmit = async (data: TimeSlotFormValues) => {
-  //   const timeInput = data.timeInput;
-  //   clearErrors('timeInput');
-
-  //   const isTimeSlotExists = existingTimeSlots.some(
-  //     (slot) => formatTime(slot.meetDate) === timeInput
-  //   );
-  //   if (isTimeSlotExists) {
-  //     setError('timeInput', {
-  //       type: 'manual',
-  //       message: 'Цей час вже додано для цієї дати.',
-  //     });
-  //     return;
-  //   }
-
-  //   const [newHours, newMinutes] = timeInput.split(':').map(Number);
-
-  //   // Construct date string in 'YYYY-MM-DDTHH:mm:ss' format using the *intended* date and time
-  //   const year = date.getFullYear();
-  //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  //   const day = String(date.getDate()).padStart(2, '0');
-  //   const hour = String(newHours).padStart(2, '0');
-  //   const minute = String(newMinutes).padStart(2, '0');
-  //   const dateTimeString = `${year}-${month}-${day}T${hour}:${minute}:00`;
-
-  //   const newTimeDate = new Date(dateTimeString); // Create Date from string - hopefully local time
-
-  //   if (existingTimeSlots.length > 0) {
-  //     for (const existingSlot of existingTimeSlots) {
-  //       const existingTimeDate = existingSlot.meetDate;
-
-  //       const timeDifference = Math.abs(
-  //         newTimeDate.getTime() - existingTimeDate.getTime()
-  //       );
-  //       const thirtyMinutes = 30 * 60 * 1000;
-
-  //       if (timeDifference < thirtyMinutes) {
-  //         setError('timeInput', {
-  //           type: 'manual',
-  //           message: `Час повинен бути мінімум 30 хвилин від ${formatTime(
-  //             existingTimeDate
-  //           )}.`,
-  //         });
-  //         return;
-  //       }
-  //     }
-  //   }
-
-  //   setIsLoading(true);
-
-  //   console.log(
-  //     'AddTimeSlotPopover - newTimeDate (before action):',
-  //     newTimeDate.toISOString()
-  //   ); // Log newTimeDate
-
-  //   // ✅ Use newTimeDate (which should now represent local time correctly)
-  //   const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
-
-  //   if (typeof result === 'string') {
-  //     toast.error(
-  //       result || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
-  //     );
-  //   } else {
-  //     toast.success(`Час ${timeInput} для ${formatDate(date)} успішно додано.`);
-  //   }
-
-  //   setIsLoading(false);
-  //   reset({ timeInput: '' });
-  // };
 
   return (
     <Popover>

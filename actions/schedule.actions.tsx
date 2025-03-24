@@ -74,26 +74,10 @@ export const addTimeSlotAction = async (
       const [hours, minutes] = time.split(':').map(Number);
       const addedMinutes = hours * 60 + minutes;
 
-      // const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-      console.log(
-        '🚀 ~ meetDateTime - before setHours:',
-        meetDateTime.toISOString()
-      );
       meetDateTime.setMinutes(meetDateTime.getMinutes() + addedMinutes);
 
       meetDateTime = fromZonedTime(meetDateTime, timeZone);
     }
-
-    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-    console.log(
-      'addTimeSlotAction - meetDateTime (before fromZonedTime):',
-      meetDateTime.toISOString()
-    ); // Логуємо meetDateTime
-    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-    // console.log(
-    //   'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
-    //   utcMeetDateTime.toISOString()
-    // );
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
