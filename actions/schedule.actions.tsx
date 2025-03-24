@@ -13,7 +13,6 @@ import {
 import { render } from '@react-email/components';
 import { ELanguage } from '@/models/language.model';
 import { sendMail } from '@/lib/mail/sendMail';
-import { fromZonedTime } from 'date-fns-tz';
 import {
   BOOK_APPOINTMENT_ACTION,
   SCHEDULE_EMAIL,
@@ -62,32 +61,18 @@ export const getScheduleAction = async (
 };
 
 export const addTimeSlotAction = async (
-  date: Date,
-  timeZone: string,
-  time?: string
+  date: Date // UTC date
 ) => {
-  console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
   try {
-    let meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-
-    if (time) {
-      const [hours, minutes] = time.split(':').map(Number);
-      const addedMinutes = hours * 60 + minutes;
-
-      meetDateTime.setMinutes(meetDateTime.getMinutes() + addedMinutes);
-
-      meetDateTime = fromZonedTime(meetDateTime, timeZone);
-    }
-
     // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-      where: eq(appointmentSchedule.meetDate, meetDateTime),
+      where: eq(appointmentSchedule.meetDate, date),
     });
 
     if (existingTimeSlot) return 'Час сеансу вже існує для цієї дати.';
 
     // Додавання часу сеансу
-    await db.insert(appointmentSchedule).values({ meetDate: meetDateTime });
+    await db.insert(appointmentSchedule).values({ meetDate: date });
 
     revalidateTag(MASTER);
 
@@ -98,83 +83,13 @@ export const addTimeSlotAction = async (
   }
 };
 
-// export const addTimeSlotAction = async (
-//   date: Date,
-//   time: string,
-//   timeZone: string
-// ): Promise<{
-//   success: boolean;
-//   error?: string;
-//   data?: typeof appointmentSchedule.$inferSelect;
-// }> => {
-//   try {
-//     const zonedDate = new Date(date);
-//     zonedDate.setHours(
-//       parseInt(time.split(':')[0], 10),
-//       parseInt(time.split(':')[1], 10),
-//       0,
-//       0
-//     );
-
-//     // Конвертуємо в UTC для зберігання в базі даних
-//     const utcMeetDateTime = fromZonedTime(zonedDate, timeZone);
-
-//     // Перевірка, чи час сеансу вже існує для цієї дати і часу (використовуємо utcMeetDateTime для порівняння)
-//     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-//       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
-//     });
-
-//     if (existingTimeSlot) {
-//       return { success: false, error: 'Час сеансу вже існує для цієї дати.' };
-//     }
-
-//     // Додавання часу сеансу
-//     const insertedTimeSlots = await db
-//       .insert(appointmentSchedule)
-//       .values({ meetDate: utcMeetDateTime })
-//       .returning();
-
-//     if (!insertedTimeSlots || insertedTimeSlots.length === 0) {
-//       return {
-//         success: false,
-//         error: 'Не вдалося додати час сеансу до бази даних.',
-//       };
-//     }
-
-//     revalidateTag(MASTER);
-
-//     console.log(
-//       '🚀 ~ addTimeSlotAction ~ insertedTimeSlots[0] after db:',
-//       insertedTimeSlots[0]
-//     );
-
-//     return {
-//       success: true,
-//       data: insertedTimeSlots[0],
-//     };
-//   } catch (error) {
-//     console.error('Помилка додавання часу сеансу:', error);
-//     return { success: false, error: 'Не вдалося додати час сеансу.' };
-//   }
-// };
-
 export const deleteTimeSlotAction = async (
-  date: Date,
-  time: string,
-  timeZone: string = 'Europe/Kiev'
+  date: Date
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    const [hours, minutes] = time.split(':').map(Number);
-    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
-
-    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
-    const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-
-    // Видалення часу сеансу з бази даних
     const deletedRows = await db
       .delete(appointmentSchedule)
-      .where(eq(appointmentSchedule.meetDate, utcMeetDateTime))
+      .where(eq(appointmentSchedule.meetDate, date))
       .returning();
 
     if (deletedRows.length === 0) {

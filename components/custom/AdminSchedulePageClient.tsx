@@ -195,11 +195,11 @@ export const ScheduleAdminTable = ({
 };
 
 interface AddDateDialogProps {
-  existingDates: Date[];
+  existingDates: Date[]; // UTC dates
 }
 
 export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date>(); // UTC date
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -226,12 +226,12 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
 
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(newTimeDate, timeZone);
+    const result = await addTimeSlotAction(newTimeDate);
 
     if (typeof result === 'string') {
       toast.error(result);
     } else {
-      toast.success(toast.success(`Дату ${formatDate(date)} успішно додано.`));
+      toast.success(`Дату ${formatDate(date)} успішно додано.`);
     }
 
     setOpen(false);
@@ -338,12 +338,7 @@ export const AddTimeSlotPopover = ({
     const minutes = newHours * 60 + newMinutes;
 
     const newTimeDate = new Date(date);
-    console.log('🚀 ~ onSubmit ~ newTimeDate:', newTimeDate.toISOString());
     newTimeDate.setMinutes(newTimeDate.getMinutes() + minutes);
-    console.log(
-      '🚀 ~ onSubmit ~ newTimeDate setMinutes:',
-      newTimeDate.toISOString()
-    );
 
     if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
@@ -368,7 +363,7 @@ export const AddTimeSlotPopover = ({
 
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(newTimeDate, timeZone);
+    const result = await addTimeSlotAction(newTimeDate);
 
     if (typeof result === 'string') {
       toast.error(
@@ -451,7 +446,14 @@ export const DeleteTimeSlotButton = ({
     const time = formatTime(timeSlot.meetDate);
     try {
       setIsLoading(true);
-      const result = await deleteTimeSlotAction(date, time);
+
+      const [hours, minutes] = time.split(':').map(Number);
+      const allMinutes = hours * 60 + minutes;
+
+      const deletedTimeDate = new Date(date);
+      deletedTimeDate.setMinutes(deletedTimeDate.getMinutes() + allMinutes);
+
+      const result = await deleteTimeSlotAction(deletedTimeDate);
 
       if (result && result.success) {
         toast.success('Час зустрічі видалено!', {
