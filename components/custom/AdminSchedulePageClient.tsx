@@ -83,10 +83,6 @@ export const ScheduleAdminTable = ({
 
         <TableBody>
           {schedule.map((daySchedule) => {
-            console.log(
-              'ScheduleAdminTable - daySchedule.meetDate (before rendering):',
-              daySchedule.meetDate.toISOString()
-            );
             const formattedDate = formatDate(daySchedule.meetDate);
 
             return daySchedule.times.length > 0 ? (
@@ -215,17 +211,17 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
       return;
     }
 
-    // ✅ Тепер dateString (рядок з <Input type="date">) передається безпосередньо
+    // Перетворюємо рядок дати в об'єкт Date перед відправкою в action
+    const date = new Date(dateString);
     console.log(
-      'AddDateDialog - dateString before action:',
-      dateString // Логуємо dateString, який тепер буде ISO-рядком
-    );
+      'AddDateDialog - date before action (from dateString):',
+      date.toISOString()
+    ); // Додаємо лог для перевірки
 
-    const isDateExists = existingDates.some((existingDate) => {
-      // Порівняння з використанням рядків дат, а не об'єктів Date
-      const existingDateString = format(existingDate, 'yyyy-MM-dd');
-      return existingDateString === dateString;
-    });
+    const isDateExists = existingDates.some(
+      (existingDate) =>
+        format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+    );
     if (isDateExists) {
       setError('Ця дата вже існує в графіку.');
       return;
@@ -233,18 +229,13 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
 
     setIsLoading(true);
 
-    const result = await addTimeSlotAction(dateString, '12:00', timeZone); // Передаємо об'єкт Date
+    const result = await addTimeSlotAction(date, '12:00', timeZone); // Передаємо об'єкт Date
 
     if (typeof result === 'string') {
       toast.error(result);
     } else {
-      const dateForFormat = new Date(dateString);
       toast.success(
-        `Дату ${formatDateLocal(
-          dateForFormat, // Використовуємо Date об'єкт для форматування
-          ELanguage.UA,
-          timeZone
-        )} успішно додано.`
+        `Дату ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно додано.`
       );
     }
 
@@ -253,48 +244,6 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
     setDateString(''); // Очищаємо рядок дати
     setIsLoading(false);
   };
-
-  // const handleConfirm = async () => {
-  //   setError(null);
-
-  //   if (!dateString) {
-  //     setError('Будь ласка, виберіть дату.');
-  //     return;
-  //   }
-
-  //   // Перетворюємо рядок дати в об'єкт Date перед відправкою в action
-  //   const date = new Date(dateString);
-  //   console.log(
-  //     'AddDateDialog - date before action (from dateString):',
-  //     date.toISOString()
-  //   ); // Додаємо лог для перевірки
-
-  //   const isDateExists = existingDates.some(
-  //     (existingDate) =>
-  //       format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-  //   );
-  //   if (isDateExists) {
-  //     setError('Ця дата вже існує в графіку.');
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-
-  //   const result = await addTimeSlotAction(date, '12:00', timeZone); // Передаємо об'єкт Date
-
-  //   if (typeof result === 'string') {
-  //     toast.error(result);
-  //   } else {
-  //     toast.success(
-  //       `Дату ${formatDateLocal(date, ELanguage.UA, timeZone)} успішно додано.`
-  //     );
-  //   }
-
-  //   setOpen(false);
-  //   setError(null);
-  //   setDateString(''); // Очищаємо рядок дати
-  //   setIsLoading(false);
-  // };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDateString(e.target.value); // Зберігаємо значення Input type="date" як рядок
@@ -442,7 +391,6 @@ export const AddTimeSlotPopover = ({
     setValue('timeInput', value); // Оновлюємо значення в формі
   };
 
-  // components/custom/AdminSchedulePageClient.tsx
   const onSubmit = async (data: TimeSlotFormValues) => {
     const timeInput = data.timeInput;
     clearErrors('timeInput');
@@ -458,23 +406,47 @@ export const AddTimeSlotPopover = ({
       return;
     }
 
+    const [newHours, newMinutes] = timeInput.split(':').map(Number);
+
+    // Get year, month, day from the 'date' object (which is start of day in UTC)
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth(); // getUTCMonth() returns month index (0-11)
+    const day = date.getUTCDate();
+    console.log('🚀 ~ AddTimeSlotPopover ~ onSubmit ~ day:', day);
+
+    // Create newTimeDate using individual components (local time interpretation assumed)
+    const newTimeDate = new Date(year, month, day, newHours, newMinutes);
+
+    if (existingTimeSlots.length > 0) {
+      for (const existingSlot of existingTimeSlots) {
+        const existingTimeDate = existingSlot.meetDate;
+
+        const timeDifference = Math.abs(
+          newTimeDate.getTime() - existingTimeDate.getTime()
+        );
+        const thirtyMinutes = 30 * 60 * 1000;
+
+        if (timeDifference < thirtyMinutes) {
+          setError('timeInput', {
+            type: 'manual',
+            message: `Час повинен бути мінімум 30 хвилин від ${formatTime(
+              existingTimeDate
+            )}.`,
+          });
+          return;
+        }
+      }
+    }
+
     setIsLoading(true);
 
     console.log(
-      'AddTimeSlotPopover - date (ISO string before action):',
-      date.toISOString()
-    ); // Log original date for reference
-    console.log(
-      'AddTimeSlotPopover - timeInput (string before action):',
-      timeInput
-    ); // Log timeInput string
+      'AddTimeSlotPopover - newTimeDate (before action):',
+      newTimeDate.toISOString()
+    ); // Log newTimeDate
 
-    // ✅ Send date as ISO string and time as string
-    const result = await addTimeSlotAction(
-      date.toISOString(),
-      timeInput,
-      timeZone
-    );
+    // Use newTimeDate (constructed with individual components)
+    const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
 
     if (typeof result === 'string') {
       toast.error(
