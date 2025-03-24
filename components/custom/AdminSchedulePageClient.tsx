@@ -361,7 +361,6 @@ export const AddTimeSlotPopover = ({
   date,
   existingTimeSlots,
 }: AddTimeSlotPopoverProps) => {
-  console.log('🚀 AddTimeSlotPopover ~ date:', date);
   const {
     handleSubmit,
     reset,
@@ -393,6 +392,8 @@ export const AddTimeSlotPopover = ({
   };
 
   const onSubmit = async (data: TimeSlotFormValues) => {
+    console.log('🚀 AddTimeSlotPopover ~ date:', date);
+    console.log('🚀 AddTimeSlotPopover ~ dateISO:', date.toISOString());
     const timeInput = data.timeInput;
     clearErrors('timeInput');
 
@@ -412,7 +413,8 @@ export const AddTimeSlotPopover = ({
     // Get year, month, day from the 'date' object (which is start of day in UTC)
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth(); // getUTCMonth() returns month index (0-11)
-    const day = date.getUTCDate();
+    const day = date.getDate();
+    console.log('🚀 ~ onSubmit ~ day:', day);
 
     // Create newTimeDate using individual components (local time interpretation assumed)
     const newTimeDate = new Date(year, month, day, newHours, newMinutes);
