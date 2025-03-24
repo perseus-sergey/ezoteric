@@ -70,6 +70,10 @@ export const addTimeSlotAction = async (
   try {
     const [hours, minutes] = time.split(':').map(Number);
     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+    console.log(
+      '🚀 ~ meetDateTime - before setHours:',
+      meetDateTime.toISOString()
+    );
     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс

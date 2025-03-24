@@ -444,7 +444,7 @@ export const AddTimeSlotPopover = ({
 
     console.log(
       'AddTimeSlotPopover - newTimeDate (before action):',
-      newTimeDate.toISOString()
+      date.toISOString()
     ); // Log newTimeDate
 
     // Use newTimeDate (constructed with individual components)
