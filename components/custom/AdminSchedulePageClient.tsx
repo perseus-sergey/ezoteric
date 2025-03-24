@@ -448,7 +448,7 @@ export const AddTimeSlotPopover = ({
     ); // Log newTimeDate
 
     // Use newTimeDate (constructed with individual components)
-    const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
+    const result = await addTimeSlotAction(date, timeInput, timeZone);
 
     if (typeof result === 'string') {
       toast.error(
