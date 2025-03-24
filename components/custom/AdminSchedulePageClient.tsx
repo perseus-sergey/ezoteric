@@ -30,7 +30,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,8 +47,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Calendar } from '../ui/calendar';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
 
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
@@ -62,13 +69,7 @@ export const ScheduleAdminTable = ({
 }: {
   initialSchedule: TSchedule[];
 }) => {
-  console.log(
-    '🚀 ~ initialSchedule:',
-    JSON.stringify(initialSchedule, null, 2)
-  );
   const schedule = groupScheduleByDate(initialSchedule, timeZone);
-  console.log('🚀 ~ schedule:', JSON.stringify(schedule, null, 2));
-
   return (
     <>
       timeZone: {timeZone}
@@ -198,72 +199,172 @@ interface AddDateDialogProps {
   existingDates: Date[]; // UTC dates
 }
 
+const addDateSchema = z.object({
+  date: z.date({
+    required_error: 'Будь ласка, виберіть дату.',
+  }),
+});
+
+type AddDateFormValues = z.infer<typeof addDateSchema>;
+
 export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
-  const [date, setDate] = useState<Date>(); // UTC date
-  const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleConfirm = async () => {
-    setError(null);
+  const form = useForm<AddDateFormValues>({
+    resolver: zodResolver(addDateSchema),
+    defaultValues: {
+      date: undefined,
+    },
+    mode: 'onSubmit',
+  });
 
-    if (!date) {
-      setError('Будь ласка, виберіть дату.');
-      return;
-    }
+  const formattedExistingDates = useMemo(
+    () => existingDates.map((date) => format(date, 'yyyy-MM-dd')),
+    [existingDates]
+  );
 
-    const isDateExists = existingDates.some(
-      (existingDate) =>
-        format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+  const onSubmit = async (values: AddDateFormValues) => {
+    const { date } = values;
+
+    const isDateExists = formattedExistingDates.includes(
+      format(date, 'yyyy-MM-dd')
     );
     if (isDateExists) {
-      setError('Ця дата вже існує в графіку.');
+      form.setError('date', {
+        type: 'manual',
+        message: 'Ця дата вже існує в графіку.',
+      });
       return;
     }
 
     const newTimeDate = new Date(date);
-    newTimeDate.setHours(newTimeDate.getHours() + 12);
+    newTimeDate.setHours(newTimeDate.getHours() + 12); // Assuming you still need to adjust the time
 
-    setIsLoading(true);
+    try {
+      const result = await addTimeSlotAction(newTimeDate);
 
-    const result = await addTimeSlotAction(newTimeDate);
-
-    if (typeof result === 'string') {
-      toast.error(result);
-    } else {
-      toast.success(`Дату ${formatDate(date)} успішно додано.`);
+      if (typeof result === 'string') {
+        toast.error(result);
+      } else {
+        toast.success(`Дату ${formatDate(date)} успішно додано.`);
+      }
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      toast.error('Не вдалося додати дату.');
+      console.error('Помилка додавання дати:', error);
     }
-
-    setOpen(false);
-    setError(null);
-    setDate(undefined);
-    setIsLoading(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>Додати Дату</DialogTrigger>
-      <DialogContent className="w-fit sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Виберіть Дату</DialogTitle>
-        </DialogHeader>
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          showOutsideDays={false}
-          className="rounded-md border"
-        />
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        <DialogFooter>
-          <Button type="button" onClick={handleConfirm} disabled={isLoading}>
-            Підтвердити
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger>Додати Дату</PopoverTrigger>
+      <PopoverContent className="w-fit sm:max-w-[425px] space-y-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Виберіть дату</FormLabel>
+                  <FormControl>
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      showOutsideDays={false}
+                      className="rounded-md border"
+                      disabled={(date) => {
+                        const currentDateFormatted = format(date, 'yyyy-MM-dd');
+                        return (
+                          date < new Date() ||
+                          formattedExistingDates.includes(currentDateFormatted)
+                        );
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              Підтвердити
+            </Button>
+          </form>
+        </Form>
+      </PopoverContent>
+    </Popover>
   );
 };
+
+// export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
+//   const [date, setDate] = useState<Date>(); // UTC date
+//   const [error, setError] = useState<string | null>(null);
+//   const [open, setOpen] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleConfirm = async () => {
+//     setError(null);
+
+//     if (!date) {
+//       setError('Будь ласка, виберіть дату.');
+//       return;
+//     }
+
+//     const isDateExists = existingDates.some(
+//       (existingDate) =>
+//         format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+//     );
+//     if (isDateExists) {
+//       setError('Ця дата вже існує в графіку.');
+//       return;
+//     }
+
+//     const newTimeDate = new Date(date);
+//     newTimeDate.setHours(newTimeDate.getHours() + 12);
+
+//     setIsLoading(true);
+
+//     const result = await addTimeSlotAction(newTimeDate);
+
+//     if (typeof result === 'string') {
+//       toast.error(result);
+//     } else {
+//       toast.success(`Дату ${formatDate(date)} успішно додано.`);
+//     }
+
+//     setOpen(false);
+//     setError(null);
+//     setDate(undefined);
+//     setIsLoading(false);
+//   };
+
+//   return (
+//     <Popover open={open} onOpenChange={setOpen}>
+//       <PopoverTrigger>Додати Дату</PopoverTrigger>
+//       <PopoverContent className="w-fit sm:max-w-[425px] space-y-4">
+//         <Calendar
+//           mode="single"
+//           selected={date}
+//           onSelect={setDate}
+//           showOutsideDays={false}
+//           className="rounded-md border"
+//         />
+//         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+//         <Button type="button" onClick={handleConfirm} disabled={isLoading}>
+//           Підтвердити
+//         </Button>
+//       </PopoverContent>
+//     </Popover>
+//   );
+// };
+
+interface AddTimeSlotPopoverProps {
+  date: Date;
+  existingTimeSlots: TSchedule[];
+}
 
 const timeSlotSchema = z.object({
   timeInput: z
@@ -276,58 +377,40 @@ const timeSlotSchema = z.object({
 
 type TimeSlotFormValues = z.infer<typeof timeSlotSchema>;
 
-interface AddTimeSlotPopoverProps {
-  date: Date;
-  existingTimeSlots: TSchedule[];
-}
-
 export const AddTimeSlotPopover = ({
   date,
   existingTimeSlots,
 }: AddTimeSlotPopoverProps) => {
-  const {
-    handleSubmit,
-    reset,
-    formState: { errors },
-    setError,
-    clearErrors,
-    setValue,
-    watch,
-  } = useForm<TimeSlotFormValues>({
+  const [open, setOpen] = useState(false);
+  const timeZone = getUserTimeZone();
+  const formatDate = (date: Date) =>
+    formatDateLocal(date, ELanguage.UA, timeZone);
+  const formatTime = (date: Date) => formatTimeLocal(date, timeZone);
+
+  const form = useForm<TimeSlotFormValues>({
     resolver: zodResolver(timeSlotSchema),
     defaultValues: {
       timeInput: '',
     },
-    mode: 'onSubmit', // Валідація при спробі відправки форми
+    mode: 'onSubmit',
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const timeInputValue = watch('timeInput');
-
-  const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ''); // Видаляємо всі нечислові символи
-
+  const handleTimeInputChange = (inputValue: string) => {
+    let value = inputValue.replace(/\D/g, '');
     if (value.length >= 2) {
-      value = `${value.slice(0, 2)}:${value.slice(2, 4)}`; // Додаємо `:` після двох символів
+      value = `${value.slice(0, 2)}:${value.slice(2, 4)}`;
     }
-
-    setValue('timeInput', value); // Оновлюємо значення в формі
+    form.setValue('timeInput', value);
   };
 
-  // =================================================================
-  // =================================================================
-  // =================================================================
-
-  const onSubmit = async (data: TimeSlotFormValues) => {
-    const timeInput = data.timeInput;
-    clearErrors('timeInput');
+  const onSubmit = async (values: TimeSlotFormValues) => {
+    const { timeInput } = values;
 
     const isTimeSlotExists = existingTimeSlots.some(
       (slot) => formatTime(slot.meetDate) === timeInput
     );
     if (isTimeSlotExists) {
-      setError('timeInput', {
+      form.setError('timeInput', {
         type: 'manual',
         message: 'Цей час вже додано для цієї дати.',
       });
@@ -350,7 +433,7 @@ export const AddTimeSlotPopover = ({
         const thirtyMinutes = 30 * 60 * 1000;
 
         if (timeDifference < thirtyMinutes) {
-          setError('timeInput', {
+          form.setError('timeInput', {
             type: 'manual',
             message: `Час повинен бути мінімум 30 хвилин від ${formatTime(
               existingTimeDate
@@ -361,62 +444,82 @@ export const AddTimeSlotPopover = ({
       }
     }
 
-    setIsLoading(true);
+    try {
+      const result = await addTimeSlotAction(newTimeDate);
 
-    const result = await addTimeSlotAction(newTimeDate);
-
-    if (typeof result === 'string') {
-      toast.error(
-        result || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
-      );
-    } else {
-      toast.success(`Час ${timeInput} для ${formatDate(date)} успішно додано.`);
+      if (typeof result === 'string') {
+        toast.error(
+          result || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
+        );
+      } else {
+        toast.success(
+          `Час ${timeInput} для ${formatDate(date)} успішно додано.`
+        );
+      }
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      toast.error('Не вдалося додати час зустрічі. Спробуйте ще раз.');
+      console.error('Помилка додавання часу сеансу:', error);
     }
-
-    setIsLoading(false);
-    reset({ timeInput: '' });
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="absolute right-0 bottom-0">
         <Button
           variant="outline"
           className="size-7 p-0 bg-transparent"
-          disabled={isLoading}
+          disabled={form.formState.isSubmitting}
         >
           <Plus className="size-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-          <div className="space-y-2">
-            <h4 className="font-medium leading-none">Додати час зустрічі</h4>
-            <p className="text-sm text-muted-foreground">
-              Введіть час у форматі HH:mm (наприклад, 09:30)
-            </p>
-          </div>
-          <div className="grid gap-2">
-            <Input
-              type="text"
-              placeholder="HH:mm"
-              value={timeInputValue}
-              maxLength={5}
-              onChange={handleTimeInputChange}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">Додати час зустрічі</h4>
+              <p className="text-sm text-muted-foreground">
+                Введіть час у форматі HH:mm (наприклад, 09:30)
+              </p>
+            </div>
+            <FormField
+              control={form.control}
+              name="timeInput"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Час</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="HH:mm"
+                      maxLength={5}
+                      {...field}
+                      onChange={(e) => {
+                        handleTimeInputChange(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.timeInput && (
-              <p className="text-red-500 text-sm">{errors.timeInput.message}</p>
-            )}
-          </div>
-          <Button type="submit" className="mt-4 w-full">
-            {isLoading ? (
-              <LoadingAnimated className="size-5 mr-4" />
-            ) : (
-              <AlarmPlusIcon className="size-5 mr-4" />
-            )}
-            Додати час
-          </Button>
-        </form>
+
+            <Button
+              type="submit"
+              className="mt-4 w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <LoadingAnimated className="size-5 mr-4" />
+              ) : (
+                <AlarmPlusIcon className="size-5 mr-4" />
+              )}
+              Додати час
+            </Button>
+          </form>
+        </Form>
       </PopoverContent>
     </Popover>
   );
