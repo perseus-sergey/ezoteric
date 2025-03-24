@@ -49,6 +49,7 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
 import { useState } from 'react';
+import { toZonedTime } from 'date-fns-tz';
 
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
@@ -102,12 +103,31 @@ export const ScheduleAdminTable = ({
                         rowSpan={daySchedule.times.length}
                       >
                         {formattedDate}
-
+                        {/* Pass initialSchedule to find the correct day entry */}
                         <AddTimeSlotPopover
-                          date={daySchedule.meetDate}
+                          date={
+                            initialSchedule.find(
+                              (item) =>
+                                format(
+                                  toZonedTime(item.meetDate, timeZone),
+                                  'yyyy-MM-dd'
+                                ) === format(daySchedule.meetDate, 'yyyy-MM-dd')
+                            )?.meetDate || daySchedule.meetDate
+                          }
                           existingTimeSlots={daySchedule.times}
                         />
                       </TableCell>
+                      // <TableCell
+                      //   className="font-medium relative"
+                      //   rowSpan={daySchedule.times.length}
+                      // >
+                      //   {formattedDate}
+
+                      //   <AddTimeSlotPopover
+                      //     date={daySchedule.meetDate}
+                      //     existingTimeSlots={daySchedule.times}
+                      //   />
+                      // </TableCell>
                     )}
                     <TableCell className="w-20">
                       <Popover>
@@ -168,9 +188,21 @@ export const ScheduleAdminTable = ({
                   {formattedDate}
 
                   <AddTimeSlotPopover
-                    date={daySchedule.meetDate}
+                    date={
+                      initialSchedule.find(
+                        (item) =>
+                          format(
+                            toZonedTime(item.meetDate, timeZone),
+                            'yyyy-MM-dd'
+                          ) === format(daySchedule.meetDate, 'yyyy-MM-dd')
+                      )?.meetDate || daySchedule.meetDate
+                    }
                     existingTimeSlots={daySchedule.times}
                   />
+                  {/* <AddTimeSlotPopover
+                    date={daySchedule.meetDate}
+                    existingTimeSlots={daySchedule.times}
+                  /> */}
                 </TableCell>
                 <TableCell />
                 <TableCell />
