@@ -407,14 +407,10 @@ export const AddTimeSlotPopover = ({
     }
 
     const [newHours, newMinutes] = timeInput.split(':').map(Number);
+    const minutes = newHours * 60 + newMinutes;
 
-    // Calculate milliseconds to add based on time input
-    const hoursInMilliseconds = newHours * 60 * 60 * 1000;
-    const minutesInMilliseconds = newMinutes * 60 * 1000;
-    const totalMillisecondsToAdd = hoursInMilliseconds + minutesInMilliseconds;
-
-    // Add milliseconds to the original 'date' object (which is start of day in UTC)
-    const newTimeDate = new Date(date.getTime() + totalMillisecondsToAdd);
+    const newTimeDate = new Date(date);
+    newTimeDate.setMinutes(newTimeDate.getMinutes() + minutes);
 
     if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
