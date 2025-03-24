@@ -49,7 +49,6 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
 import { useState } from 'react';
-import { toZonedTime } from 'date-fns-tz';
 
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
@@ -103,31 +102,12 @@ export const ScheduleAdminTable = ({
                         rowSpan={daySchedule.times.length}
                       >
                         {formattedDate}
-                        {/* Pass initialSchedule to find the correct day entry */}
+
                         <AddTimeSlotPopover
-                          date={
-                            initialSchedule.find(
-                              (item) =>
-                                format(
-                                  toZonedTime(item.meetDate, timeZone),
-                                  'yyyy-MM-dd'
-                                ) === format(daySchedule.meetDate, 'yyyy-MM-dd')
-                            )?.meetDate || daySchedule.meetDate
-                          }
+                          date={daySchedule.meetDate}
                           existingTimeSlots={daySchedule.times}
                         />
                       </TableCell>
-                      // <TableCell
-                      //   className="font-medium relative"
-                      //   rowSpan={daySchedule.times.length}
-                      // >
-                      //   {formattedDate}
-
-                      //   <AddTimeSlotPopover
-                      //     date={daySchedule.meetDate}
-                      //     existingTimeSlots={daySchedule.times}
-                      //   />
-                      // </TableCell>
                     )}
                     <TableCell className="w-20">
                       <Popover>
@@ -188,21 +168,9 @@ export const ScheduleAdminTable = ({
                   {formattedDate}
 
                   <AddTimeSlotPopover
-                    date={
-                      initialSchedule.find(
-                        (item) =>
-                          format(
-                            toZonedTime(item.meetDate, timeZone),
-                            'yyyy-MM-dd'
-                          ) === format(daySchedule.meetDate, 'yyyy-MM-dd')
-                      )?.meetDate || daySchedule.meetDate
-                    }
-                    existingTimeSlots={daySchedule.times}
-                  />
-                  {/* <AddTimeSlotPopover
                     date={daySchedule.meetDate}
                     existingTimeSlots={daySchedule.times}
-                  /> */}
+                  />
                 </TableCell>
                 <TableCell />
                 <TableCell />
@@ -423,78 +391,6 @@ export const AddTimeSlotPopover = ({
     setValue('timeInput', value); // Оновлюємо значення в формі
   };
 
-  // const onSubmit = async (data: TimeSlotFormValues) => {
-  //   const timeInput = data.timeInput;
-  //   clearErrors('timeInput');
-
-  //   const isTimeSlotExists = existingTimeSlots.some(
-  //     (slot) => formatTime(slot.meetDate) === timeInput
-  //   );
-  //   if (isTimeSlotExists) {
-  //     setError('timeInput', {
-  //       type: 'manual',
-  //       message: 'Цей час вже додано для цієї дати.',
-  //     });
-  //     return;
-  //   }
-
-  //   const [newHours, newMinutes] = timeInput.split(':').map(Number);
-
-  //   // Construct date string in 'YYYY-MM-DDTHH:mm:ss' format using the *intended* date and time
-  //   const newTimeDateUTC = new Date(
-  //     Date.UTC(
-  //       date.getUTCFullYear(),
-  //       date.getUTCMonth(),
-  //       date.getUTCDate(),
-  //       newHours,
-  //       newMinutes,
-  //       0,
-  //       0
-  //     )
-  //   );
-
-  //   if (existingTimeSlots.length > 0) {
-  //     for (const existingSlot of existingTimeSlots) {
-  //       const existingTimeDate = existingSlot.meetDate;
-
-  //       const timeDifference = Math.abs(
-  //         newTimeDateUTC.getTime() - existingTimeDate.getTime()
-  //       );
-  //       const thirtyMinutes = 30 * 60 * 1000;
-
-  //       if (timeDifference < thirtyMinutes) {
-  //         setError('timeInput', {
-  //           type: 'manual',
-  //           message: `Час повинен бути мінімум 30 хвилин від ${formatTime(
-  //             existingTimeDate
-  //           )}.`,
-  //         });
-  //         return;
-  //       }
-  //     }
-  //   }
-
-  //   setIsLoading(true);
-
-  //   console.log(
-  //     'AddTimeSlotPopover - newTimeDate (before action):',
-  //     newTimeDateUTC.toISOString()
-  //   );
-
-  //   const result = await addTimeSlotAction(newTimeDateUTC, timeInput, timeZone);
-
-  //   if (typeof result === 'string') {
-  //     toast.error(
-  //       result || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
-  //     );
-  //   } else {
-  //     toast.success(`Час ${timeInput} для ${formatDate(date)} успішно додано.`);
-  //   }
-
-  //   setIsLoading(false);
-  //   reset({ timeInput: '' });
-  // };
-
   const onSubmit = async (data: TimeSlotFormValues) => {
     const timeInput = data.timeInput;
     clearErrors('timeInput');
@@ -510,17 +406,17 @@ export const AddTimeSlotPopover = ({
       return;
     }
 
-    const [newHours, newMinutes] = timeInput.split(':').map(Number);
+    // Construct newTimeDate more explicitly with timezone context
+    const datePart = date.toLocaleDateString('en-CA', {
+      timeZone: timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }); // YYYY-MM-DD format
+    const timePart = timeInput; // HH:mm format
+    const dateTimeString = `${datePart}T${timePart}:00`; // Combine date and time in ISO 8601 format (without timezone offset)
 
-    // Construct date string in 'YYYY-MM-DDTHH:mm:ss' format using the *intended* date and time
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(newHours).padStart(2, '0');
-    const minute = String(newMinutes).padStart(2, '0');
-    const dateTimeString = `${year}-${month}-${day}T${hour}:${minute}:00`;
-
-    const newTimeDate = new Date(dateTimeString); // Create Date from string - hopefully local time
+    const newTimeDate = new Date(dateTimeString); // Create Date object from combined string (implicitly local time)
 
     if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
@@ -550,7 +446,7 @@ export const AddTimeSlotPopover = ({
       newTimeDate.toISOString()
     ); // Log newTimeDate
 
-    // ✅ Use newTimeDate (which should now represent local time correctly)
+    // Use newTimeDate (which is now constructed with timezone context)
     const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
 
     if (typeof result === 'string') {
@@ -564,6 +460,76 @@ export const AddTimeSlotPopover = ({
     setIsLoading(false);
     reset({ timeInput: '' });
   };
+
+  // const onSubmit = async (data: TimeSlotFormValues) => {
+  //   const timeInput = data.timeInput;
+  //   clearErrors('timeInput');
+
+  //   const isTimeSlotExists = existingTimeSlots.some(
+  //     (slot) => formatTime(slot.meetDate) === timeInput
+  //   );
+  //   if (isTimeSlotExists) {
+  //     setError('timeInput', {
+  //       type: 'manual',
+  //       message: 'Цей час вже додано для цієї дати.',
+  //     });
+  //     return;
+  //   }
+
+  //   const [newHours, newMinutes] = timeInput.split(':').map(Number);
+
+  //   // Construct date string in 'YYYY-MM-DDTHH:mm:ss' format using the *intended* date and time
+  //   const year = date.getFullYear();
+  //   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  //   const day = String(date.getDate()).padStart(2, '0');
+  //   const hour = String(newHours).padStart(2, '0');
+  //   const minute = String(newMinutes).padStart(2, '0');
+  //   const dateTimeString = `${year}-${month}-${day}T${hour}:${minute}:00`;
+
+  //   const newTimeDate = new Date(dateTimeString); // Create Date from string - hopefully local time
+
+  //   if (existingTimeSlots.length > 0) {
+  //     for (const existingSlot of existingTimeSlots) {
+  //       const existingTimeDate = existingSlot.meetDate;
+
+  //       const timeDifference = Math.abs(
+  //         newTimeDate.getTime() - existingTimeDate.getTime()
+  //       );
+  //       const thirtyMinutes = 30 * 60 * 1000;
+
+  //       if (timeDifference < thirtyMinutes) {
+  //         setError('timeInput', {
+  //           type: 'manual',
+  //           message: `Час повинен бути мінімум 30 хвилин від ${formatTime(
+  //             existingTimeDate
+  //           )}.`,
+  //         });
+  //         return;
+  //       }
+  //     }
+  //   }
+
+  //   setIsLoading(true);
+
+  //   console.log(
+  //     'AddTimeSlotPopover - newTimeDate (before action):',
+  //     newTimeDate.toISOString()
+  //   ); // Log newTimeDate
+
+  //   // ✅ Use newTimeDate (which should now represent local time correctly)
+  //   const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
+
+  //   if (typeof result === 'string') {
+  //     toast.error(
+  //       result || 'Не вдалося додати час зустрічі. Спробуйте ще раз.'
+  //     );
+  //   } else {
+  //     toast.success(`Час ${timeInput} для ${formatDate(date)} успішно додано.`);
+  //   }
+
+  //   setIsLoading(false);
+  //   reset({ timeInput: '' });
+  // };
 
   return (
     <Popover>
