@@ -62,22 +62,23 @@ export const getScheduleAction = async (
 };
 
 export const addTimeSlotAction = async (
-  date: Date,
+  dateISOString: string, // ✅ Receive date as ISO string
   time: string,
   timeZone: string
 ) => {
   console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
   try {
     const [hours, minutes] = time.split(':').map(Number);
-    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
 
-    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
-    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    // ✅ Reconstruct Date object on server, in server's timezone context
+    const meetDate = new Date(dateISOString); // Create Date from ISO string (implicitly UTC)
+    const meetDateTime = new Date(meetDate); // Clone to avoid mutation
+    meetDateTime.setHours(hours, minutes, 0, 0); // Set time
+
     console.log(
       'addTimeSlotAction - meetDateTime (before fromZonedTime):',
       meetDateTime.toISOString()
-    ); // Логуємо meetDateTime
+    );
     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
     console.log(
       'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
@@ -102,6 +103,48 @@ export const addTimeSlotAction = async (
     return 'Не вдалося додати час сеансу.';
   }
 };
+
+// export const addTimeSlotAction = async (
+//   date: Date,
+//   time: string,
+//   timeZone: string
+// ) => {
+//   console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
+//   try {
+//     const [hours, minutes] = time.split(':').map(Number);
+//     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+//     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
+
+//     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+//     // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+//     console.log(
+//       'addTimeSlotAction - meetDateTime (before fromZonedTime):',
+//       meetDateTime.toISOString()
+//     ); // Логуємо meetDateTime
+//     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+//     console.log(
+//       'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
+//       utcMeetDateTime.toISOString()
+//     );
+
+//     // Перевірка, чи час сеансу вже існує для цієї дати і часу
+//     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
+//       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
+//     });
+
+//     if (existingTimeSlot) return 'Час сеансу вже існує для цієї дати.';
+
+//     // Додавання часу сеансу
+//     await db.insert(appointmentSchedule).values({ meetDate: utcMeetDateTime });
+
+//     revalidateTag(MASTER);
+
+//     return null;
+//   } catch (error) {
+//     console.error('Помилка додавання часу сеансу:', error);
+//     return 'Не вдалося додати час сеансу.';
+//   }
+// };
 
 // export const addTimeSlotAction = async (
 //   date: Date,
