@@ -61,69 +61,43 @@ export const getScheduleAction = async (
   }
 };
 
-// export const addTimeSlotAction = async (
-//   date: Date,
-//   time: string,
-//   timeZone: string
-// ) => {
-//   console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
-//   try {
-//     const [hours, minutes] = time.split(':').map(Number);
-//     // const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-//     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
-//     console.log(
-//       '🚀 ~ meetDateTime - before setHours:',
-//       meetDateTime.toISOString()
-//     );
-//     meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
-
-//     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
-//     // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-//     console.log(
-//       'addTimeSlotAction - meetDateTime (before fromZonedTime):',
-//       meetDateTime.toISOString()
-//     ); // Логуємо meetDateTime
-//     const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-//     console.log(
-//       'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
-//       utcMeetDateTime.toISOString()
-//     );
-
-//     // Перевірка, чи час сеансу вже існує для цієї дати і часу
-//     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-//       where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
-//     });
-
-//     if (existingTimeSlot) return 'Час сеансу вже існує для цієї дати.';
-
-//     // Додавання часу сеансу
-//     await db.insert(appointmentSchedule).values({ meetDate: utcMeetDateTime });
-
-//     revalidateTag(MASTER);
-
-//     return null;
-//   } catch (error) {
-//     console.error('Помилка додавання часу сеансу:', error);
-//     return 'Не вдалося додати час сеансу.';
-//   }
-// };
-
 export const addTimeSlotAction = async (
-  date: Date
-  // timeZone: string
+  date: Date,
+  time: string,
+  timeZone: string
 ) => {
+  console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
   try {
-    // const utcMeetDateTime = fromZonedTime(date, timeZone);
+    const [hours, minutes] = time.split(':').map(Number);
+    // const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+    const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
+    console.log(
+      '🚀 ~ meetDateTime - before setHours:',
+      meetDateTime.toISOString()
+    );
+    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
+
+    // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
+    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    console.log(
+      'addTimeSlotAction - meetDateTime (before fromZonedTime):',
+      meetDateTime.toISOString()
+    ); // Логуємо meetDateTime
+    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    // console.log(
+    //   'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
+    //   utcMeetDateTime.toISOString()
+    // );
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-      where: eq(appointmentSchedule.meetDate, date),
+      where: eq(appointmentSchedule.meetDate, meetDateTime),
     });
 
     if (existingTimeSlot) return 'Час сеансу вже існує для цієї дати.';
 
     // Додавання часу сеансу
-    await db.insert(appointmentSchedule).values({ meetDate: date });
+    await db.insert(appointmentSchedule).values({ meetDate: meetDateTime });
 
     revalidateTag(MASTER);
 
