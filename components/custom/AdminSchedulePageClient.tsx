@@ -49,6 +49,7 @@ import { getUserTimeZone } from '@/lib/utils/clientDate';
 import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
 import { ELanguage } from '@/models/language.model';
 import { useState } from 'react';
+import { toZonedTime } from 'date-fns-tz';
 
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
@@ -408,13 +409,16 @@ export const AddTimeSlotPopover = ({
 
     const [newHours, newMinutes] = timeInput.split(':').map(Number);
 
-    // Get year, month, day from the 'date' object (which is start of day in UTC)
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth(); // getUTCMonth() returns month index (0-11)
-    const day = date.getUTCDate();
-    console.log('🚀 ~ AddTimeSlotPopover ~ onSubmit ~ day:', day);
+    // Create a new Date object representing the date in the user's timezone
+    const dateInUserTimeZone = toZonedTime(date, timeZone);
+    console.log('🚀 ~ onSubmit ~ timeZone:', timeZone);
 
-    // Create newTimeDate using individual components (local time interpretation assumed)
+    // Extract year, month, and day components in the user's timezone
+    const year = dateInUserTimeZone.getFullYear();
+    const month = dateInUserTimeZone.getMonth();
+    const day = dateInUserTimeZone.getDate();
+
+    // Create newTimeDate using components in user's timezone and provided time
     const newTimeDate = new Date(year, month, day, newHours, newMinutes);
 
     if (existingTimeSlots.length > 0) {
@@ -443,9 +447,9 @@ export const AddTimeSlotPopover = ({
     console.log(
       'AddTimeSlotPopover - newTimeDate (before action):',
       newTimeDate.toISOString()
-    ); // Log newTimeDate
+    );
 
-    // Use newTimeDate (constructed with individual components)
+    // Pass newTimeDate to addTimeSlotAction - it will be converted to UTC there
     const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
 
     if (typeof result === 'string') {
