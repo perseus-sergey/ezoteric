@@ -409,8 +409,14 @@ export const AddTimeSlotPopover = ({
     const [newHours, newMinutes] = timeInput.split(':').map(Number);
     const minutes = newHours * 60 + newMinutes;
 
+    console.log('🚀 ~ onSubmit ~ date:', date.toISOString());
     const newTimeDate = new Date(date);
+    console.log('🚀 ~ onSubmit ~ newTimeDate:', newTimeDate.toISOString());
     newTimeDate.setMinutes(newTimeDate.getMinutes() + minutes);
+    console.log(
+      '🚀 ~ onSubmit ~ newTimeDate setMinutes:',
+      newTimeDate.toISOString()
+    );
 
     if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
