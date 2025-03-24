@@ -83,6 +83,10 @@ export const ScheduleAdminTable = ({
 
         <TableBody>
           {schedule.map((daySchedule) => {
+            console.log(
+              'ScheduleAdminTable - daySchedule.meetDate (before rendering):',
+              daySchedule.meetDate.toISOString()
+            );
             const formattedDate = formatDate(daySchedule.meetDate);
 
             return daySchedule.times.length > 0 ? (
