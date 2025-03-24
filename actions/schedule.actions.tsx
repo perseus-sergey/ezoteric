@@ -83,21 +83,21 @@ export const addTimeSlotAction = async (
       'addTimeSlotAction - meetDateTime (before fromZonedTime):',
       meetDateTime.toISOString()
     ); // Логуємо meetDateTime
-    // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
-    // console.log(
-    //   'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
-    //   utcMeetDateTime.toISOString()
-    // );
+    const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
+    console.log(
+      'addTimeSlotAction - utcMeetDateTime (after fromZonedTime):',
+      utcMeetDateTime.toISOString()
+    );
 
     // Перевірка, чи час сеансу вже існує для цієї дати і часу
     const existingTimeSlot = await db.query.appointmentSchedule.findFirst({
-      where: eq(appointmentSchedule.meetDate, meetDateTime),
+      where: eq(appointmentSchedule.meetDate, utcMeetDateTime),
     });
 
     if (existingTimeSlot) return 'Час сеансу вже існує для цієї дати.';
 
     // Додавання часу сеансу
-    await db.insert(appointmentSchedule).values({ meetDate: meetDateTime });
+    await db.insert(appointmentSchedule).values({ meetDate: utcMeetDateTime });
 
     revalidateTag(MASTER);
 

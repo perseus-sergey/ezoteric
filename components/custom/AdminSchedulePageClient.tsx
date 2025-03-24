@@ -392,8 +392,6 @@ export const AddTimeSlotPopover = ({
   };
 
   const onSubmit = async (data: TimeSlotFormValues) => {
-    console.log('🚀 AddTimeSlotPopover ~ date:', date);
-    console.log('🚀 AddTimeSlotPopover ~ dateISO:', date.toISOString());
     const timeInput = data.timeInput;
     clearErrors('timeInput');
 
@@ -410,15 +408,13 @@ export const AddTimeSlotPopover = ({
 
     const [newHours, newMinutes] = timeInput.split(':').map(Number);
 
-    // Get year, month, day from the 'date' object (which is start of day in UTC)
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth(); // getUTCMonth() returns month index (0-11)
-    const day = date.getUTCDate();
+    // Calculate milliseconds to add based on time input
+    const hoursInMilliseconds = newHours * 60 * 60 * 1000;
+    const minutesInMilliseconds = newMinutes * 60 * 1000;
+    const totalMillisecondsToAdd = hoursInMilliseconds + minutesInMilliseconds;
 
-    // Create newTimeDate using individual components (local time interpretation assumed)
-    const newTimeDate = new Date(
-      Date.UTC(year, month, day, newHours, newMinutes)
-    );
+    // Add milliseconds to the original 'date' object (which is start of day in UTC)
+    const newTimeDate = new Date(date.getTime() + totalMillisecondsToAdd);
 
     if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
@@ -445,10 +441,10 @@ export const AddTimeSlotPopover = ({
 
     console.log(
       'AddTimeSlotPopover - newTimeDate (before action):',
-      date.toISOString()
-    ); // Log newTimeDate
+      newTimeDate.toISOString()
+    );
 
-    // Use newTimeDate (constructed with individual components)
+    // Pass the newTimeDate to addTimeSlotAction
     const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
 
     if (typeof result === 'string') {
