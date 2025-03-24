@@ -361,6 +361,7 @@ export const AddTimeSlotPopover = ({
   date,
   existingTimeSlots,
 }: AddTimeSlotPopoverProps) => {
+  console.log('🚀 AddTimeSlotPopover ~ date:', date);
   const {
     handleSubmit,
     reset,
@@ -408,11 +409,13 @@ export const AddTimeSlotPopover = ({
 
     const [newHours, newMinutes] = timeInput.split(':').map(Number);
 
-    // Calculate time in milliseconds from hours and minutes
-    const timeInMilliseconds = (newHours * 60 + newMinutes) * 60 * 1000;
+    // Get year, month, day from the 'date' object (which is start of day in UTC)
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth(); // getUTCMonth() returns month index (0-11)
+    const day = date.getUTCDate();
 
-    // Create newTimeDate by adding milliseconds to the 'date' object (which is UTC start-of-day)
-    const newTimeDate = new Date(date.getTime() + timeInMilliseconds);
+    // Create newTimeDate using individual components (local time interpretation assumed)
+    const newTimeDate = new Date(year, month, day, newHours, newMinutes);
 
     if (existingTimeSlots.length > 0) {
       for (const existingSlot of existingTimeSlots) {
@@ -440,9 +443,9 @@ export const AddTimeSlotPopover = ({
     console.log(
       'AddTimeSlotPopover - newTimeDate (before action):',
       newTimeDate.toISOString()
-    );
+    ); // Log newTimeDate
 
-    // Pass newTimeDate (now directly manipulated UTC Date with added time)
+    // Use newTimeDate (constructed with individual components)
     const result = await addTimeSlotAction(newTimeDate, timeInput, timeZone);
 
     if (typeof result === 'string') {
