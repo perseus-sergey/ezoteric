@@ -69,13 +69,15 @@ export const addTimeSlotAction = async (
   console.log('🚀 ~ addTimeSlotAction ~ timeZone:', timeZone);
   try {
     const [hours, minutes] = time.split(':').map(Number);
+    const addedMinutes = hours * 60 + minutes;
+
     // const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
     const meetDateTime = new Date(date); // Клонуємо дату, щоб уникнути мутації
     console.log(
       '🚀 ~ meetDateTime - before setHours:',
       meetDateTime.toISOString()
     );
-    meetDateTime.setHours(hours, minutes, 0, 0); // Встановлюємо час для дати
+    meetDateTime.setMinutes(meetDateTime.getMinutes() + addedMinutes);
 
     // Перетворюємо meetDateTime в UTC, враховуючи часовий пояс
     // const utcMeetDateTime = fromZonedTime(meetDateTime, timeZone);
