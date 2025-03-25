@@ -3,4 +3,4 @@
 export const getUserTimeZone = () =>
   Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-// export const getUserTimeZone = () => 'Europe/Athens';
+export const getAvailableTimeZones = () => Intl.supportedValuesOf('timeZone'); // Отримуємо список часових поясів

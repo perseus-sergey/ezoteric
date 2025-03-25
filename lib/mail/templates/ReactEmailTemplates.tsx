@@ -6,7 +6,11 @@ import { Column, Heading, Link, Row, Text } from '@react-email/components';
 import { format } from 'date-fns';
 import { uk, enUS } from 'date-fns/locale';
 import { ReactEmailLayout } from './ReactEmailLayout';
-import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
+import {
+  formatDateLocal,
+  formatTimeLocal,
+  getTimezoneWithOffsetStr,
+} from '@/lib/utils/formatDate';
 import { SCHEDULE_EMAIL } from '@/models/scheduleEmail.model';
 
 interface MailMeetBookToUserProps {
@@ -22,6 +26,7 @@ const {
   dateCaption,
   team,
   timeCaption,
+  timeZoneCaption,
   questionCaption,
   additionalQuestion,
   autoGenerate,
@@ -67,6 +72,10 @@ export const MailMeetBookToUser = ({
             {getTitleDescription(DEFAULT_META_OG.siteName)[lang]}
           </Heading>
 
+          <Text style={paragraph}>
+            <b>{timeZoneCaption[lang]}: </b>
+            {getTimezoneWithOffsetStr(timeZone)}
+          </Text>
           <Text style={paragraph}>
             <b>{dateCaption[lang]}: </b>
             {meetDateFormatted}
@@ -158,6 +167,11 @@ export const MailMeetBookAdmin = ({
             <b>Час: </b>
             {meetTimeFormatted}
           </Text>
+          <Text style={paragraph}>
+            <b>Часовий пояс користувача: </b>
+            {getTimezoneWithOffsetStr(timeZone)}
+          </Text>
+
           <Text style={{ ...paragraph, marginTop: -5 }}>
             <b>Питання користувача: </b>
             {meetData.question}

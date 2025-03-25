@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils/utils';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -57,6 +58,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 const formatDate = (date: Date) =>
   formatDateLocal(date, ELanguage.UA, timeZone);
@@ -299,68 +301,6 @@ export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
   );
 };
 
-// export const AddDateDialog = ({ existingDates }: AddDateDialogProps) => {
-//   const [date, setDate] = useState<Date>(); // UTC date
-//   const [error, setError] = useState<string | null>(null);
-//   const [open, setOpen] = useState(false);
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const handleConfirm = async () => {
-//     setError(null);
-
-//     if (!date) {
-//       setError('Будь ласка, виберіть дату.');
-//       return;
-//     }
-
-//     const isDateExists = existingDates.some(
-//       (existingDate) =>
-//         format(existingDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-//     );
-//     if (isDateExists) {
-//       setError('Ця дата вже існує в графіку.');
-//       return;
-//     }
-
-//     const newTimeDate = new Date(date);
-//     newTimeDate.setHours(newTimeDate.getHours() + 12);
-
-//     setIsLoading(true);
-
-//     const result = await addTimeSlotAction(newTimeDate);
-
-//     if (typeof result === 'string') {
-//       toast.error(result);
-//     } else {
-//       toast.success(`Дату ${formatDate(date)} успішно додано.`);
-//     }
-
-//     setOpen(false);
-//     setError(null);
-//     setDate(undefined);
-//     setIsLoading(false);
-//   };
-
-//   return (
-//     <Popover open={open} onOpenChange={setOpen}>
-//       <PopoverTrigger>Додати Дату</PopoverTrigger>
-//       <PopoverContent className="w-fit sm:max-w-[425px] space-y-4">
-//         <Calendar
-//           mode="single"
-//           selected={date}
-//           onSelect={setDate}
-//           showOutsideDays={false}
-//           className="rounded-md border"
-//         />
-//         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-//         <Button type="button" onClick={handleConfirm} disabled={isLoading}>
-//           Підтвердити
-//         </Button>
-//       </PopoverContent>
-//     </Popover>
-//   );
-// };
-
 interface AddTimeSlotPopoverProps {
   date: Date;
   existingTimeSlots: TSchedule[];
@@ -580,10 +520,6 @@ export const DeleteTimeSlotButton = ({
     }
   };
 
-  const handleCancelDelete = () => {
-    setIsConfirmationOpen(false);
-  };
-
   return (
     <>
       <Button
@@ -601,7 +537,6 @@ export const DeleteTimeSlotButton = ({
         open={isConfirmationOpen}
         onOpenChange={setIsConfirmationOpen}
         onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
         message="Ви впевнені, що хочете видалити цей час прийому? Для цього часу вже є запис."
       />
     </>
@@ -612,7 +547,6 @@ interface ConfirmationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  onCancel: () => void;
   message: string;
 }
 
@@ -620,7 +554,6 @@ const ConfirmationDialog = ({
   open,
   onOpenChange,
   onConfirm,
-  onCancel,
   message,
 }: ConfirmationDialogProps) => {
   return (
@@ -628,14 +561,14 @@ const ConfirmationDialog = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Підтвердження видалення</DialogTitle>
+          <DialogDescription>{message}</DialogDescription>
         </DialogHeader>
-        <div>
-          <p className="mb-4">{message}</p>
-        </div>
         <DialogFooter>
-          <Button type="button" variant="secondary" onClick={onCancel}>
-            Скасувати
-          </Button>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Скасувати
+            </Button>
+          </DialogClose>
           <Button type="button" variant="destructive" onClick={onConfirm}>
             Підтвердити видалення
           </Button>

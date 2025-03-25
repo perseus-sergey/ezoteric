@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -38,14 +38,19 @@ import {
   SCHEDULE_PAGE,
   DEFAULT_QUESTIONS,
 } from '@/models/schedule.model';
+
 import { TSchedule } from '@/db/schema';
 import { LoadingAnimated } from '@/svg/LoadingAnimated';
 import { CalendarPlus, Check, ChevronsUpDown } from 'lucide-react';
 import { bookAppointmentAction } from '@/actions/schedule.actions';
 import { ELanguage } from '@/models/language.model';
-import { formatDateLocal, formatTimeLocal } from '@/lib/utils/formatDate';
+import {
+  formatDateLocal,
+  formatTimeLocal,
+  getTimezoneWithOffsetStr,
+} from '@/lib/utils/formatDate';
 import { cn } from '@/lib/utils/utils';
-import { getUserTimeZone } from '@/lib/utils/clientDate';
+import { getAvailableTimeZones, getUserTimeZone } from '@/lib/utils/clientDate';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
 
 const {
@@ -76,7 +81,8 @@ interface AppointmentBookingFormProps {
   lang: ELanguage;
 }
 
-const timeZone = getUserTimeZone();
+const initialTimeZone = getUserTimeZone();
+const timeZones = getAvailableTimeZones();
 
 const dirtyValidate = {
   shouldDirty: true,
@@ -88,12 +94,17 @@ const AppointmentBookingForm = ({
   userEmail,
   lang,
 }: AppointmentBookingFormProps) => {
+  const [selectedTimeZone, setSelectedTimeZone] =
+    useState<string>(initialTimeZone);
   const [schedule, setSchedule] = useState<IScheduleEntry[]>(
-    groupScheduleByDate(initialSchedule, timeZone)
+    groupScheduleByDate(initialSchedule, selectedTimeZone)
   );
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TSchedule | null>(
     null
-  ); // Стан для обраного часу сеансів
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [openTimeZonePopover, setOpenTimeZonePopover] = useState(false);
+  const [timezoneSearchValue, setTimezoneSearchValue] = useState('');
 
   const form = useForm<TAppointmentFormValues>({
     resolver: zodResolver(getAppointmentSchema(lang)),
@@ -117,7 +128,9 @@ const AppointmentBookingForm = ({
 
   const bookFormTitleRef = useRef<HTMLHeadingElement>(null);
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setSchedule(groupScheduleByDate(initialSchedule, selectedTimeZone));
+  }, [initialSchedule, selectedTimeZone]);
 
   useEffect(() => {
     if (selectedTimeSlot && bookFormTitleRef.current) {
@@ -132,21 +145,29 @@ const AppointmentBookingForm = ({
     setIsLoading(true);
     try {
       clearErrors();
-      const bookingResult = await bookAppointmentAction(data, lang, timeZone);
+      const bookingResult = await bookAppointmentAction(
+        data,
+        lang,
+        selectedTimeZone
+      );
 
       if (bookingResult.success) {
         toast.success(toastSuccessBooking.title[lang], {
           description: `${toastSuccessBooking.description[lang]} ${formatTimeLocal(
             selectedTimeSlot!.meetDate,
-            timeZone
-          )} ${formatDateLocal(selectedTimeSlot!.meetDate, lang, timeZone)}.`,
+            selectedTimeZone
+          )} ${formatDateLocal(selectedTimeSlot!.meetDate, lang, selectedTimeZone)}.`,
         });
 
         setSchedule((prevSchedule) =>
           prevSchedule.map((daySchedule) => {
             if (
-              formatDateLocal(daySchedule.meetDate, lang, timeZone) ===
-              formatDateLocal(selectedTimeSlot!.meetDate, lang, timeZone)
+              formatDateLocal(daySchedule.meetDate, lang, selectedTimeZone) ===
+              formatDateLocal(
+                selectedTimeSlot!.meetDate,
+                lang,
+                selectedTimeZone
+              )
             ) {
               return {
                 ...daySchedule,
@@ -182,6 +203,15 @@ const AppointmentBookingForm = ({
     clearErrors('selectedTimeSlotId'); // Очищаємо помилку вибору часу, якщо вона була
   };
 
+  const formatDate = (date: Date) =>
+    formatDateLocal(date, lang, selectedTimeZone);
+  const formatTime = (date: Date) => formatTimeLocal(date, selectedTimeZone);
+
+  const filteredTimeZones = useMemo(() => {
+    const search = timezoneSearchValue.toLowerCase();
+    return timeZones.filter((zone) => zone.toLowerCase().includes(search));
+  }, [timezoneSearchValue]);
+
   return (
     <Form {...form}>
       <form
@@ -189,17 +219,62 @@ const AppointmentBookingForm = ({
         className="grid gap-6 justify-center"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 className="text-xl font-semibold ">
             {availableSlotsCaption[lang]}
           </h2>
+
+          <Popover
+            open={openTimeZonePopover}
+            onOpenChange={setOpenTimeZonePopover}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openTimeZonePopover}
+                className={cn(
+                  'w-fit max-w-[300px] my-3 justify-between',
+                  !selectedTimeZone && 'text-muted-foreground'
+                )}
+              >
+                {getTimezoneWithOffsetStr(selectedTimeZone)}
+                <ChevronsUpDown className="opacity-50 size-4 ml-2" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit max-w-[300px] p-0">
+              <Command>
+                <CommandInput
+                  placeholder="Пошук часового поясу..."
+                  className="h-9"
+                  value={timezoneSearchValue}
+                  onValueChange={setTimezoneSearchValue}
+                />
+                <CommandList>
+                  <CommandEmpty>Не знайдено часових поясів.</CommandEmpty>
+                  <CommandGroup>
+                    {filteredTimeZones.map((zone) => (
+                      <CommandItem
+                        key={zone}
+                        value={zone}
+                        onSelect={() => {
+                          setSelectedTimeZone(zone);
+                          setOpenTimeZonePopover(false);
+                          setTimezoneSearchValue('');
+                        }}
+                      >
+                        {getTimezoneWithOffsetStr(zone)}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+
           <ScrollArea className="h-[300px] w-full rounded-md border bg-tertiary">
             <div className="p-2 sm:p-6 space-y-4">
               {schedule.map((daySchedule) => {
-                const formattedDate = formatDateLocal(
-                  daySchedule.meetDate,
-                  lang,
-                  timeZone
-                );
+                const formattedDate = formatDate(daySchedule.meetDate);
 
                 return (
                   <div key={formattedDate}>
@@ -214,7 +289,7 @@ const AppointmentBookingForm = ({
                           className={`justify-center ${selectedTimeSlot?.id === timeSlot.id ? 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground' : ''}`}
                           onClick={() => handleTimeSlotSelect(timeSlot)}
                         >
-                          {formatTimeLocal(timeSlot.meetDate, timeZone)}
+                          {formatTime(timeSlot.meetDate)}
                         </Button>
                       ))}
                       {daySchedule.times.length === 0 && (
@@ -242,6 +317,7 @@ const AppointmentBookingForm = ({
 
         {selectedTimeSlot && (
           <>
+            {/* Form fields for name, question, submit button, and description remain the same */}
             <h2
               id="book-form"
               className="text-xl font-semibold text-center py-4"
@@ -335,7 +411,7 @@ const AppointmentBookingForm = ({
             <Button
               type="submit"
               className="w-full md:w-fit"
-              disabled={!form.formState.isDirty}
+              disabled={!form.formState.isDirty || isLoading}
             >
               {submitButton[lang]}
               {isLoading ? (
@@ -348,8 +424,8 @@ const AppointmentBookingForm = ({
             <FormDescription>
               {confirmationTimeCaption[lang]}{' '}
               <b>
-                {formatTimeLocal(selectedTimeSlot.meetDate, timeZone)}{' '}
-                {formatDateLocal(selectedTimeSlot.meetDate, lang, timeZone)}
+                {formatTime(selectedTimeSlot.meetDate)}{' '}
+                {formatDate(selectedTimeSlot.meetDate)}
               </b>
               <br />
               {forEmail[lang]} <b>{userEmail}</b>

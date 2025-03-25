@@ -27,6 +27,10 @@ export const SCHEDULE_EMAIL = {
     [UA]: 'Час',
     [EN]: 'Time',
   },
+  timeZoneCaption: {
+    [UA]: 'Часовий пояс',
+    [EN]: 'Time zone',
+  },
   questionCaption: {
     [UA]: 'Ваше питання',
     [EN]: 'Your question',
