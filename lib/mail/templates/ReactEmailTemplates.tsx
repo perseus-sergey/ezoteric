@@ -12,6 +12,7 @@ import {
   getTimezoneWithOffsetStr,
 } from '@/lib/utils/formatDate';
 import { SCHEDULE_EMAIL } from '@/models/scheduleEmail.model';
+import { toZonedTime } from 'date-fns-tz';
 
 interface MailMeetBookToUserProps {
   subject: string;
@@ -132,8 +133,8 @@ export const MailMeetBookAdmin = ({
   lang,
   timeZone,
 }: MailMeetBookToUserProps) => {
-  const meetDateFormatted = formatDateLocal(meetData.meetDate, lang, timeZone);
-  const meetTimeFormatted = formatTimeLocal(meetData.meetDate, timeZone);
+  const gmtDate = toZonedTime(meetData.meetDate, 'GMT');
+  const formattedGmtDate = format(gmtDate, 'yyyy-MM-dd HH:mm');
 
   return (
     <ReactEmailLayout subject={subject}>
@@ -161,11 +162,7 @@ export const MailMeetBookAdmin = ({
 
           <Text style={paragraph}>
             <b>На дату: </b>
-            {meetDateFormatted}
-          </Text>
-          <Text style={paragraph}>
-            <b>Час: </b>
-            {meetTimeFormatted}
+            {formattedGmtDate} (GMT)
           </Text>
           <Text style={paragraph}>
             <b>Часовий пояс користувача: </b>

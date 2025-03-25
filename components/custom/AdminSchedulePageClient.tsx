@@ -91,8 +91,6 @@ export const ScheduleAdminTable = ({
 
             return daySchedule.times.length > 0 ? (
               daySchedule.times.map((timeSlot, index) => {
-                const formattedTime = formatTime(timeSlot.meetDate);
-
                 return (
                   <TableRow
                     key={timeSlot.id}
@@ -113,20 +111,14 @@ export const ScheduleAdminTable = ({
                         />
                       </TableCell>
                     )}
+
                     <TableCell className="w-20">
-                      <Popover>
-                        <PopoverTrigger className="flex items-center w-full justify-between">
-                          {formattedTime}
-                          <MoreVertical className="size-4 opacity-40" />
-                        </PopoverTrigger>
-                        <PopoverContent className="w-fit">
-                          <DeleteTimeSlotButton
-                            date={daySchedule.meetDate}
-                            timeSlot={timeSlot}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <DeleteTimeSlotButton
+                        date={daySchedule.meetDate}
+                        timeSlot={timeSlot}
+                      />
                     </TableCell>
+
                     <TableCell>
                       {timeSlot.userName && (
                         <Popover>
@@ -476,8 +468,11 @@ export const DeleteTimeSlotButton = ({
 }: DeleteTimeSlotButtonProps) => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const handleDelete = async () => {
+    setPopoverOpen(false);
+
     if (timeSlot.email) {
       setIsConfirmationOpen(true); // Open confirmation if email exists
     } else {
@@ -522,16 +517,24 @@ export const DeleteTimeSlotButton = ({
 
   return (
     <>
-      <Button
-        variant="destructive"
-        className="flex items-center gap-4 w-fit"
-        onClick={handleDelete}
-        disabled={isLoading}
-      >
-        Видалити час
-        <Trash2 className="size-4" />
-        <span className="sr-only">Видалити</span>
-      </Button>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverTrigger className="flex items-center w-full justify-between">
+          {formatTime(timeSlot.meetDate)}
+          <MoreVertical className="size-4 opacity-40" />
+        </PopoverTrigger>
+        <PopoverContent className="w-fit">
+          <Button
+            variant="destructive"
+            className="flex items-center gap-4 w-fit"
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            Видалити час
+            <Trash2 className="size-4" />
+            <span className="sr-only">Видалити</span>
+          </Button>
+        </PopoverContent>
+      </Popover>
 
       <ConfirmationDialog
         open={isConfirmationOpen}
