@@ -1,18 +1,20 @@
+'use client';
+
+import React from 'react';
+
 const SpotifyPlayer = ({ trackId }: { trackId?: string | null }) => {
-  return (
-    trackId && (
-      <iframe
-        style={{ borderRadius: '12px' }}
-        src={`https://open.spotify.com/embed/track/${trackId}?utm_source=generator`}
-        width="100%"
-        height="152"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        sandbox="allow-scripts allow-same-origin"
-        allowFullScreen
-        loading="lazy"
-      />
-    )
-  );
+  return trackId ? (
+    <div
+      data-service="spotify"
+      data-id={trackId}
+      style={{ borderRadius: '12px', overflow: 'hidden' }} // Важливо для borderRadius
+    >
+      {/* Placeholder контент (необов'язково) - можна додати, наприклад, зображення або текст, який буде видно до завантаження iframe */}
+      <div data-placeholder>
+        <p>Завантаження Spotify плеєра...</p>
+      </div>
+    </div>
+  ) : null;
 };
 
 export default SpotifyPlayer;

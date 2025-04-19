@@ -2,6 +2,8 @@ import React from 'react';
 import { ELanguage } from './language.model';
 import { DEFAULT_META_OG } from './root.model';
 import SeoSVG from '@/components/custom/SeoSVG';
+import { META_COOKIE, META_PRIVACY, META_TERMS } from './policy.model';
+import { ESegment } from './url.model';
 
 const { UA, EN } = ELanguage;
 
@@ -190,28 +192,6 @@ export const SIDEBAR = {
   },
 };
 
-export const FOOTER_MODEL = {
-  title: { [UA]: `Контакти`, [EN]: 'Contact Us' },
-  description: {
-    [UA]: `Зв'яжіться з нами:`,
-    [EN]: `Get in touch with us:`,
-  },
-  phone: {
-    caption: { [UA]: 'Телефон', [EN]: 'Phone' },
-    ariaLabel: {
-      [UA]: 'Зателефонувати нам',
-      [EN]: 'Call us',
-    },
-  },
-
-  mail: {
-    ariaLabel: {
-      [UA]: 'Надіслати нам листа',
-      [EN]: 'Send us an email',
-    },
-  },
-};
-
 export const MEET_DIALOG = {
   linkCaption: {
     [UA]: 'Замовити Сеанс',
@@ -232,5 +212,59 @@ export const MEET_DIALOG = {
   providerCaption: {
     [UA]: 'Авторизуватись через:',
     [EN]: 'Login via:',
+  },
+};
+
+export const FOOTER_POLICIES = {
+  [UA]: [
+    {
+      caption: `Політика Конфіденційності`,
+      description: META_PRIVACY[UA].description,
+      href: `/${UA}/${ESegment.PRIVACY_POLICY}`,
+    },
+    {
+      caption: `Використання файлів cookie`,
+      description: META_COOKIE[UA].description,
+      href: `/${UA}/${ESegment.COOKIE_POLICY}`,
+    },
+    {
+      caption: `Правила та Умови`,
+      description: META_TERMS[UA].description,
+      href: `/${UA}/${ESegment.TERMS_AND_CONDITIONS}`,
+    },
+  ],
+  [EN]: [
+    {
+      caption: `Privacy Policy`,
+      description: META_PRIVACY[EN].description,
+      href: `/${EN}/${ESegment.PRIVACY_POLICY}`,
+    },
+    {
+      caption: `Cookie Policy`,
+      description: META_COOKIE[EN].description,
+      href: `/${EN}/${ESegment.COOKIE_POLICY}`,
+    },
+    {
+      caption: `Terms and Conditions`,
+      description: META_TERMS[EN].description,
+      href: `/${EN}/${ESegment.TERMS_AND_CONDITIONS}`,
+    },
+  ],
+};
+
+export const MANAGE_COOKIE_BTN = {
+  [EN]: {
+    caption: `Manage cookie preferences`,
+    description: 'Open cookie settings management form',
+  },
+  [UA]: {
+    caption: `Керування налаштуваннями cookie`,
+    description: `Відкрити форму керування налаштуваннями файлів cookie`,
+  },
+};
+
+export const FOOTER_MODEL = {
+  policies: {
+    title: { [UA]: `Безпека`, [EN]: 'Safety' },
   },
 };

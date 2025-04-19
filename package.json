@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
+    "dev-turbo": "next dev --turbo",
     "build": "tsx db/migrate && next build",
     "d:generate": "npx drizzle-kit generate",
     "d:migrate": "tsx db/migrate",
@@ -84,6 +85,7 @@
     "tinymce": "^7.6.0",
     "use-debounce": "^10.0.4",
     "usehooks-ts": "^3.1.0",
+    "vanilla-cookieconsent": "3.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

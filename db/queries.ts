@@ -12,6 +12,7 @@ import { convertToUIMessages } from '@/lib/utils/utils';
 
 const db = getDB();
 
+// Not used anywhere
 export async function getUser(email: string): Promise<Array<TUser>> {
   try {
     return await db.select().from(user).where(eq(user.email, email)).limit(1);
@@ -21,6 +22,7 @@ export async function getUser(email: string): Promise<Array<TUser>> {
   }
 }
 
+// Not used anywhere
 export async function createUser(
   email: string,
   password: string,

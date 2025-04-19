@@ -20,7 +20,6 @@ import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getImageSrc } from '@/controllers/articles.controller';
 import ValidImage from '@/components/custom/ValidImage';
-import SpotifyPlayer from '@/components/custom/SpotifyPlayer';
 import EditPostLink from '@/components/custom/EditPostLink';
 import { getTestBySlug, updateTestView } from '@/db/queriesTests';
 import { Badge } from '@/components/ui/badge';
@@ -88,7 +87,7 @@ export default async function Page({ params }: { params: TParams }) {
     completedCount,
     id,
     published,
-    spotifyId,
+    // spotifyId,
     category,
   } = test;
 
@@ -141,7 +140,7 @@ export default async function Page({ params }: { params: TParams }) {
             {...TEST_IMG.size}
           />
 
-          {spotifyId && (
+          {/* {spotifyId && (
             <motion.div
               initial={{ opacity: 0, x: -200 }}
               whileInView={{ opacity: 0.6, x: 0 }}
@@ -156,7 +155,7 @@ export default async function Page({ params }: { params: TParams }) {
             >
               <SpotifyPlayer trackId={spotifyId} />
             </motion.div>
-          )}
+          )} */}
         </div>
       )}
 

@@ -1,5 +1,3 @@
-import * as motion from 'motion/react-client';
-
 import BottomInfoPanel from '@/components/custom/BottomInfoPanel';
 import DangerHtml from '@/components/custom/DangerHtml';
 import TextUnderH1 from '@/components/custom/TextUnderH1';
@@ -25,7 +23,6 @@ import { generatePostJsonLd } from '@/lib/utils/generatePostJsonLd';
 import { INFO_PANEL_CAPTION } from '@/models/infoPanel.model';
 import { getImageSrc } from '@/controllers/articles.controller';
 import ValidImage from '@/components/custom/ValidImage';
-import SpotifyPlayer from '@/components/custom/SpotifyPlayer';
 import EditPostLink from '@/components/custom/EditPostLink';
 import TagList from '@/components/custom/TagList';
 import SimilarArticlesBlock from '@/components/custom/SimilarArticlesBlock';
@@ -90,7 +87,7 @@ export default async function Page({ params }: { params: TParams }) {
     viewCount,
     id,
     published,
-    spotifyId,
+    // spotifyId,
     articleTags,
   } = article;
 
@@ -145,22 +142,25 @@ export default async function Page({ params }: { params: TParams }) {
             {...ARTICLE_IMG.size}
           />
 
-          {spotifyId && (
-            <motion.div
-              initial={{ opacity: 0, x: -200 }}
-              whileInView={{ opacity: 0.6, x: 0 }}
-              exit={{ opacity: 0, x: -200 }}
-              transition={{ duration: 0.5 }}
-              whileHover={{
-                opacity: 0.9,
-                width: '50%',
-                transition: { duration: 0.2 },
-              }}
-              className="absolute bottom-0 left-0 p-1"
-            >
-              <SpotifyPlayer trackId={spotifyId} />
-            </motion.div>
-          )}
+          {/* {spotifyId && (
+            <>
+              <IframeManagerComponent lang={lang} />
+              <motion.div
+                initial={{ opacity: 0, x: -200 }}
+                whileInView={{ opacity: 0.6, x: 0 }}
+                exit={{ opacity: 0, x: -200 }}
+                transition={{ duration: 0.5 }}
+                whileHover={{
+                  opacity: 0.9,
+                  width: '50%',
+                  transition: { duration: 0.2 },
+                }}
+                className="absolute bottom-0 left-0 p-1"
+              >
+                <SpotifyPlayer trackId={spotifyId} />
+              </motion.div>
+            </>
+          )} */}
         </div>
       )}
 

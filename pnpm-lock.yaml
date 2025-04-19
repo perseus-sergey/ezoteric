@@ -196,6 +196,9 @@ importers:
       usehooks-ts:
         specifier: ^3.1.0
         version: 3.1.0(react@19.0.0-rc-7771d3a7-20240827)
+      vanilla-cookieconsent:
+        specifier: 3.1.0
+        version: 3.1.0
       zod:
         specifier: ^3.23.8
         version: 3.24.1
@@ -7115,6 +7118,12 @@ packages:
         integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==,
       }
 
+  vanilla-cookieconsent@3.1.0:
+    resolution:
+      {
+        integrity: sha512-/McNRtm/3IXzb9dhqMIcbquoU45SzbN2VB+To4jxEPqMmp7uVniP6BhGLjU8MC7ZCDsNQVOp27fhQTM/ruIXAA==,
+      }
+
   vfile-message@4.0.2:
     resolution:
       {
@@ -11886,6 +11895,8 @@ snapshots:
       react: 19.0.0-rc-7771d3a7-20240827
 
   util-deprecate@1.0.2: {}
+
+  vanilla-cookieconsent@3.1.0: {}
 
   vfile-message@4.0.2:
     dependencies:
