@@ -13,6 +13,8 @@ export interface ISiteAddress {
   country: string;
 }
 
+export const IS_SITE_ADDRESS_SHOWED = false;
+
 export const siteAddress: Record<ELanguage, ISiteAddress> = {
   [EN]: {
     street: 'Shevchnko',

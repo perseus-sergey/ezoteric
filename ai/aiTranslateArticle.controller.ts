@@ -9,24 +9,68 @@ import { z } from 'zod';
 export const aiTranslateArticle = async (contentUa: string) => {
   const { object } = await generateObject({
     model: geminiFlashModel,
-    system: `
+    system: `## 🔄 General Instructions
+
 Translate the Ukrainian content into English.
-Ensure that only the text content inside the tags and the relevant attribute values (e.g., alt, aria-label) are translated, leaving the tags and structure unchanged.
 
-Translate the text content while keeping all HTML tags and formatting as is. Translate any text inside alt attributes of images.
+- Ensure that only the **text content inside the tags** and the relevant **attribute values** (e.g., 'alt', 'aria-label') are translated.
+- Leave the **HTML tags and structure unchanged**.
+- Translate the **text content** while preserving all formatting.
 
-If any internal links in the format "/uk/blog/article-name" or "/uk/tests/test-name" are found, replace "/uk" with "/en", so that the translated version points to the correct English URL, e.g.:
+---
 
-- "/uk/blog/article-name" → "/en/blog/article-name"
-- "/uk/tests/test-name" → "/en/tests/test-name"
+## 🔗 Internal Links Handling
 
-When translating, adapt the text to match the mentality, cultural background, and expectations of an English-speaking audience. This includes:
+If any internal links are found in the format:
 
-Adjusting names and surnames to be more familiar to English-speaking users if appropriate.
-Adapting expressions, idioms, and cultural references to be more relatable to English speakers.
-Ensuring that the tone, style, and formality of the text align with natural English communication patterns.
-Maintain the essence and meaning of the original content while ensuring the translation feels natural and engaging to an English-speaking reader.
-  `,
+- '/uk/blog/article-name'
+- '/uk/tests/test-name'
+
+Replace '/uk' with '/en', so that the translated version points to the correct English URL:
+
+- '/uk/blog/article-name' → '/en/blog/article-name'
+- '/uk/tests/test-name' → '/en/tests/test-name'
+
+---
+
+## 🌍 Cultural and Language Adaptation
+
+When translating, adapt the text to match the **mentality, cultural background, and expectations** of an English-speaking audience:
+
+- Use **names and surnames** that are more familiar to English-speaking users, if appropriate.
+- Adapt **expressions, idioms, and cultural references** to be more relatable to English readers.
+- Adjust **tone, style, and formality** to align with natural English communication norms.
+- Ensure the result feels **natural and engaging**, not overly literal.
+
+---
+
+## 🧠 Special Cases: Cultural Systems like Numerology or Alphabets
+
+If the content includes:
+
+- **Tables or descriptions of number-letter associations** using the **Ukrainian alphabet** (e.g., Pythagorean numerology),
+- **Culturally specific naming or symbolic systems**,
+
+Then do the following:
+
+- **Do not transliterate or translate the Cyrillic letters literally**.
+- Instead, **adapt or replace** the table or logic with the **English equivalent** (e.g., Latin alphabet Pythagorean numerology).
+- Add **explanatory text if needed**, such as:
+  
+  > “In English-speaking contexts, the Pythagorean system assigns numbers to letters as follows…”
+
+- Ensure clarity and cultural relevance for readers unfamiliar with Cyrillic.
+
+---
+
+## ✅ Goal
+
+The final result should:
+
+- Retain **original HTML structure**
+- Be a **natural, culturally adapted English version**
+- Be ready to use in an **English-facing website or blog**
+`,
     schema: z.object({
       translatedHtml: z
         .string()

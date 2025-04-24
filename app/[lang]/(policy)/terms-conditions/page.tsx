@@ -7,7 +7,11 @@ import { ELanguage } from '@/models/language.model';
 import { DEFAULT_META_OG, SITE_DOMAIN } from '@/models/root.model';
 import SeoLink from '@/components/custom/SeoLink';
 import { Metadata } from 'next';
-import { META_TERMS, siteAddress } from '@/models/policy.model';
+import {
+  IS_SITE_ADDRESS_SHOWED,
+  META_TERMS,
+  siteAddress,
+} from '@/models/policy.model';
 import { SiteAddress } from '@/components/custom/SiteAddress';
 
 export const revalidate = 2592000; // 3600 * 24 * 30 invalidate cache every month
@@ -67,20 +71,18 @@ export default async function Page({ params }: { params: TParams }) {
             УГОДА ЩОДО НАШИХ ЮРИДИЧНИХ УМОВ
           </h2>
           <p className="mb-4">
-            Ми{' '}
-            {siteLegalName
-              ? `- ${siteLegalName}`
-              : 'ведемо діяльність як фізична особа'}{' '}
-            ("<strong>Компанія</strong>", "<strong>ми</strong>", "
-            <strong>нас</strong>", "<strong>наш</strong>"),
-            {siteLegalName
-              ? ` компанія, зареєстрована в Україні за адресою:`
-              : ` що базується в Україні за адресою:`}
+            Ми - {siteLegalName} ("<strong>Компанія</strong>", "
+            <strong>ми</strong>", "<strong>нас</strong>", "<strong>наш</strong>
+            ")
+            {IS_SITE_ADDRESS_SHOWED &&
+              `, компанія, зареєстрована в Україні за адресою:`}
           </p>
-          <SiteAddress
-            siteLegalName={siteLegalName}
-            siteAddress={siteAddress[lang]}
-          />
+          {IS_SITE_ADDRESS_SHOWED && (
+            <SiteAddress
+              siteLegalName={siteLegalName}
+              siteAddress={siteAddress[lang]}
+            />
+          )}
 
           <p className="mb-4">
             Ми керуємо веб-сайтом{' '}
@@ -1262,21 +1264,18 @@ export default async function Page({ params }: { params: TParams }) {
           <h2 className="text-xl font-semibold my-4">
             AGREEMENT TO OUR LEGAL TERMS
           </h2>
+
           <p className="mb-4">
-            We are{' '}
-            {siteLegalName
-              ? `${siteLegalName}`
-              : 'operating as an individual entity'}{' '}
-            ("<strong>Company</strong>," "<strong>we</strong>," "
-            <strong>us</strong>," "<strong>our</strong>"),
-            {siteLegalName
-              ? ` a company registered in Ukraine at:`
-              : ` based in Ukraine at:`}
+            We are {siteLegalName} ("<strong>Company</strong>," "
+            <strong>we</strong>," "<strong>us</strong>," "<strong>our</strong>")
+            {IS_SITE_ADDRESS_SHOWED && `, a company registered in Ukraine at:`}
           </p>
-          <SiteAddress
-            siteLegalName={siteLegalName}
-            siteAddress={siteAddress[lang]}
-          />
+          {IS_SITE_ADDRESS_SHOWED && (
+            <SiteAddress
+              siteLegalName={siteLegalName}
+              siteAddress={siteAddress[lang]}
+            />
+          )}
 
           <p className="mb-4">
             We operate the website{' '}

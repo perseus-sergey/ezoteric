@@ -7,7 +7,11 @@ import { ELanguage } from '@/models/language.model';
 import { DEFAULT_META_OG, SITE_DOMAIN } from '@/models/root.model';
 import SeoLink from '@/components/custom/SeoLink';
 import { Metadata } from 'next';
-import { META_PRIVACY, siteAddress } from '@/models/policy.model';
+import {
+  IS_SITE_ADDRESS_SHOWED,
+  META_PRIVACY,
+  siteAddress,
+} from '@/models/policy.model';
 import { SiteAddress } from '@/components/custom/SiteAddress';
 
 export const revalidate = 2592000; // 3600 * 24 * 30 invalidate cache every month
@@ -2171,13 +2175,16 @@ export default async function Page({ params }: { params: TParams }) {
                 className="text-blue-500 hover:underline"
               >
                 {siteMail}
-              </SeoLink>{' '}
-              або зв'язатися з нами поштою за адресою:
+              </SeoLink>
+              {IS_SITE_ADDRESS_SHOWED &&
+                ` або зв'язатися з нами поштою за адресою:`}
             </p>
-            <SiteAddress
-              siteLegalName={siteLegalName}
-              siteAddress={siteAddress[lang]}
-            />
+            {IS_SITE_ADDRESS_SHOWED && (
+              <SiteAddress
+                siteLegalName={siteLegalName}
+                siteAddress={siteAddress[lang]}
+              />
+            )}
           </section>
 
           <section id="request">
@@ -4300,13 +4307,15 @@ export default async function Page({ params }: { params: TParams }) {
                 className="text-blue-500 hover:underline"
               >
                 {siteMail}
-              </SeoLink>{' '}
-              or contact us by post at:
+              </SeoLink>
+              {IS_SITE_ADDRESS_SHOWED && ` or contact us by post at:`}
             </p>
-            <SiteAddress
-              siteLegalName={siteLegalName}
-              siteAddress={siteAddress[lang]}
-            />
+            {IS_SITE_ADDRESS_SHOWED && (
+              <SiteAddress
+                siteLegalName={siteLegalName}
+                siteAddress={siteAddress[lang]}
+              />
+            )}
           </section>
 
           {/* Section 20: HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU? */}

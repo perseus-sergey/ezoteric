@@ -135,6 +135,10 @@ export const MailMeetBookAdmin = ({
 }: MailMeetBookToUserProps) => {
   const gmtDate = toZonedTime(meetData.meetDate, 'GMT');
   const formattedGmtDate = format(gmtDate, 'yyyy-MM-dd HH:mm');
+  const formattedKievDate = format(
+    toZonedTime(meetData.meetDate, 'Europe/Kiev'),
+    'yyyy-MM-dd HH:mm'
+  );
 
   return (
     <ReactEmailLayout subject={subject}>
@@ -161,8 +165,12 @@ export const MailMeetBookAdmin = ({
           </Text>
 
           <Text style={paragraph}>
-            <b>На дату: </b>
-            {formattedGmtDate} (GMT)
+            <b>На дату (За Київським часом): </b>
+            {formattedKievDate}
+          </Text>
+
+          <Text style={paragraph}>
+            <i>(GMT): {formattedGmtDate}</i>
           </Text>
           <Text style={paragraph}>
             <b>Часовий пояс користувача: </b>
@@ -195,11 +203,11 @@ export const MailMeetBookAdmin = ({
               marginTop: -5,
             }}
           >
-            Дата створення замовлення: {meetData.reservedAt?.toLocaleString()}
             Дата створення замовлення:{' '}
-            {format(meetData.reservedAt || '', 'EEEE dd MMMM', {
+            {format(meetData.reservedAt || '', 'EEE yyyy-MM-dd HH:mm', {
               locale: lang === ELanguage.UA ? uk : enUS,
-            })}
+            })}{' '}
+            (За Київським часом)
           </Text>
           <Text style={{ ...paragraph, marginTop: -5 }}>
             З повагою,

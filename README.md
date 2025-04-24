@@ -28,6 +28,8 @@
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient object storage
 - [NextAuth.js](https://github.com/nextauthjs/next-auth)
   - Simple and secure authentication
+- [CookieConsent v3](https://cookieconsent.orestbida.com/essential/introduction.html)
+  - A lightweight, GDPR and CCPA compliant Consent Management Tool written in vanilla JS.
 
 ## Running locally
 

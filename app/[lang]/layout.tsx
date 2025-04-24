@@ -17,7 +17,6 @@ import bgImg from '@/public/images/ezoteric_1024.jpeg';
 import { Suspense } from 'react';
 
 // =================================================================
-// add meta for policy
 // email to admin: На дату - додати Киівський час
 // email to admin: Дата створення - з новоі строки
 // appointment page - remove past dates from appointment schedule and from db (empty dates)

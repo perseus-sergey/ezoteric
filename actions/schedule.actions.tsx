@@ -3,7 +3,7 @@
 import { appointmentSchedule, TSchedule } from '@/db/schema'; // Шлях до вашої схеми appointmentSchedule
 import { revalidateTag } from 'next/cache';
 import { TAppointmentFormValues } from '@/models/schedule.model';
-import { eq, isNull } from 'drizzle-orm';
+import { and, eq, gt, isNull, sql } from 'drizzle-orm';
 import { getDB } from '@/db/root';
 import { ESegment } from '@/models/url.model';
 import {
@@ -40,7 +40,10 @@ export const getScheduleAction = async (
 }> => {
   const reservedCondition = withReserved
     ? undefined
-    : isNull(appointmentSchedule.reservedAt);
+    : and(
+        isNull(appointmentSchedule.reservedAt),
+        gt(appointmentSchedule.meetDate, sql`NOW() + interval '1 hour'`)
+      );
 
   try {
     const allAppointments = await db

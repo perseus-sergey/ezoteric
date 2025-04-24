@@ -52,6 +52,8 @@ import {
 import { cn } from '@/lib/utils/utils';
 import { getAvailableTimeZones, getUserTimeZone } from '@/lib/utils/clientDate';
 import { groupScheduleByDate } from '@/lib/utils/groupDate';
+import { enUS, uk } from 'date-fns/locale';
+import { format } from 'date-fns';
 
 const {
   appointmentForm: {
@@ -274,7 +276,13 @@ const AppointmentBookingForm = ({
           <ScrollArea className="h-[300px] w-full rounded-md border bg-tertiary">
             <div className="p-2 sm:p-6 space-y-4">
               {schedule.map((daySchedule) => {
-                const formattedDate = formatDate(daySchedule.meetDate);
+                const formattedDate = format(
+                  daySchedule.meetDate,
+                  'EEEE dd MMMM',
+                  {
+                    locale: lang === ELanguage.UA ? uk : enUS,
+                  }
+                );
 
                 return (
                   <div key={formattedDate}>
