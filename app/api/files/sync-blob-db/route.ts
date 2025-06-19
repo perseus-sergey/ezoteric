@@ -1,8 +1,7 @@
-import { getDB } from '@/db/root';
+import { db } from '@/db/root';
 import { tblImages } from '@/db/schema';
 import { list } from '@vercel/blob';
 import { eq } from 'drizzle-orm';
-const db = getDB();
 
 export async function GET() {
   const { blobs } = await list();

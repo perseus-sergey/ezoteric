@@ -1,4 +1,4 @@
-import { getDB } from '@/db/root';
+import { db } from '@/db/root';
 import {
   tblArticle,
   tblArticleViews,
@@ -9,8 +9,6 @@ import {
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
-
-const db = getDB();
 
 export async function GET() {
   try {

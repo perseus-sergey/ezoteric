@@ -12,7 +12,7 @@ import {
   tblTag,
   TTag,
 } from './schema';
-import { getDB } from './root';
+import { db } from './root';
 import { ELanguage } from '@/models/language.model';
 import { cache } from 'react';
 import { TArticleFormValues } from '@/models/editArticle.model';
@@ -22,8 +22,6 @@ import { revalidateTag } from 'next/cache';
 import { ESegment } from '@/models/url.model';
 
 const { UA } = ELanguage;
-
-const db = getDB();
 
 export const getArticlesChunk = cache(
   async (

@@ -5,16 +5,14 @@ import 'server-only';
 import { eq } from 'drizzle-orm';
 
 import { TNewTag, tblTag } from './schema';
-import { getDB } from './root';
+import { db } from './root';
 // import { ELanguage } from '@/models/language.model';
 
 // const { UA } = ELanguage;
 
-const db = getDB();
-
 export const getTagsFromDb = async () => {
   try {
-    const res = await getDB().query.tblTag.findMany({
+    const res = await db.query.tblTag.findMany({
       orderBy: (tags, { asc }) => [asc(tags.nameEn)],
     });
     return res;

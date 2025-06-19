@@ -4,7 +4,9 @@ import * as schema from './schema';
 
 const postgresUrl = process.env.POSTGRES_URL || '';
 
-export const getDB = () => {
-  const client = postgres(postgresUrl);
-  return drizzle(client, { schema });
-};
+if (!postgresUrl) {
+  throw new Error('POSTGRES_URL environment variable is not set');
+}
+
+const client = postgres(postgresUrl);
+export const db = drizzle(client, { schema });

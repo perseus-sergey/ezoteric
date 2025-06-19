@@ -15,13 +15,11 @@ import {
   TNewTestCategory,
   TTestCategory,
 } from './schema';
-import { getDB } from './root';
+import { db } from './root';
 import { testFormSchema, TTestFormValues } from '@/models/editArticle.model';
 import { revalidateTag } from 'next/cache';
 import { ESegment } from '@/models/url.model';
 import { getTestCategoriesFromDb } from './queriesTests';
-
-const db = getDB();
 
 export const insertCategoryToDb = async (newCategory: TNewTestCategory) => {
   try {

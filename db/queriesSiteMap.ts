@@ -5,9 +5,7 @@ import 'server-only';
 import { eq } from 'drizzle-orm';
 
 import { tblArticle, tblTests } from './schema';
-import { getDB } from './root';
-
-const db = getDB();
+import { db } from './root';
 
 export const getPostsSiteMap = async () => {
   try {

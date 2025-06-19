@@ -7,10 +7,8 @@ import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { eq, sql } from 'drizzle-orm';
 
 import { user, chat, TUser, reservation, TChat } from './schema';
-import { getDB } from './root';
+import { db } from './root';
 import { convertToUIMessages } from '@/lib/utils/utils';
-
-const db = getDB();
 
 // Not used anywhere
 export async function getUser(email: string): Promise<Array<TUser>> {

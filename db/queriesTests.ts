@@ -1,7 +1,7 @@
 'use server';
 
 import 'server-only';
-import { getDB } from './root';
+import { db } from './root';
 import { cache } from 'react';
 import { ELanguage } from '@/models/language.model';
 import { and, desc, eq, not, sql } from 'drizzle-orm';
@@ -14,8 +14,6 @@ import {
 import { TTestLocalized } from '@/models/test.model';
 
 const { UA, EN } = ELanguage;
-
-const db = getDB();
 
 export const getTestCategoriesFromDb = async () => {
   try {
@@ -31,7 +29,7 @@ export const getTestCategoriesFromDb = async () => {
 export const getHeaderTestCats = cache(
   async (lang: ELanguage): Promise<{ slug: string; name: string }[]> => {
     try {
-      const res = await getDB().query.tblTestCategories.findMany({
+      const res = await db.query.tblTestCategories.findMany({
         columns: {
           slug: true,
         },

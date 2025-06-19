@@ -5,12 +5,10 @@ import 'server-only';
 import { and, desc, eq, or, sql } from 'drizzle-orm';
 
 import { tblArticle, tblImages, tblTests } from './schema';
-import { getDB } from './root';
+import { db } from './root';
 import { BLOB_UPLOAD_PAGE_SIZE } from '@/models/image.model';
 import { ESegment } from '@/models/url.model';
 import { DEFAULT_LANG } from '@/models/language.model';
-
-const db = getDB();
 
 export const getArticleByImage = async (imageName: string) => {
   const articleFilters = [];

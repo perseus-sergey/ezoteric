@@ -5,12 +5,10 @@ import 'server-only';
 import { desc, eq } from 'drizzle-orm';
 
 import { tblArticle, tblTests } from './schema';
-import { getDB } from './root';
+import { db } from './root';
 import { cache } from 'react';
 import { ELanguage } from '@/models/language.model';
 import { ESegment } from '@/models/url.model';
-
-const db = getDB();
 
 const { UA, EN } = ELanguage;
 const { BLOG, TESTS } = ESegment;

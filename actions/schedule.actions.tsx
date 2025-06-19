@@ -4,7 +4,7 @@ import { appointmentSchedule, TSchedule } from '@/db/schema'; // Шлях до �
 import { revalidateTag } from 'next/cache';
 import { TAppointmentFormValues } from '@/models/schedule.model';
 import { and, eq, gt, isNull, sql } from 'drizzle-orm';
-import { getDB } from '@/db/root';
+import { db } from '@/db/root';
 import { ESegment } from '@/models/url.model';
 import {
   MailMeetBookToUser,
@@ -18,7 +18,6 @@ import {
   SCHEDULE_EMAIL,
 } from '@/models/scheduleEmail.model';
 
-const db = getDB();
 const { MASTER } = ESegment;
 
 const {
