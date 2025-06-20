@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json", // Наслідуємо основні налаштування
+  "compilerOptions": {
+    "module": "CommonJS", // Важливо для Node.js
+    "outDir": "dist-scripts", // Папка для скомпільованих файлів
+    "rootDir": ".", // Корінь проекту
+    "isolatedModules": false, // Дозволяє компілювати файли, що не є модулями
+    "noEmit": false // Дозволяє створювати вихідні файли
+  },
+  "include": [
+    "cron/**/*.ts", // Включаємо тільки наші скрипти
+    "db/**/*.ts" // Включаємо залежності, як-от файли drizzle
+  ],
+  "exclude": ["node_modules"]
+}

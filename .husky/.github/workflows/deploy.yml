@@ -1,0 +1,29 @@
+name: Deploy
+
+# Trigger the workflow on push and
+# pull request events on the main branch
+on:
+  push:
+    branches: ['main'] # Або ваша основна гілка
+  pull_request:
+    branches: ['main'] # Або ваша основна гілка
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }} # IP-адреса вашого сервера
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }} # Зазвичай 22, якщо не змінювали
+          key: ${{ secrets.SSHKEY }} # Ваш приватний SSH-ключ для new_user
+          timeout: 15m # Час очікування
+          script: |
+            cd /var/www/ezoteric.net
+            chmod +x ./.scripts/deploy.sh
+            ./.scripts/deploy.sh
