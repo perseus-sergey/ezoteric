@@ -45,3 +45,7 @@ You will need to use the environment variables [defined in `.env.example`](.env.
 pnpm install
 pnpm dev
 ```
+
+---
+
+## DEPLOY
