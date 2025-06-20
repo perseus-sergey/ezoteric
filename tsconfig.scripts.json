@@ -1,15 +1,30 @@
+// tsconfig.scripts.json
 {
-  "extends": "./tsconfig.json", // Наслідуємо основні налаштування
   "compilerOptions": {
-    "module": "CommonJS", // Важливо для Node.js
+    // Основні налаштування для Node.js скриптів
+    "target": "ES2020", // Сучасний стандарт, що підтримується актуальними версіями Node.js
+    "module": "CommonJS", // Найбільш сумісний формат для Node.js
+    "moduleResolution": "node", // Стандартний спосіб пошуку модулів для Node.js
+    "esModuleInterop": true, // Дозволяє використовувати `import ... from '...'` для CommonJS модулів
+    "forceConsistentCasingInFileNames": true, // Запобігає помилкам через різний регістр в іменах файлів
+    "strict": true, // Вмикає строгі перевірки типів (добра практика)
+    "skipLibCheck": true, // Пропускає перевірку типів у файлах декларацій (прискорює компіляцію)
+    "resolveJsonModule": true, // Дозволяє імпортувати JSON файли
+
+    // Налаштування для Drizzle/Next.js сумісності
+    "jsx": "preserve", // Залишаємо, як є, може знадобитись залежностям
+
+    // Шляхи
     "outDir": "dist-scripts", // Папка для скомпільованих файлів
-    "rootDir": ".", // Корінь проекту
-    "isolatedModules": false, // Дозволяє компілювати файли, що не є модулями
-    "noEmit": false // Дозволяє створювати вихідні файли
+    "rootDir": ".", // Корінь проекту, щоб шляхи були правильними
+    "baseUrl": ".", // Базовий URL для аліасів шляхів
+    "paths": {
+      "@/*": ["./*"] // Налаштовуємо аліас @, щоб він працював
+    }
   },
   "include": [
     "cron/**/*.ts", // Включаємо тільки наші скрипти
     "db/**/*.ts" // Включаємо залежності, як-от файли drizzle
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next", "out"]
 }

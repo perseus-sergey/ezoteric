@@ -1,11 +1,11 @@
-import { db } from '../db/root'; // Змінено з '@/db/root'
+import { db } from '@/db/root'; // Змінено з '@/db/root'
 import {
   tblArticle,
   tblArticleViews,
   tblTestCompleted,
   tblTests,
   tblTestViews,
-} from '../db/schema'; // Змінено з '@/db/schema'
+} from '@/db/schema'; // Змінено з '@/db/schema'
 import { sql } from 'drizzle-orm';
 // Додаємо dotenv для завантаження змінних з .env.local
 import { config } from 'dotenv';
