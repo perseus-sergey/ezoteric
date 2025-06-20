@@ -1,6 +1,6 @@
 'use client';
 
-import { TChat } from '@/db/schema';
+import { TChat } from '@/models/chat.model';
 import { Button } from '../ui/button';
 import {
   AlertDialog,

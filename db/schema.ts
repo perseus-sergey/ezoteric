@@ -1,4 +1,3 @@
-import { Message } from 'ai';
 import { InferSelectModel, relations, sql } from 'drizzle-orm';
 import {
   pgTable,
@@ -65,10 +64,6 @@ export const chat = pgTable(TBL_CHAT, {
     .notNull()
     .references(() => user.email),
 });
-
-export type TChat = Omit<InferSelectModel<typeof chat>, 'messages'> & {
-  messages: Array<Message>;
-};
 
 // =================================================================
 // TBL_RESERVATION

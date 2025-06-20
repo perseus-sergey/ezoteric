@@ -3,9 +3,9 @@
 import { CoreMessage } from 'ai';
 import { ELanguage } from '@/models/language.model';
 import { getChatByEmail } from '@/db/queries';
-import { TChat } from '@/db/schema';
 import { convertToUIMessages } from '@/lib/utils/utils';
 import ChatClient from './ChatClient';
+import { TChat } from '@/models/chat.model';
 
 const ChatWidget = async ({
   id,

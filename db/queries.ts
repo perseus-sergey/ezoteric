@@ -6,9 +6,10 @@ import { CoreMessage, Message } from 'ai';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { eq, sql } from 'drizzle-orm';
 
-import { user, chat, TUser, reservation, TChat } from './schema';
+import { user, chat, TUser, reservation } from './schema';
 import { db } from './root';
 import { convertToUIMessages } from '@/lib/utils/utils';
+import { TChat } from '@/models/chat.model';
 
 // Not used anywhere
 export async function getUser(email: string): Promise<Array<TUser>> {

@@ -1,4 +1,11 @@
+import { InferSelectModel } from 'drizzle-orm';
 import { ELanguage } from './language.model';
+import { chat } from '@/db/schema';
+import { Message } from 'ai';
+
+export type TChat = Omit<InferSelectModel<typeof chat>, 'messages'> & {
+  messages: Array<Message>;
+};
 
 const { UA, EN } = ELanguage;
 

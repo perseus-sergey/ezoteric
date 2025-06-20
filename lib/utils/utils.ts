@@ -8,7 +8,7 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { TChat } from '@/db/schema';
+import { TChat } from '@/models/chat.model';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
