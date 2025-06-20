@@ -20,7 +20,7 @@
 
   // КЛЮЧОВА ЗМІНА ТУТ
   "include": [
-    "scripts/cron/update-counts.ts", // Тільки сам скрипт
+    "cron/update-counts.ts", // Тільки сам скрипт
     "db/root.ts", // Файл з екземпляром db (або db/index.ts)
     "db/schema.ts" // Файл зі схемами Drizzle
   ],
