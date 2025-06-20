@@ -1,10 +1,11 @@
-import { db } from '../db/root';
-import { sql } from 'drizzle-orm';
 import { config } from 'dotenv';
 import path from 'path';
 
 // Завантажуємо змінні середовища з файлу .env.local в корені проекту
 config({ path: path.resolve(process.cwd(), '.env.local') });
+
+import { db } from '../db/root';
+import { sql } from 'drizzle-orm';
 
 if (!process.env.POSTGRES_URL) {
   throw new Error(
@@ -23,7 +24,7 @@ async function main() {
         UPDATE ezo_article
         SET "viewCount" = (
           SELECT count(*) 
-          FROM ezo_article_views}
+          FROM ezo_article_views
           WHERE ezo_article_views.articleId = ezo_article.id
         )
       `);
