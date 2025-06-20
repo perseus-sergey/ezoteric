@@ -1,4 +1,4 @@
-import { db } from '@/db/root'; // Змінено з '@/db/root'
+import { db } from '../db/root';
 import { sql } from 'drizzle-orm';
 import { config } from 'dotenv';
 import path from 'path';
