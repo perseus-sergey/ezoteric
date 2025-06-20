@@ -12,7 +12,13 @@ import { config } from 'dotenv';
 import path from 'path';
 
 // Завантажуємо змінні середовища з файлу .env.local в корені проекту
-config({ path: path.resolve(__dirname, '../../.env.local') });
+config({ path: path.resolve(process.cwd(), '.env.local') });
+
+if (!process.env.POSTGRES_URL) {
+  throw new Error(
+    'Could not find POSTGRES_URL in environment variables. Ensure .env.local exists and is in the project root.'
+  );
+}
 
 async function main() {
   console.log(`[${new Date().toISOString()}] Starting counts update...`);
