@@ -1,13 +1,5 @@
 import { db } from '@/db/root'; // Змінено з '@/db/root'
-import {
-  tblArticle,
-  tblArticleViews,
-  tblTestCompleted,
-  tblTests,
-  tblTestViews,
-} from '@/db/schema'; // Змінено з '@/db/schema'
 import { sql } from 'drizzle-orm';
-// Додаємо dotenv для завантаження змінних з .env.local
 import { config } from 'dotenv';
 import path from 'path';
 
@@ -28,27 +20,27 @@ async function main() {
       // Оновлюємо статті
       // Використовуємо .execute() для запитів, що не повертають результати, це може бути ефективніше
       await tx.execute(sql`
-        UPDATE ${tblArticle}
+        UPDATE ezo_article
         SET "viewCount" = (
           SELECT count(*) 
-          FROM ${tblArticleViews} 
-          WHERE ${tblArticleViews.articleId} = ${tblArticle.id}
+          FROM ezo_article_views}
+          WHERE ezo_article_views.articleId = ezo_article.id
         )
       `);
 
       // Оновлюємо тести
       await tx.execute(sql`
-        UPDATE ${tblTests}
+        UPDATE ezo_tests
         SET 
           "viewCount" = (
             SELECT count(*) 
-            FROM ${tblTestViews} 
-            WHERE ${tblTestViews.testId} = ${tblTests.id}
+            FROM ezo_test_views
+            WHERE ezo_test_views.testId = ezo_tests.id
           ),
           "completedCount" = (
             SELECT count(*) 
-            FROM ${tblTestCompleted} 
-            WHERE ${tblTestCompleted.testId} = ${tblTests.id}
+            FROM ezo_test_completed
+            WHERE ezo_test_completed.testId = ezo_tests.id
           )
       `);
     });
