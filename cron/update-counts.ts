@@ -22,7 +22,7 @@ async function main() {
       // Використовуємо .execute() для запитів, що не повертають результати, це може бути ефективніше
       await tx.execute(sql`
         UPDATE ezo_article
-        SET "viewCount" = (
+        SET "view_count" = (
           SELECT count(*) 
           FROM ezo_article_views
           WHERE ezo_article_views.article_id = ezo_article.id
@@ -33,12 +33,12 @@ async function main() {
       await tx.execute(sql`
         UPDATE ezo_tests
         SET 
-          "viewCount" = (
+          "view_count" = (
             SELECT count(*) 
             FROM ezo_test_views
             WHERE ezo_test_views.test_id = ezo_tests.id
           ),
-          "completedCount" = (
+          "completed_count" = (
             SELECT count(*) 
             FROM ezo_test_completed
             WHERE ezo_test_completed.test_id = ezo_tests.id
