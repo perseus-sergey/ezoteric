@@ -25,7 +25,7 @@ async function main() {
         SET "viewCount" = (
           SELECT count(*) 
           FROM ezo_article_views
-          WHERE ezo_article_views.articleId = ezo_article.id
+          WHERE ezo_article_views.article_id = ezo_article.id
         )
       `);
 
@@ -36,12 +36,12 @@ async function main() {
           "viewCount" = (
             SELECT count(*) 
             FROM ezo_test_views
-            WHERE ezo_test_views.testId = ezo_tests.id
+            WHERE ezo_test_views.test_id = ezo_tests.id
           ),
           "completedCount" = (
             SELECT count(*) 
             FROM ezo_test_completed
-            WHERE ezo_test_completed.testId = ezo_tests.id
+            WHERE ezo_test_completed.test_id = ezo_tests.id
           )
       `);
     });
