@@ -366,8 +366,8 @@ export const tblArticle = pgTable(
       'gin',
       sql`(
         setweight(to_tsvector('english', ${table.titleEn}), 'A') ||
-        setweight(to_tsvector('english', ${table.descriptionEn}), 'B') || // Додаємо опис
-        setweight(to_tsvector('english', substring(${table.textEn}, 1, 1000)), 'C') // Індексуємо лише перший 1КБ тексту
+        setweight(to_tsvector('english', ${table.descriptionEn}), 'B') ||
+        setweight(to_tsvector('english', substring(${table.textEn}, 1, 1000)), 'C')
       )`
     ),
     searchIndexUa: index('articles_search_ua_idx').using(
