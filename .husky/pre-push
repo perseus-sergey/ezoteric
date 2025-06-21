@@ -1,6 +1,6 @@
 # .husky/pre-push
-echo "Running Database Migrations..."
-pnpm d:migrate
+# echo "Running Database Migrations..."
+# pnpm d:migrate
 
 echo "Building the project..."
 pnpm build
