@@ -21,6 +21,9 @@ pnpm d:migrate
 echo "Creating Production Build..."
 pnpm build
 
+echo "Building cron scripts..."
+pnpm build:scripts # А це збірка для наших cron-скриптів
+
 echo "Restarting PM2 process for ezoteric.net..."
 # Перезапускаємо тільки конкретний процес за його іменем
 pm2 reload ezoteric.net 
