@@ -8,6 +8,7 @@ set -e
 DB_USER="postgres"
 DB_NAME="ezoteric"
 LOG_FILE="/var/log/reindex_db.log"
+PSQL_PATH="/usr/bin/psql"
 
 # Таблиці, для яких потрібно виконати REINDEX. Додавайте нові за потреби.
 TABLES_TO_REINDEX=(
@@ -30,7 +31,7 @@ for table in "${TABLES_TO_REINDEX[@]}"; do
   log "Починаю реіндексацію для таблиці: $table"
   
   # Виконуємо REINDEX CONCURRENTLY, щоб не блокувати таблицю
-  if psql -U "$DB_USER" -d "$DB_NAME" -c "REINDEX TABLE CONCURRENTLY $table;" &>> "$LOG_FILE"; then
+  if "$PSQL_PATH" -U "$DB_USER" -d "$DB_NAME" -c "REINDEX TABLE CONCURRENTLY $table;" &>> "$LOG_FILE"; then
     log "Успішно завершено реіндексацію для: $table"
   else
     log "ПОМИЛКА під час реіндексації таблиці: $table. Див. деталі вище."
