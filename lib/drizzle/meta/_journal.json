@@ -183,6 +183,13 @@
       "when": 1750445799076,
       "tag": "0025_cloudy_true_believers",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1750493022725,
+      "tag": "0026_burly_firedrake",
+      "breakpoints": true
     }
   ]
 }

@@ -150,7 +150,7 @@ export const tblTests = pgTable(
       sql`(
         setweight(to_tsvector('english', ${table.titleEn}), 'A') ||
         setweight(to_tsvector('english', ${table.descriptionEn}), 'B') ||
-        setweight(to_tsvector('english', ${table.textEn}), 'C')
+        setweight(to_tsvector('english', substring(${table.textEn}, 1, 1000)), 'C')
       )`
     ),
     searchIndexUa: index('tests_search_ua_idx').using(
@@ -158,7 +158,7 @@ export const tblTests = pgTable(
       sql`(
         setweight(to_tsvector('simple', ${table.titleUa}), 'A') ||
         setweight(to_tsvector('simple', ${table.descriptionUa}), 'B') ||
-         setweight(to_tsvector('simple', ${table.textUa}), 'C')
+        setweight(to_tsvector('simple', substring(${table.textUa}, 1, 1000)), 'C')
       )`
     ),
   })
@@ -360,19 +360,22 @@ export const tblArticle = pgTable(
     published: boolean('published').notNull().default(true),
     viewCount: integer('view_count').notNull().default(0),
   },
+
   (table) => ({
     searchIndexEn: index('articles_search_en_idx').using(
       'gin',
       sql`(
         setweight(to_tsvector('english', ${table.titleEn}), 'A') ||
-        setweight(to_tsvector('english', ${table.textEn}), 'B')
+        setweight(to_tsvector('english', ${table.descriptionEn}), 'B') || // Додаємо опис
+        setweight(to_tsvector('english', substring(${table.textEn}, 1, 1000)), 'C') // Індексуємо лише перший 1КБ тексту
       )`
     ),
     searchIndexUa: index('articles_search_ua_idx').using(
       'gin',
       sql`(
         setweight(to_tsvector('simple', ${table.titleUa}), 'A') ||
-        setweight(to_tsvector('simple', ${table.textUa}), 'B')
+        setweight(to_tsvector('simple', ${table.descriptionUa}), 'B') ||
+        setweight(to_tsvector('simple', substring(${table.textUa}, 1, 1000)), 'C')
       )`
     ),
   })
