@@ -31,4 +31,8 @@ pm2 reload ezoteric.net
 # pm2 save не обов'язковий при кожному деплої, але не зашкодить
 pm2 save
 
+echo "Making system scripts executable..."
+chmod +x ./cron/run_reindex.sh
+echo "System scripts are ready."
+
 echo "Deployment Finished!"
