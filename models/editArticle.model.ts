@@ -87,6 +87,8 @@ export const newArticleDefaultValues = {
   slug: '',
   titleUa: '',
   titleEn: '',
+  h1En: '',
+  h1Ua: '',
   descriptionUa: '',
   descriptionEn: '',
   keywordsUa: '',

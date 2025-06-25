@@ -1,6 +1,7 @@
 'use server';
 
-import { geminiFlashModel, geminiProExperimental } from '@/ai';
+import { geminiFlashModel } from '@/ai';
+// import { geminiFlashModel, geminiProExperimental } from '@/ai';
 import { TTag } from '@/db/schema';
 import { questAndConclusionSchema } from '@/models/editArticle.model';
 import { generateObject } from 'ai';
@@ -114,7 +115,7 @@ const metaDataSchema = z.object({
 
 export const aiGenerateMeta = async (titleUa: string, contentUa: string) => {
   const { object } = await generateObject({
-    model: geminiProExperimental,
+    model: geminiFlashModel,
     system: `
     You are an SEO expert and content marketing specialist.
     Your task is to generate high-quality SEO-optimized meta data and H1 headings for search engines (Google, Bing, etc.).
@@ -220,7 +221,7 @@ A brief description or text content of the test topic (e.g., "A personality test
 `;
 
   const { object } = await generateObject({
-    model: geminiProExperimental,
+    model: geminiFlashModel,
     system,
     schema: questAndConclusionSchema,
     prompt: content,

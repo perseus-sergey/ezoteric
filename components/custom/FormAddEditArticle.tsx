@@ -75,9 +75,9 @@ export const FormAddEditArticle = ({
       ? {
           ...article,
           tags: article.articleTags.map((tagObj) => tagObj.tag.id) ?? [],
-          imageSrc: article.imageSrc ?? undefined,
-          h1En: article.h1En ?? undefined,
-          h1Ua: article.h1Ua ?? undefined,
+          imageSrc: article.imageSrc ?? '',
+          h1En: article.h1En ?? '',
+          h1Ua: article.h1Ua ?? '',
         }
       : newArticleDefaultValues,
   });
@@ -588,7 +588,7 @@ export const FormAddEditArticle = ({
         />
 
         {/* Spotify */}
-        <FormField
+        {/* <FormField
           control={control}
           name="spotifyId"
           render={({ field }) => (
@@ -604,7 +604,7 @@ export const FormAddEditArticle = ({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         {/* Published */}
         <FormField

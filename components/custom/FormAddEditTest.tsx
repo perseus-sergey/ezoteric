@@ -694,7 +694,7 @@ export default function FormAddEditTest({
         />
 
         {/* Spotify */}
-        <FormField
+        {/* <FormField
           control={control}
           name="spotifyId"
           render={({ field }) => (
@@ -710,7 +710,7 @@ export default function FormAddEditTest({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         {/* Published */}
         <FormField
