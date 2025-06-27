@@ -22,7 +22,8 @@ export const CodeBlock = ({
           iconSize={12}
           value={copyCode}
           title="Copy to clipboard"
-          className="size-fit p-2 bg-tertiary/50 hover:bg-tertiary rounded-full absolute right-2 bottom-1/2 translate-y-1/2"
+          className="size-fit p-2 bg-tertiary/50 hover:bg-tertiary rounded-full absolute right-2 top-0"
+          // className="size-fit p-2 bg-tertiary/50 hover:bg-tertiary rounded-full absolute right-2 bottom-1/2 translate-y-1/2"
         />
       </div>
     </TooltipSimple>
