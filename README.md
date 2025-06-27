@@ -45,3 +45,9 @@ You will need to use the environment variables [defined in `.env.example`](.env.
 pnpm install
 pnpm dev
 ```
+
+## Links
+
+- [en/chat-viewer](https://www.ezoteric.net/en/chat-viewer)
+- [en/links](https://www.ezoteric.net/en/links)
+- [en/schedule](https://www.ezoteric.net/en/schedule)

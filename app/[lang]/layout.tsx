@@ -27,12 +27,6 @@ import { Suspense } from 'react';
 // not to show expired date in schedule
 // change gemini-1.5 to 2.0 on installsat and 1plus2
 
-// - інформації. ... (імітація обчислень) ...
-// add similar articles and tests to main page
-// - improve components/custom/Modals/ModalNumerologyResponse.tsx
-// - check jsonld main page
-// - check tests pagination & search
-
 // installsat: remove from sitemap pages with schedules (ask ai how it is better to do)
 // installsat: remove redundant pages with pagination from sitemap
 
@@ -40,8 +34,6 @@ import { Suspense } from 'react';
 // **Seamless Handoff:** If possible, integrate the booking system directly into the chat interface for a seamless transition from conversation to appointment scheduling.
 // chat: add message time
 // JsonLd: add site logo
-
-// shadcn - combobox, popover, dialog,
 // =================================================================
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
