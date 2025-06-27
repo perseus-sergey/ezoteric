@@ -48,6 +48,6 @@ pnpm dev
 
 ## Links
 
-- [en/chat-viewer](https://www.ezoteric.net/en/chat-viewer)
-- [en/links](https://www.ezoteric.net/en/links)
-- [en/schedule](https://www.ezoteric.net/en/schedule)
+- [en/master/chat-viewer](https://www.ezoteric.net/en/master/chat-viewer)
+- [en/master/links](https://www.ezoteric.net/en/master/links)
+- [en/master/schedule](https://www.ezoteric.net/en/master/schedule)
