@@ -1,53 +1,186 @@
-<a href="https://www.ezoteric.net/en">
-  <img alt="Ezoteric icon" src="app/icon.png">
-  <h1 align="center">Ezoteric.net</h1>
-</a>
+# EZOTERIC
 
-<p align="center">
-  Built With Next.js and the AI SDK by Vercel.
-</p>
+An AI-powered bilingual platform combining esoteric content, interactive tests, specialist booking and AI chat.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
-</p>
-<br/>
+The project was built as a full-stack Next.js application with PostgreSQL, authentication, AI integrations and an administration panel.
 
 ## Features
 
-- [Cron Jobs](https://www.easycron.com/cron-jobs) For fire script updating article view count.
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports Google (default), OpenAI, Anthropic, Cohere, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Vercel Postgres powered by Neon](https://vercel.com/storage/postgres) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient object storage
-- [NextAuth.js](https://github.com/nextauthjs/next-auth)
-  - Simple and secure authentication
-- [CookieConsent v3](https://cookieconsent.orestbida.com/essential/introduction.html)
-  - A lightweight, GDPR and CCPA compliant Consent Management Tool written in vanilla JS.
+- Bilingual user interface and content
+- AI-powered chat
+- Persistent chat history for authenticated users
+- Anonymous chat sessions stored locally
+- AI-generated articles
+- AI-generated interactive tests
+- Administration panel for managing content and AI generation
+- Google OAuth authentication
+- User authentication and authorization
+- Specialist appointment scheduling
+- Email notifications
+- PostgreSQL database
+- Responsive interface
+- SEO-friendly content structure
 
-## Running locally
+## AI Integration
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+AI is used as an integral part of the application rather than only as a standalone chat feature.
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various Google Cloud and authentication provider accounts.
+The platform includes:
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+- AI-powered conversational chat
+- AI-generated articles
+- AI-generated tests and questions
+- Dynamic content generation from the administration panel
+- Persistent storage of generated content in PostgreSQL
 
-```bash
-pnpm install
-pnpm dev
+The application was designed so that AI-generated content could be created and managed through the admin interface rather than being hardcoded into the application.
+
+## Authentication & User Data
+
+The application supports both authenticated and anonymous user flows.
+
+### Authenticated users
+
+- Google OAuth
+- Persistent chat history
+- User-specific data stored in PostgreSQL
+- Protected application functionality
+
+### Anonymous users
+
+- Chat sessions maintained in local storage
+- No account required to use the basic AI chat functionality
+
+Administrative functionality is protected separately from the public application.
+
+## Booking & Email
+
+The platform includes specialist appointment scheduling with email notifications.
+
+The booking flow includes:
+
+1. Selecting a specialist
+2. Selecting an available time
+3. Creating the appointment
+4. Persisting booking data in PostgreSQL
+5. Sending notification emails
+
+Email templates are generated programmatically and used for application notifications.
+
+## Technology Stack
+
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Responsive UI
+- React Hook Form
+- Zod
+
+### Backend
+
+- Next.js
+- Node.js
+- REST/API integrations
+- Server-side application logic
+- Authentication and authorization
+
+### Database
+
+- PostgreSQL
+- Drizzle ORM
+
+### Authentication
+
+- Google OAuth
+- Auth.js / NextAuth
+- Protected routes and admin functionality
+
+### AI
+
+- Google Gemini
+- AI SDK
+
+### Email
+
+- React Email
+- Nodemailer / email integrations
+
+### Development
+
+- Git
+- GitHub
+- ESLint
+- Prettier
+- Jest
+- React Testing Library
+
+## Architecture
+
+The application is built around a full-stack Next.js architecture.
+
+```text
+Browser
+   │
+   ▼
+Next.js / React
+   │
+   ├── Server-side application logic
+   ├── Authentication
+   ├── AI integrations
+   ├── Booking
+   └── Email notifications
+   │
+   ▼
+Drizzle ORM
+   │
+   ▼
+PostgreSQL
 ```
 
-## Links
+AI services and Google OAuth are integrated through server-side application logic, while user-facing functionality is implemented with React and Next.js.
 
-- [en/master/chat-viewer](https://www.ezoteric.net/en/master/chat-viewer)
-- [en/master/links](https://www.ezoteric.net/en/master/links)
-- [en/master/schedule](https://www.ezoteric.net/en/master/schedule)
+## Project Structure
+
+The application separates public functionality, authenticated user functionality and administration features.
+
+```text
+Public
+ ├── Content
+ ├── Tests
+ └── AI Chat
+
+Authenticated
+ ├── User account
+ └── Chat history
+
+Administration
+ ├── Content management
+ ├── AI content generation
+ ├── Tests management
+ └── User / application management
+```
+
+## Development
+
+The project was developed as an end-to-end full-stack application, including:
+
+- Application architecture
+- UI implementation
+- Database design
+- API and server-side logic
+- Authentication
+- AI integrations
+- Booking workflow
+- Email notifications
+- Administration tools
+- Deployment and maintenance
+
+## Author
+
+**Sergiy Gubriy**
+
+Full-Stack Developer
+JavaScript / TypeScript · React · Next.js · Node.js · PostgreSQL
