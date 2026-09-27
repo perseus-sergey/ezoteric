@@ -1,5 +1,4 @@
 import { getELangKey } from '@/lib/utils/getLanguage';
-import { TParams } from '@/models/url.model';
 import ChatWidget from '@/components/custom/ChatWidget';
 import { generateUUID } from '@/lib/utils/utils';
 import { Suspense } from 'react';
@@ -7,7 +6,7 @@ import { auth } from '@/app/(auth)/auth';
 
 type TProps = Readonly<{
   children: React.ReactNode;
-  params: TParams;
+  params: Promise<{ lang: string }>;
 }>;
 
 export default async function Layout({ children, params }: TProps) {

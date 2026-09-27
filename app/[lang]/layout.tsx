@@ -1,11 +1,10 @@
-import { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
 import { Header } from '@/components/custom/Header';
 import { ThemeProvider } from '@/components/custom/theme-provider';
 import { ELanguage } from '@/models/language.model';
 import { getELangKey } from '@/lib/utils/getLanguage';
-import { ESegment, MAIN_URL, TParams } from '@/models/url.model';
+import { ESegment, MAIN_URL } from '@/models/url.model';
 import { BACKGROUND_IMG_ALT, DEFAULT_META_OG } from '@/models/root.model';
 import { DEFAULT_META_DATA } from '@/models/meta/default.model';
 import Footer from '@/components/custom/Footer';
@@ -40,14 +39,12 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MAIN_URL;
 
 type TProps = Readonly<{
   children: React.ReactNode;
-  params: TParams;
+  params: Promise<{ lang: string }>;
 }>;
 
 export const dynamicParams = false;
 
-export const generateMetadata = async ({
-  params,
-}: TProps): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: TProps) => {
   const p = await params;
   const lang = getELangKey(p.lang);
 

@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 interface IDangerHtmlProps {
   text: string;
   className?: string;

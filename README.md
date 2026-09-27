@@ -184,3 +184,29 @@ The project was developed as an end-to-end full-stack application, including:
 
 Full-Stack Developer
 JavaScript / TypeScript · React · Next.js · Node.js · PostgreSQL
+
+pnpm build
+
+> ezoteric@0.1.0 build /sait/NextJs/ezoteric
+> next build
+
+▲ Next.js 15.5.26
+
+- Environments: .env.local
+
+Creating an optimized production build ...
+✓ Compiled successfully in 6.9s
+Linting and checking validity of types .Failed to compile.
+
+Type error: Type 'typeof import("/sait/NextJs/ezoteric/app/[lang]/layout")' does not satisfy the constraint 'LayoutConfig<"/[lang]">'.
+Types of property 'default' are incompatible.
+Type '({ children, params }: Readonly<{ children: ReactNode; params: TParams; }>) => Promise<Element>' is not assignable to type 'ComponentType<LayoutProps<"/[lang]">> | ((props: LayoutProps<"/[lang]">) => void | ReactNode | Promise<void> | Promise<...>)'.
+Type '({ children, params }: Readonly<{ children: ReactNode; params: TParams; }>) => Promise<Element>' is not assignable to type 'FunctionComponent<LayoutProps<"/[lang]">>'.
+Types of parameters '\_\_0' and 'props' are incompatible.
+Type 'LayoutProps<"/[lang]">' is not assignable to type 'Readonly<{ children: ReactNode; params: TParams; }>'.
+Types of property 'params' are incompatible.
+Type 'Promise<{ lang: string; }>' is not assignable to type 'TParams'.
+Type '{ lang: string; }' is missing the following properties from type '{ id: string; page: string; "page-id": string; "page-test-id": string; "page-test-cat-id": string; category: string; categories: string; lang: string; slug: string; "tag-slug": string; master: string; schedule: string; ... 12 more ...; tags: string; }': id, page, "page-id", "page-test-id", and 20 more.
+
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.
