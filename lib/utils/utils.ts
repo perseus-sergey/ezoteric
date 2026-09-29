@@ -10,6 +10,12 @@ import { twMerge } from 'tailwind-merge';
 
 import { TChat } from '@/models/chat.model';
 
+type NextFetchRequestInit = RequestInit & {
+  next?: {
+    revalidate?: number;
+  };
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -37,25 +43,25 @@ export const fetcher = async (url: string) => {
 };
 
 export async function fetchJsonLd(url: string) {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
+  try {
     const response = await fetch(url, {
       signal: controller.signal,
       next: { revalidate: 86400 },
-    });
-
-    clearTimeout(timeout);
+    } as NextFetchRequestInit);
 
     if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
     console.error('❌ Error fetching JSON-LD:', error);
     return null;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
