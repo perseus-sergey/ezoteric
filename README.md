@@ -1,4 +1,17 @@
-# EZOTERIC
+<a href="https://www.ezoteric.net/en">
+  <img alt="Ezoteric icon" src="app/icon.png">
+  <h1 align="center">Ezoteric.net</h1>
+</a>
+
+<p align="center">
+  Built With Next.js and the AI SDK by Vercel.
+</p>
+
+<p align="center">
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#running-locally"><strong>Running locally</strong></a>
+</p>
+<br/>
 
 An AI-powered bilingual platform combining esoteric content, interactive tests, specialist booking and AI chat.
 
@@ -191,22 +204,3 @@ pnpm build
 > next build
 
 ▲ Next.js 15.5.26
-
-- Environments: .env.local
-
-Creating an optimized production build ...
-✓ Compiled successfully in 6.9s
-Linting and checking validity of types .Failed to compile.
-
-Type error: Type 'typeof import("/sait/NextJs/ezoteric/app/[lang]/layout")' does not satisfy the constraint 'LayoutConfig<"/[lang]">'.
-Types of property 'default' are incompatible.
-Type '({ children, params }: Readonly<{ children: ReactNode; params: TParams; }>) => Promise<Element>' is not assignable to type 'ComponentType<LayoutProps<"/[lang]">> | ((props: LayoutProps<"/[lang]">) => void | ReactNode | Promise<void> | Promise<...>)'.
-Type '({ children, params }: Readonly<{ children: ReactNode; params: TParams; }>) => Promise<Element>' is not assignable to type 'FunctionComponent<LayoutProps<"/[lang]">>'.
-Types of parameters '\_\_0' and 'props' are incompatible.
-Type 'LayoutProps<"/[lang]">' is not assignable to type 'Readonly<{ children: ReactNode; params: TParams; }>'.
-Types of property 'params' are incompatible.
-Type 'Promise<{ lang: string; }>' is not assignable to type 'TParams'.
-Type '{ lang: string; }' is missing the following properties from type '{ id: string; page: string; "page-id": string; "page-test-id": string; "page-test-cat-id": string; category: string; categories: string; lang: string; slug: string; "tag-slug": string; master: string; schedule: string; ... 12 more ...; tags: string; }': id, page, "page-id", "page-test-id", and 20 more.
-
-Next.js build worker exited with code: 1 and signal: null
- ELIFECYCLE  Command failed with exit code 1.
