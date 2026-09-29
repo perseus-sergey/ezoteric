@@ -1,4 +1,4 @@
-<a href="https://www.ezoteric.net/en">
+<a href="https://ezoteric-app.vercel.app/en">
   <img alt="Ezoteric icon" src="app/icon.png">
   <h1 align="center">Ezoteric.net</h1>
 </a>
