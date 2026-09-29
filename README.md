@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#Technology Stack"><strong>Technology Stack</strong></a>
+  <a href="#technology-stack"><strong>Technology Stack</strong></a>
 </p>
 <br/>
 
